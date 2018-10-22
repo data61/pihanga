@@ -1,0 +1,6 @@
+./node_modules
+node_modules/
+build/
+src/environments/environment.js
+yarn.lock
+UNUSED
