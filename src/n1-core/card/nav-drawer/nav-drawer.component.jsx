@@ -13,19 +13,25 @@ import { N1PropTypes } from 'n1-core';
 import { clickOpenDrawer, clickCloseDrawer, clickNavMenu } from './nav-drawer.actions';
 import styled from './nav-drawer.style';
 
-export const NavDrawerCard = styled(({cardName, drawerOpen, navItems, classes}) => {
+export const NavDrawerCard = styled(({
+  drawerIsOpen, 
+  navItems, 
+  onOpenDrawer, onCloseDrawer,
+  onClickNavMenu,
+  classes
+}) => {
 
   const NavEntry = ({item}) => (
-    <ListItem key={ item.name } button  onClick={() => clickNavMenu(item, cardName)}>
+    <ListItem key={ item.name } button  onClick={() => onClickNavMenu({item})}>
       <ListItemText primary={ item.name } />
     </ListItem>
   );
 
   return (
-    <Drawer variant="persistent" classes={{ paper: classes.drawerPaper, }} open={drawerOpen}>
+    <Drawer variant="persistent" classes={{ paper: classes.drawerPaper, }} open={drawerIsOpen}>
       <div className={classes.drawerInner}>
         <div className={classes.drawerHeader}>
-          <IconButton onClick={() => clickCloseDrawer(cardName)}>
+          <IconButton onClick={() => onCloseDrawer()}>
             <ChevronLeftIcon />
           </IconButton>
         </div>

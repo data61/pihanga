@@ -31,11 +31,11 @@ const AppComponent = (store, routerComponentWrapper) => {
 
   // PIHANAGA
 
-  const cardNotFoundFunc = missingCard => (
-    <div>
-      <p>ERROR: Can't find card  &quot;{missingCard}&quot;. Please check your configuration.</p>
-    </div>
-  );
+  // const cardNotFoundFunc = missingCard => (
+  //   <div>
+  //     <p>ERROR: Can't find card  &quot;{missingCard}&quot;. Please check your configuration.</p>
+  //   </div>
+  // );
 
   // const PageComponent = connect(s => s)(s => {
   //   const page = s.pihanga.page;

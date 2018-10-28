@@ -4,7 +4,7 @@ const environment = {
   },
   debugEnabled: true,
   API_BASE: '/v1',
-  PATH_PREFIX: '/dashboard',
+  PATH_PREFIX: '',
 };
 
 export default environment;

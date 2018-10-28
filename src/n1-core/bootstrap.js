@@ -3,7 +3,8 @@ import { RouterComponentWrapper } from './router';
 import { Reducer, createStore } from './redux';
 import { createLogger } from './logger';
 import { init as routerInit } from './router';
-import { registerCard } from './card.service';
+import { registerCards, registerCardComponent } from './card.service';
+import appStructure from './app/app.pihanga';
 
 const logger = createLogger('bootstrap');
 
@@ -14,7 +15,7 @@ const logger = createLogger('bootstrap');
  * @param initialState
  * @param moduleById
  */
-export function bootstrap(elementId, mainComponent, initialState, moduleById) {
+export function bootstrap(elementId, mainComponent, initialState, moduleById, baseCards) {
   const routerComponentWrapper = new RouterComponentWrapper({});
   const reducer = new Reducer({});
   const registerReducer = reducer.registerReducer.bind(reducer);
@@ -22,11 +23,13 @@ export function bootstrap(elementId, mainComponent, initialState, moduleById) {
   const getRoute = routerComponentWrapper.getRoute.bind(routerComponentWrapper);
 
   routerInit(registerReducer, getRoute);
+  
 
   const register = {
     routing: registerRouting,
     reducer: registerReducer,
-    card: registerCard,
+    cardComponent: registerCardComponent,
+    cards: registerCards,
   }
   for (const m in moduleById) {
     logger.debugSilently(`Discovered module ${m}`);
@@ -43,6 +46,7 @@ export function bootstrap(elementId, mainComponent, initialState, moduleById) {
       // logger.debug(`Module index "${p}" does NOT contain an init() function`);
     }
   }
+  registerCards(appStructure); // base structure, some cards may also have been registered in inits
 
   logger.infoSilently('Creating store');
   const store = createStore(reducer.rootReducer.bind(reducer), initialState);

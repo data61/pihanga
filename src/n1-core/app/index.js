@@ -1,6 +1,7 @@
 import { bootstrap, createLogger } from 'n1-core';
 import { AppComponent } from './component';
 import { initialState } from './app.initial-state';
+import baseCards from './app.pihanga';
 import { areCookiesEnabled } from 'n1-core/backend';
 import { requireContext } from './require-context';
 
@@ -21,5 +22,5 @@ export function bootstrapApp(appElementId) {
   }
 
   const modules = requireContext();
-  bootstrap(appElementId, AppComponent, initialState, modules);
+  bootstrap(appElementId, AppComponent, initialState, modules, baseCards);
 }

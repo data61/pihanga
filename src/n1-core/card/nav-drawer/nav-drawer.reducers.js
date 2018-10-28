@@ -1,28 +1,20 @@
-import update from 'immutability-helper';
+import { update } from 'n1-core';
 
 import { ACTION_TYPES } from './nav-drawer.actions';
 
 export default (registerReducer) => {
 
   registerReducer(ACTION_TYPES.OPEN_DRAWER, (state, action) => {
-    return drawerState(state, true);
+    return drawerState(true, state, action);
   });
 
   registerReducer(ACTION_TYPES.CLOSE_DRAWER, (state, action) => {
-    return drawerState(state, false, action.cardName);
+    return drawerState(false, state, action);
   })
 
-  function drawerState(state, isOpen, cardName) {
-    return update(ensurePage(state), {
-      page: { drawerOpen: { $set: isOpen } }
-    });
+  function drawerState(drawerIsOpen, state, action) {
+    return update(state, [ 'pihanga', action.id ], {drawerIsOpen});
   }
 
-  function ensurePage(state) {
-    if (state.page) return state;
-    return update(state, {
-      page: { $set: {} },
-    });
-  }
 
 }

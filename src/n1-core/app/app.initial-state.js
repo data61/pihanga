@@ -7,7 +7,7 @@ export const initialState = {
   version: {},
   checkedSession: true,
   route: {
-    path: '/overview',
+    path: '/cars',
     //paramValueByName: {},
     routePath: '???',
   },
@@ -66,62 +66,13 @@ export const initialState = {
   unsavedData: {}, // space for various unsaved/unfinished workflow
 
   // FIXME: Shouldn't be necessary anymore as we have separate card entries
-  scratch: {
-    table: {
-      // carListing: {
+  // scratch: {
+  //   table: {
+  //     // carListing: {
 
-      // }
-    }
-  },
+  //     // }
+  //   }
+  // },
 
-  pihanga: {
-    page: {
-      cardType: 'MyPageCard',
-      title: 'My App',
-    
-      contentCard: 'carListing',
-
-      navDrawerCard: 'navDrawer',
-      drawerOpen: s => s.pihanga.navDrawer.drawerOpen,
-      
-      toolbarAddOns: [], 
-      showRefreshButton: false, 
-      topMargin: true,
-      breadcrumbs: s => s.pihanga[s.pihanga.page.contentCard].breadcrumbs,
-    },
-    navDrawer: {
-      cardType: 'NavDrawer',
-      drawerOpen: true,
-      navItems: (s) => {
-        return Object.entries(s)
-          .filter(e => e[1].topLevel === true)
-          .map(e => ({name: capitalize(e[0]), path: e[1].path}))
-          ;
-      },
-    },
-    carListing: {
-      cardType: 'Listing',
-      columns: [
-        { id: 'id', label: 'ID', numeric: false, sortable: true, isKey: true, },
-        { id: 'name', label: 'Name', numeric: false, sortable: true, },
-        { id: 'bodyStyle', label: 'Body Style', numeric: false, sortable: true,  },
-        { id: 'model', label: 'Model', numeric: true, sortable: true,  },
-        { id: 'year', label: 'Year', numeric: true, sortable: true,  },
-      ],
-      data: s => s.cars.list,
-      path: s => s.cars.path,
-      breadcrumbs: [{
-        title: 'Cars',
-        path: '/cars',
-      }],
-      // this is a temporary hack!!!
-      scratch: {
-        table: {
-          carListing: {
-  
-          }
-        }
-      }
-    },
-  }
+  pihanga: {}
 };
