@@ -1,0 +1,44 @@
+{
+  "extends": "airbnb",
+  "plugins" : [
+    "react"
+  ],
+  "env"     : {
+    "browser" : true
+  },
+  "rules": {
+    // "export default" is not always ideal.
+    //
+    // Since we have those "index.js" files that do batch export with
+    // "export * from './other-file.js'". If "other-file.js" has a default export,
+    // we will need to re-declare it using: "export {default as something} from './other-file.js'"
+    //
+    // This increases coupling between the "index.js" and "other-file.js". Since index needs
+    // to understand what the other file wants to export to give it an appropriate name.
+    "import/prefer-default-export": 0,
+
+    // Since we will more likely never use an object that shadows an Object.prototype method or does
+    // not inherit from Object.prototype.
+    "no-prototype-builtins": 0,
+
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }]
+  },
+
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "sourceType": "module",
+    "allowImportExportEverywhere": true
+  },
+
+  "settings": {
+    // To avoid eslint complaining that the modules under 'src/' cannot be resolved
+    "import/resolver": {
+      "node": {
+        "moduleDirectory": [
+          "node_modules",
+          "src"
+        ]
+      }
+    }
+  }
+}
