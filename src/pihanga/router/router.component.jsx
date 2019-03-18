@@ -141,9 +141,6 @@ export class RouterComponentWrapper {
         return that.routeNotFoundElementFunc(route.path);
       }
 
-      // pass the map of params to the store
-      route.paramValueByName = matchedComponent.routeParamValueByName;
-
       if (!route.preventAddingHistory) {
         // add route path to browser history
         // NOTE: If routing config has this configured as a redirect, this route path might be
@@ -151,7 +148,14 @@ export class RouterComponentWrapper {
         that.addRoutePathToHistory(matchedComponent.routePath);
       }
 
-      return React.createElement(matchedComponent.componentType, props);
+      return React.createElement(matchedComponent.componentType, {
+        ...props,
+        updateRoute,
+        route: {
+          ...route,
+          paramValueByName: matchedComponent.routeParamValueByName
+        }
+      });
     };
 
     RouterComponent.propTypes = {

@@ -1,5 +1,8 @@
 # pihanga example
 
+__NOTE__: This documentation is written for the apollo client example app. Some statements will
+ need be changed.
+
 ## Get started
 
 Install [NodeJS](https://nodejs.org/en/) or via [package manager](https://nodejs.org/en/download/package-manager/)

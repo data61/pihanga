@@ -18,8 +18,11 @@
     "react": "^16.5.2",
     "react-apollo": "^2.2.4",
     "react-dom": "^16.5.2",
+    "react-redux": "^6.0.1",
     "react-scripts": "2.0.4",
-    "recompose": "^0.30.0"
+    "recompose": "^0.30.0",
+    "redux": "^4.0.1",
+    "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
     "autoprefixer": "^9.1.5",
@@ -33,8 +36,8 @@
     "tailwindcss": "^0.6.6"
   },
   "scripts": {
-    "build:css": "postcss src/app/ui/app-router.component.css -o src/app/ui/auto-generated.app-router.component.css",
-    "watch:css": "postcss src/app/ui/app-router.component.css -o src/app/ui/auto-generated.app-router.component.css",
+    "build:css": "postcss src/apollo-client-example-app/ui/app-router.component.css -o src/shared/auto-generated.app-router.component.css",
+    "watch:css": "postcss src/apollo-client-example-app/ui/app-router.component.css -o src/apollo-client-example-app/ui/auto-generated.app-router.component.css",
     "lint": "npm run build:css && eslint --ext .jsx,.js src/",
     "start": "npm run watch:css & react-scripts start",
     "build": "npm run build:css && react-scripts build",
