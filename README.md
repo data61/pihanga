@@ -1,24 +1,5 @@
-# stellargraph-vis-ui
+# pihanga example
 
-This project provides a visualisation tool for graphs ingested to 
-[stellar-storage](https://github.com/stellargraph/stellar-storage), with the 
-[stellar-platform](https://github.com/stellargraph/stellar-platform) being the long-term integration goal.
-
-It is implemented primarily in Javascript (ES6), using:
-- [react](https://facebook.github.io/react/) as a View library for the frontend.
-- [react-scripts](https://github.com/facebook/create-react-app#readme) to avoid the hassle of 
-managing multiple tools for bundling & optimising front-end assets (including JS, CSS and images).
-- [apollo-client](https://www.apollographql.com) for managing the front-end state and interacting
- with [GraphQL](https://graphql.org) backend.
-- [tailwind](https://tailwindcss.com) as the CSS framework.
-
-# Contents
-- [Get started](#get-started) 
-- [Build scripts](#build-scripts)
-- [Directory structure](#directory-structure)
-- [Module definition](#module-definition)
-- [Router](#router)
- 
 ## Get started
 
 Install [NodeJS](https://nodejs.org/en/) or via [package manager](https://nodejs.org/en/download/package-manager/)

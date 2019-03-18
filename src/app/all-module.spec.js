@@ -1,4 +1,4 @@
-import { loadModules } from 'framework';
+import { loadModules } from 'pihanga';
 import { requireContext as requireContextPolyfill } from './require-context.polyfill';
 
 describe('bootstrap app', () => {

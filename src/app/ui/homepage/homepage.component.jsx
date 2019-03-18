@@ -1,9 +1,8 @@
 import React from 'react';
-import { ExtendedPropTypes } from 'framework';
+import { ExtendedPropTypes } from 'pihanga';
 
 import './homepage.css';
 import { PROJECT_ROUTING } from '../project';
-import { GRAPH_ROUTING } from '../graph';
 
 export const HomepageComponent = ({ updateRoute }) => (
   <div className="bg-white mx-auto max-w-sm shadow-lg rounded-lg overflow-hidden">
@@ -15,12 +14,8 @@ export const HomepageComponent = ({ updateRoute }) => (
       />
       <div className="text-center sm:text-left sm:flex-grow">
         <div className="mb-4">
-          <p className="text-xl leading-tight">Stellar Graph Visualisation</p>
+          <p className="text-xl leading-tight">Pihanga Apollo Client Example</p>
           <p className="text-sm leading-tight text-grey-dark">
-            <a href="https://Stellargraph.io">
-              Stellar
-            </a>
-            {' | '}
             <a href="https://www.data61.csiro.au/">
               Data61
             </a>
@@ -39,15 +34,6 @@ export const HomepageComponent = ({ updateRoute }) => (
             onClick={() => updateRoute(PROJECT_ROUTING.getProjectRoute())}
           >
             View project list
-          </button>
-
-          <button
-            type="button"
-            className="text-xs font-semibold rounded-full px-4 py-1 leading-normal bg-white
-                border border-purple text-purple hover:bg-purple hover:text-white"
-            onClick={() => updateRoute(GRAPH_ROUTING.getGraphRoute())}
-          >
-            View test graph
           </button>
         </div>
       </div>

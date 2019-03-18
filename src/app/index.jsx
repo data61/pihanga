@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import { compose } from 'recompose';
 import GraphQLJSON from 'graphql-type-json';
 
-import { loadModules } from 'framework';
+import { loadModules } from 'pihanga';
 import { AppRouterComponent } from './ui';
 import { Resolvers, createApolloClient } from './apollo-client';
 import { requireContext } from './require-context';
