@@ -29,8 +29,7 @@ export function bootstrapApp(appElementId) {
   const RouterComponent = connect(s => s)(
     compose(
       withProps({
-        updateRoute: (path, payload, preventAddingHistory) =>
-          updateRoute(path, payload, preventAddingHistory)
+        updateRoute
       })
     )(AppRouterComponent(routerComponentWrapper))
   );

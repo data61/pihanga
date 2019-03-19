@@ -40,11 +40,13 @@ export class RouterComponentWrapper {
       this.browserHistory = createHistory();
     }
 
-    this.updateRoutePath = () => {};
+    this.updateRoute = () => {};
 
-    // Listen for changes to the current location.
+    // Listen for changes to the current location (for browser back & forward).
     this.browserHistory.listen(location => {
-      this.updateRoutePath(location.pathname);
+      if (this.routePath !== location.pathname) {
+        this.updateRoute({ path: location.pathname });
+      }
     });
 
     this.routingConfig = routingConfig;
@@ -118,10 +120,9 @@ export class RouterComponentWrapper {
      * @returns {*}
      * @constructor
      */
-    const RouterComponent = props => {
-      const { route, updateRoute } = props;
-
-      that.updateRoutePath = path => updateRoute(path);
+    const RouterComponent = ({ route, updateRoute, ...props }) => {
+      that.updateRoute = updateRoute;
+      that.routePath = route.path;
 
       const matchedComponent = RouterService.findComponentAndExtractParams(
         that.routingConfig,
