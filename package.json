@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "lodash": "^4.17.2",
     "apollo-boost": "^0.1.16",
     "apollo-cache-inmemory": "^1.3.6",
     "apollo-client": "^2.4.3",
@@ -22,26 +23,31 @@
     "react-scripts": "2.0.4",
     "recompose": "^0.30.0",
     "redux": "^4.0.1",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "stackinfo": "^1.1.5"
   },
   "devDependencies": {
     "autoprefixer": "^9.1.5",
     "babel-eslint": "9.0.0",
     "eslint": "5.6.0",
+    "eslint-config-prettier": "^3.3.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-jsx-a11y": "^6.1.2",
     "eslint-plugin-react": "^7.0.1",
+    "eslint-plugin-prettier": "^3.0.0",
+    "prettier": "^1.15.3",
     "postcss-cli": "^6.0.0",
     "react-test-renderer": "^16.5.2",
     "tailwindcss": "^0.6.6"
   },
   "scripts": {
-    "build:css": "postcss src/apollo-client-example-app/ui/app-router.component.css -o src/shared/auto-generated.app-router.component.css",
-    "watch:css": "postcss src/apollo-client-example-app/ui/app-router.component.css -o src/apollo-client-example-app/ui/auto-generated.app-router.component.css",
+    "build:css": "postcss src/shared/app-router.component.css -o src/shared/auto-generated.app-router.component.css",
+    "watch:css": "postcss src/shared/app-router.component.css -o src/shared/app-router.component.css",
     "lint": "npm run build:css && eslint --ext .jsx,.js src/",
     "start": "npm run watch:css & react-scripts start",
     "build": "npm run build:css && react-scripts build",
-    "test": "react-scripts test --env=jsdom"
+    "test": "react-scripts test --env=jsdom",
+    "prettier": "prettier"
   },
   "browserslist": [
     ">0.2%",

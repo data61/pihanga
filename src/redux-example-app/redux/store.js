@@ -1,8 +1,8 @@
 import { applyMiddleware, compose, createStore as createReduxStore } from 'redux';
 import thunk from 'redux-thunk';
-import { createLogger } from '../logger';
+import { LoggerFactory } from 'pihanga';
 
-const logger = createLogger('store');
+const logger = LoggerFactory.create('store');
 
 let store;
 
@@ -21,7 +21,9 @@ export function dispatch(event) {
     const scheduleEventMs = 100;
     logger.debug(
       `Schedule event ${event} to be executed in ${scheduleEventMs} ms because` +
-      '\'store\' wasn\'t defined yet', event);
+        "'store' wasn't defined yet",
+      event
+    );
 
     // retry later
     setTimeout(() => dispatch(event), scheduleEventMs);
@@ -38,7 +40,7 @@ export function dispatch(event) {
  * @returns {function(*)}
  */
 export function doActionInReducer(actionFn, actionFnArgs) {
-  return (state) => {
+  return state => {
     setTimeout(() => {
       if (actionFnArgs) {
         actionFn(...actionFnArgs);
@@ -64,7 +66,10 @@ export function createStore(rootReducer, initialState = {}) {
   /* eslint-disable no-underscore-dangle */
   // For redux-devtools-extension on browser
   if (window.__REDUX_DEVTOOLS_EXTENSION__) {
-    middleware = compose(middleware, window.__REDUX_DEVTOOLS_EXTENSION__());
+    middleware = compose(
+      middleware,
+      window.__REDUX_DEVTOOLS_EXTENSION__()
+    );
   }
   /* eslint-enable no-underscore-dangle */
 

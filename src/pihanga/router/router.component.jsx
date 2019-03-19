@@ -14,11 +14,9 @@ import { RouterService } from './router.service';
 function appendPrefixToRoutePath(componentByRoutePath, pathPrefix) {
   const resultComponentByRoutePath = {};
 
-  Object
-    .keys(componentByRoutePath)
-    .forEach((routePath) => {
-      resultComponentByRoutePath[pathPrefix + routePath] = componentByRoutePath[routePath];
-    });
+  Object.keys(componentByRoutePath).forEach(routePath => {
+    resultComponentByRoutePath[pathPrefix + routePath] = componentByRoutePath[routePath];
+  });
 
   return resultComponentByRoutePath;
 }
@@ -33,11 +31,7 @@ function appendPrefixToRoutePath(componentByRoutePath, pathPrefix) {
  * "connect(s => s)((new RouterComponentContainer(routingConfig)).getRouterComponentConstructor())"
  */
 export class RouterComponentWrapper {
-  constructor(
-    routingConfig,
-    routeNotFoundElementFunc,
-    serverSideRendering,
-  ) {
+  constructor(routingConfig, routeNotFoundElementFunc, serverSideRendering) {
     this.routeNotFoundElementFunc = routeNotFoundElementFunc;
 
     if (serverSideRendering) {
@@ -49,7 +43,7 @@ export class RouterComponentWrapper {
     this.updateRoutePath = () => {};
 
     // Listen for changes to the current location.
-    this.browserHistory.listen((location) => {
+    this.browserHistory.listen(location => {
       this.updateRoutePath(location.pathname);
     });
 
@@ -84,30 +78,25 @@ export class RouterComponentWrapper {
     }
 
     // Throw error if there is any duplicate routes
-    Object
-      .keys(tmpRoutingConfig)
+    Object.keys(tmpRoutingConfig)
       .filter(routePath => this.routingConfig[routePath])
-      .forEach((duplicate) => {
-        throw Error(
-          `Route path "${duplicate}" already exists.`,
-        );
+      .forEach(duplicate => {
+        throw Error(`Route path "${duplicate}" already exists.`);
       });
 
-    Object
-      .keys(tmpRoutingConfig)
-      .forEach((routePath) => {
-        if (routePath === undefined) {
-          throw Error('Route path cannot be undefined');
-        }
+    Object.keys(tmpRoutingConfig).forEach(routePath => {
+      if (routePath === undefined) {
+        throw Error('Route path cannot be undefined');
+      }
 
-        const component = tmpRoutingConfig[routePath];
-        if (!component) {
-          throw Error(`Component cannot be undefined for route ${routePath}`);
-        }
+      const component = tmpRoutingConfig[routePath];
+      if (!component) {
+        throw Error(`Component cannot be undefined for route ${routePath}`);
+      }
 
-        // eslint-disable-next-line no-param-reassign
-        this.routingConfig[routePath] = component;
-      });
+      // eslint-disable-next-line no-param-reassign
+      this.routingConfig[routePath] = component;
+    });
   }
 
   /**
@@ -129,13 +118,15 @@ export class RouterComponentWrapper {
      * @returns {*}
      * @constructor
      */
-    const RouterComponent = (props) => {
+    const RouterComponent = props => {
       const { route, updateRoute } = props;
 
       that.updateRoutePath = path => updateRoute(path);
 
-      const matchedComponent = RouterService
-        .findComponentAndExtractParams(that.routingConfig, route.path);
+      const matchedComponent = RouterService.findComponentAndExtractParams(
+        that.routingConfig,
+        route.path
+      );
 
       if (!matchedComponent.componentType) {
         return that.routeNotFoundElementFunc(route.path);
@@ -160,7 +151,7 @@ export class RouterComponentWrapper {
 
     RouterComponent.propTypes = {
       route: ExtendedPropTypes.route.isRequired,
-      updateRoute: ExtendedPropTypes.func.isRequired,
+      updateRoute: ExtendedPropTypes.func.isRequired
     };
 
     RouterComponent.defaultProps = {};

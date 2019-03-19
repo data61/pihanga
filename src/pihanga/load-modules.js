@@ -12,25 +12,20 @@ const logger = LoggerFactory.create('bootstrap');
  * @param serverSideRendering
  * @returns {RouterComponentWrapper}
  */
-export function loadModules(
-  logLevel, moduleById, extraModuleInitArgs, serverSideRendering,
-) {
+export function loadModules(logLevel, moduleById, extraModuleInitArgs, serverSideRendering) {
   LoggerFactory.setLevel(logLevel);
 
-  const routerComponentWrapper = new RouterComponentWrapper(
-    {},
-    () => {},
-    serverSideRendering,
-  );
+  const routerComponentWrapper = new RouterComponentWrapper({}, () => {}, serverSideRendering);
 
-  moduleById.keys().forEach((m) => {
+  moduleById.keys().forEach(m => {
     logger.debug(`Discovered module ${m}`);
     const module = moduleById(m);
     if (module.init !== undefined) {
       module.init.apply(
         module.init,
-        [routerComponentWrapper.registerRouting.bind(routerComponentWrapper)]
-          .concat(extraModuleInitArgs || []),
+        [routerComponentWrapper.registerRouting.bind(routerComponentWrapper)].concat(
+          extraModuleInitArgs || []
+        )
       );
     } else {
       // There can be lots of cases where there is no `init()` since the component doesn't need to

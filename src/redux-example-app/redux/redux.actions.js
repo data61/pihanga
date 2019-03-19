@@ -6,7 +6,7 @@ export const ACTION_TYPES = {
   // internal redux action
   INIT: '@@INIT',
 
-  ERROR: `${Domain}ERROR`,
+  ERROR: `${Domain}ERROR`
 };
 
 export function emitError(msg, stackInfo) {

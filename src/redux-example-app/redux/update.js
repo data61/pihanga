@@ -23,7 +23,7 @@ export function update(source, path, leaf) {
 
   if (isArray(source)) {
     if (pathClone.length !== 0) {
-      throw new Error('Can\'t handle updates of intermittent arrays');
+      throw new Error("Can't handle updates of intermittent arrays");
     }
     return isFunction(leaf) ? leaf(source) : updateArray(source, car, leaf);
   }
@@ -44,11 +44,11 @@ export function get(source, path) {
   let result = source;
 
   if (path && path.length > 0) {
-    every(path, (propertyName) => {
+    every(path, propertyName => {
       result = result[propertyName];
 
       // break loop when property name is not found
-      return (result !== undefined);
+      return result !== undefined;
     });
   }
 

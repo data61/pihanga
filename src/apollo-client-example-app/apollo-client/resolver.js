@@ -27,21 +27,19 @@ export class Resolvers {
    * @param newResolvers
    */
   registerResolvers(newResolvers) {
-    Object.keys(newResolvers).forEach((name) => {
+    Object.keys(newResolvers).forEach(name => {
       const r = this.resolvers[name];
       if (r === undefined) {
         this.resolvers[name] = newResolvers[name];
       } else {
         const resolver = newResolvers[name];
-        Object
-          .keys(resolver)
-          .forEach((funcName) => {
-            if (Object.hasOwnProperty.call(r, funcName)) {
-              throw new Error(`Duplicate resolver registration: "${name}.${funcName}"`);
-            }
+        Object.keys(resolver).forEach(funcName => {
+          if (Object.hasOwnProperty.call(r, funcName)) {
+            throw new Error(`Duplicate resolver registration: "${name}.${funcName}"`);
+          }
 
-            r[funcName] = resolver[funcName];
-          });
+          r[funcName] = resolver[funcName];
+        });
       }
     });
 

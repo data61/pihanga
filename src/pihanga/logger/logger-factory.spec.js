@@ -24,19 +24,18 @@ describe('Logger', () => {
     expect(testLogger.error(messageToLog)).toEqual(`[ERROR: ${moduleName}]:` + messageToLog);
   });
 
-  it('should NOT print out any thing for debug and info if debug is disable (except error)',
-    () => {
-      LoggerFactory.setLevel('error');
+  it('should NOT print out any thing for debug and info if debug is disable (except error)', () => {
+    LoggerFactory.setLevel('error');
 
-      const moduleName = 'TEST MODULE';
-      const messageToLog = 'logger works';
+    const moduleName = 'TEST MODULE';
+    const messageToLog = 'logger works';
 
-      const testLogger = LoggerFactory.create(moduleName);
+    const testLogger = LoggerFactory.create(moduleName);
 
-      expect(testLogger.debug('')).toBeUndefined();
-      expect(testLogger.info('')).toBeUndefined();
+    expect(testLogger.debug('')).toBeUndefined();
+    expect(testLogger.info('')).toBeUndefined();
 
-      // The only exception
-      expect(testLogger.error(messageToLog)).toEqual(`[ERROR: ${moduleName}]:` + messageToLog);
+    // The only exception
+    expect(testLogger.error(messageToLog)).toEqual(`[ERROR: ${moduleName}]:` + messageToLog);
   });
 });

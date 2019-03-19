@@ -20,7 +20,7 @@ export class RouterService {
    * { id: 555 }
    *
    * @param routingConfig Should be in a form of {'/dataset': DatasetComponent,
-    * '/project/:projectId': ProjectComponent }
+   * '/project/:projectId': ProjectComponent }
    * @param routePath Should be something like '/dataset'
    * @returns {{componentType: *, routeParamValueByName: *}}
    */
@@ -40,13 +40,11 @@ export class RouterService {
       }
 
       if (!compType) {
-        const foundItem = Object
-          .entries(routingConfig)
-          .find((item) => {
-            const routePattern = item[0];
-            routeParamValueByName = RouterService.matchRouteConfigPattern(routePath, routePattern);
-            return routeParamValueByName;
-          });
+        const foundItem = Object.entries(routingConfig).find(item => {
+          const routePattern = item[0];
+          routeParamValueByName = RouterService.matchRouteConfigPattern(routePath, routePattern);
+          return routeParamValueByName;
+        });
 
         compType = (foundItem && foundItem[1]) || undefined;
       }
@@ -55,7 +53,7 @@ export class RouterService {
     return {
       routePath,
       componentType: compType,
-      routeParamValueByName: routeParamValueByName || {},
+      routeParamValueByName: routeParamValueByName || {}
     };
   }
 
@@ -94,7 +92,7 @@ export class RouterService {
       // cache this conversion since it is not too trivial task
       pathToRegexPatternCache[routeConfigPattern] = {
         keys,
-        pattern,
+        pattern
       };
     }
 

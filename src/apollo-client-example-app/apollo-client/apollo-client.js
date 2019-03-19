@@ -11,7 +11,7 @@ export function createApolloClient(resolvers, defaults, typeDefs) {
     cache,
     resolvers,
     defaults,
-    typeDefs,
+    typeDefs
   });
 
   return new ApolloClient({
@@ -19,8 +19,8 @@ export function createApolloClient(resolvers, defaults, typeDefs) {
     link: ApolloLink.from([
       stateLink,
       new HttpLink({
-        uri: process.env.REACT_APP_GRAPHQL_HTTP_URL,
-      }),
-    ]),
+        uri: process.env.REACT_APP_GRAPHQL_HTTP_URL
+      })
+    ])
   });
 }

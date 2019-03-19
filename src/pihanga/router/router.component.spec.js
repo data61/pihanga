@@ -8,14 +8,14 @@ import { RouterService } from './router.service';
 /** MOCK EXTERNAL MODULES **/
 let mockBrowserHistory = {
   location: {
-    pathname: '/test/path',
+    pathname: '/test/path'
   },
-  listen: jest.fn((func) => {
+  listen: jest.fn(func => {
     func('/test/new/path');
   }),
-  push: jest.fn((newPathname) => {
+  push: jest.fn(newPathname => {
     mockBrowserHistory.location.pathname = newPathname;
-  }),
+  })
 };
 
 jest.mock('history/createBrowserHistory', () => jest.fn(() => mockBrowserHistory));
@@ -23,8 +23,8 @@ jest.mock('history/createBrowserHistory', () => jest.fn(() => mockBrowserHistory
 jest.mock('./router.service', () => ({
   RouterService: {
     findComponentAndExtractParams: jest.fn(),
-    matchRouteConfigPattern: jest.fn(),
-  },
+    matchRouteConfigPattern: jest.fn()
+  }
 }));
 
 const routeNotFoundElementFunc = invalidRoutePath => (
@@ -39,26 +39,19 @@ describe('Wrapper: RouterComponentWrapper', () => {
   let routerComponentWrapper;
 
   const TEST_COMPONENT = () => {
-    return (
-      <div id="testComponentInjection"></div>
-    )
+    return <div id="testComponentInjection" />;
   };
 
   const VALID_ROUTE_PATH = '/any/path';
 
   beforeEach(() => {
     testRoutingConfig = {
-      [VALID_ROUTE_PATH]: TEST_COMPONENT,
+      [VALID_ROUTE_PATH]: TEST_COMPONENT
     };
 
-    routerComponentWrapper = new RouterComponentWrapper(
-      testRoutingConfig,
-      <div />
-    );
+    routerComponentWrapper = new RouterComponentWrapper(testRoutingConfig, <div />);
 
-    routerComponentWrapper.customise(
-      routeNotFoundElementFunc
-    )
+    routerComponentWrapper.customise(routeNotFoundElementFunc);
   });
 
   it('should initialise component correctly and should subscribe to the browser location change', () => {
@@ -100,9 +93,7 @@ describe('Wrapper: RouterComponentWrapper', () => {
 
     it('should inject the matching component on valid route path', () => {
       const TEST_COMPONENT = () => {
-        return (
-          <div id="testComponentInjection"></div>
-        )
+        return <div id="testComponentInjection" />;
       };
 
       const VALID_ROUTE_PATH = '/any/path';
@@ -111,23 +102,24 @@ describe('Wrapper: RouterComponentWrapper', () => {
       RouterService.findComponentAndExtractParams.mockReturnValue({
         componentType: TEST_COMPONENT,
         routeParamValueByName: {},
-        routePath: VALID_ROUTE_PATH,
+        routePath: VALID_ROUTE_PATH
       });
 
       const mockRoute = {
-        path: VALID_ROUTE_PATH,
+        path: VALID_ROUTE_PATH
       };
 
       // Render the router component
-      renderer.render(<RouterComponent route={mockRoute} updateRoute={updateRoute}/>);
+      renderer.render(<RouterComponent route={mockRoute} updateRoute={updateRoute} />);
 
-      expect(RouterService.findComponentAndExtractParams).toHaveBeenCalledWith(testRoutingConfig, VALID_ROUTE_PATH);
+      expect(RouterService.findComponentAndExtractParams).toHaveBeenCalledWith(
+        testRoutingConfig,
+        VALID_ROUTE_PATH
+      );
       expect(routerComponentWrapper.addRoutePathToHistory).toHaveBeenCalledWith(VALID_ROUTE_PATH);
 
       // Render the component that will be resolved by the router
-      const result = renderer.render(
-        renderer.getRenderOutput()
-      );
+      const result = renderer.render(renderer.getRenderOutput());
 
       expect(result).toEqual(TEST_COMPONENT());
     });
@@ -137,17 +129,20 @@ describe('Wrapper: RouterComponentWrapper', () => {
       RouterService.findComponentAndExtractParams.mockReturnValue({
         componentType: undefined,
         routeParamValueByName: {},
-        routePath: '',
+        routePath: ''
       });
 
       const mockRoute = {
-        path: '/invalid/path',
+        path: '/invalid/path'
       };
 
       // Render the router component
-      renderer.render(<RouterComponent route={mockRoute} updateRoute={updateRoute}/>);
+      renderer.render(<RouterComponent route={mockRoute} updateRoute={updateRoute} />);
 
-      expect(RouterService.findComponentAndExtractParams).toHaveBeenCalledWith(testRoutingConfig, VALID_ROUTE_PATH);
+      expect(RouterService.findComponentAndExtractParams).toHaveBeenCalledWith(
+        testRoutingConfig,
+        VALID_ROUTE_PATH
+      );
       expect(routerComponentWrapper.addRoutePathToHistory).not.toHaveBeenCalled();
 
       // Render the component that will be resolved by the router
@@ -155,10 +150,9 @@ describe('Wrapper: RouterComponentWrapper', () => {
 
       expect(result).toEqual(
         <div>
-          <p>ERROR: Path &quot;{"/invalid/path"}&quot; does not exist. Please check your URL.</p>
+          <p>ERROR: Path &quot;{'/invalid/path'}&quot; does not exist. Please check your URL.</p>
         </div>
       );
     });
   });
-
 });

@@ -21,7 +21,10 @@ describe('Service: RouterService', () => {
         '/dataset': testComponent
       };
 
-      const foundComponent = RouterService.findComponentAndExtractParams(testRoutingConfig, '/dataset');
+      const foundComponent = RouterService.findComponentAndExtractParams(
+        testRoutingConfig,
+        '/dataset'
+      );
 
       expect(foundComponent.componentType).toEqual(testComponent);
       expect(foundComponent.routeParamValueByName).toEqual({});
@@ -34,10 +37,13 @@ describe('Service: RouterService', () => {
       const testComponent = jest.fn();
       const testRoutingConfig = {
         '/dataset': '/dataset/dashboard',
-        '/dataset/dashboard': testComponent,
+        '/dataset/dashboard': testComponent
       };
 
-      const foundComponent = RouterService.findComponentAndExtractParams(testRoutingConfig, '/dataset');
+      const foundComponent = RouterService.findComponentAndExtractParams(
+        testRoutingConfig,
+        '/dataset'
+      );
 
       expect(foundComponent.componentType).toEqual(testComponent);
       expect(foundComponent.routeParamValueByName).toEqual({});
@@ -52,39 +58,36 @@ describe('Service: RouterService', () => {
         '/dataset/:datasetId': testComponent
       };
 
-      const foundComponent = RouterService.findComponentAndExtractParams(testRoutingConfig, '/dataset/123');
+      const foundComponent = RouterService.findComponentAndExtractParams(
+        testRoutingConfig,
+        '/dataset/123'
+      );
 
       expect(RouterService.matchRouteConfigPattern).toHaveBeenCalled();
 
       expect(foundComponent.componentType).toEqual(testComponent);
       expect(foundComponent.routeParamValueByName).toEqual({
-        datasetId: 123,
+        datasetId: 123
       });
     });
 
     it('should deal with empty values', () => {
-      expect(
-        RouterService.findComponentAndExtractParams(undefined, '')
-      ).toEqual({
+      expect(RouterService.findComponentAndExtractParams(undefined, '')).toEqual({
         componentType: undefined,
         routeParamValueByName: {},
-        routePath: '',
+        routePath: ''
       });
 
-      expect(
-        RouterService.findComponentAndExtractParams(undefined, undefined)
-      ).toEqual({
+      expect(RouterService.findComponentAndExtractParams(undefined, undefined)).toEqual({
         componentType: undefined,
         routeParamValueByName: {},
-        routePath: undefined,
+        routePath: undefined
       });
 
-      expect(
-        RouterService.findComponentAndExtractParams({}, undefined)
-      ).toEqual({
+      expect(RouterService.findComponentAndExtractParams({}, undefined)).toEqual({
         componentType: undefined,
         routeParamValueByName: {},
-        routePath: undefined,
+        routePath: undefined
       });
     });
   });
@@ -94,7 +97,10 @@ describe('Service: RouterService', () => {
       const testRoutePath = '/project/123';
       const testRoutePattern = '/project/:projectId';
 
-      const paramValueByName = RouterService.matchRouteConfigPattern(testRoutePath, testRoutePattern);
+      const paramValueByName = RouterService.matchRouteConfigPattern(
+        testRoutePath,
+        testRoutePattern
+      );
 
       expect(paramValueByName).not.toBeUndefined();
       expect(paramValueByName['projectId']).toEqual('123');
@@ -107,7 +113,10 @@ describe('Service: RouterService', () => {
       const testRoutePath = '/project/123';
       const testRoutePattern = '/overview/:projectId';
 
-      const paramValueByName = RouterService.matchRouteConfigPattern(testRoutePath, testRoutePattern);
+      const paramValueByName = RouterService.matchRouteConfigPattern(
+        testRoutePath,
+        testRoutePattern
+      );
 
       expect(paramValueByName).toBeUndefined();
     });

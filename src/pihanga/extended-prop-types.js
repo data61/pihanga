@@ -19,5 +19,5 @@ ExtendedPropTypes.route = ExtendedPropTypes.shape({
 
   // true indicates this route won't be added to browser history, hence the browser location
   // field won't be updated. The page does load the new component of the new route though
-  preventAddingHistory: ExtendedPropTypes.bool,
+  preventAddingHistory: ExtendedPropTypes.bool
 });

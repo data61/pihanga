@@ -1,6 +1,7 @@
 import React from 'react';
+import 'shared/auto-generated.app-router.component.css';
 
-export const AppRouterComponent = (routerComponentWrapper) => {
+export const AppRouterComponent = routerComponentWrapper => {
   const routeNotFoundElementFunc = invalidRoutePath => (
     <div>
       <p>
@@ -11,9 +12,5 @@ export const AppRouterComponent = (routerComponentWrapper) => {
     </div>
   );
 
-  return routerComponentWrapper
-    .customise(
-      routeNotFoundElementFunc,
-    )
-    .getRouterComponentConstructor();
+  return routerComponentWrapper.customise(routeNotFoundElementFunc).getRouterComponentConstructor();
 };

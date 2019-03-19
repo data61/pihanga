@@ -23,9 +23,7 @@ export const GraphListComponent = () => (
       if (loading) return <p>Loading graph list...</p>;
       if (error) return <p>Error :(</p>;
 
-      return data.projects.map(({
-        id, name, description, graphs,
-      }) => (
+      return data.projects.map(({ id, name, description, graphs }) => (
         <div className="pl-4 pb-2" key={id}>
           <p>{`Project name: ${name}`}</p>
           <p>{`Project description: ${description}`}</p>

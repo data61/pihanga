@@ -2,7 +2,7 @@ import { dispatch } from './store';
 import { ACTION_TYPES, emitError } from './redux.actions';
 
 jest.mock('./store', () => ({
-  dispatch: jest.fn(),
+  dispatch: jest.fn()
 }));
 
 describe('redux actions', () => {
@@ -19,7 +19,7 @@ describe('redux actions', () => {
     expect(dispatch).toHaveBeenCalledWith({
       type: ACTION_TYPES.ERROR,
       msg,
-      stackInfo,
+      stackInfo
     });
   });
 });

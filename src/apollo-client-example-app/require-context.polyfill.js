@@ -19,7 +19,7 @@ export function requireContext(base = '.', scanSubDirectories = false, regularEx
   const files = {};
 
   function readDirectory(directory) {
-    fs.readdirSync(directory).forEach((file) => {
+    fs.readdirSync(directory).forEach(file => {
       const fullPath = path.resolve(directory, file);
 
       if (fs.statSync(fullPath).isDirectory()) {

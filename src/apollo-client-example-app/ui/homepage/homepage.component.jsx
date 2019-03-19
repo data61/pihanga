@@ -16,14 +16,10 @@ export const HomepageComponent = ({ updateRoute }) => (
         <div className="mb-4">
           <p className="text-xl leading-tight">Pihanga Apollo Client Example</p>
           <p className="text-sm leading-tight text-grey-dark">
-            <a href="https://www.data61.csiro.au/">
-              Data61
-            </a>
+            <a href="https://www.data61.csiro.au/">Data61</a>
             {' | '}
 
-            <small>
-              {`v${process.env.REACT_APP_VERSION}`}
-            </small>
+            <small>{`pihanga@v${process.env.REACT_APP_VERSION}`}</small>
           </p>
         </div>
         <div>
@@ -33,7 +29,7 @@ export const HomepageComponent = ({ updateRoute }) => (
                 border border-purple text-purple hover:bg-purple hover:text-white"
             onClick={() => updateRoute(PROJECT_ROUTING.getProjectRoute())}
           >
-            View project list
+            View dummy page
           </button>
         </div>
       </div>
@@ -42,5 +38,5 @@ export const HomepageComponent = ({ updateRoute }) => (
 );
 
 HomepageComponent.propTypes = {
-  updateRoute: ExtendedPropTypes.func.isRequired,
+  updateRoute: ExtendedPropTypes.func.isRequired
 };

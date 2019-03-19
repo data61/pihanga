@@ -1,6 +1,9 @@
 import React from 'react';
 import { ExtendedPropTypes } from 'pihanga';
 
+import './homepage.css';
+import { PROJECT_ROUTING } from '../project';
+
 export const HomepageComponent = ({ updateRoute }) => (
   <div className="bg-white mx-auto max-w-sm shadow-lg rounded-lg overflow-hidden">
     <div className="sm:flex sm:items-center px-6 py-4">
@@ -11,16 +14,12 @@ export const HomepageComponent = ({ updateRoute }) => (
       />
       <div className="text-center sm:text-left sm:flex-grow">
         <div className="mb-4">
-          <p className="text-xl leading-tight">Pihanga Apollo Client Example</p>
+          <p className="text-xl leading-tight">Pihanga Redux Example</p>
           <p className="text-sm leading-tight text-grey-dark">
-            <a href="https://www.data61.csiro.au/">
-              Data61
-            </a>
+            <a href="https://www.data61.csiro.au/">Data61</a>
             {' | '}
 
-            <small>
-              {`v${process.env.REACT_APP_VERSION}`}
-            </small>
+            <small>{`pihanga@v${process.env.REACT_APP_VERSION}`}</small>
           </p>
         </div>
         <div>
@@ -30,7 +29,7 @@ export const HomepageComponent = ({ updateRoute }) => (
                 border border-purple text-purple hover:bg-purple hover:text-white"
             onClick={() => updateRoute(PROJECT_ROUTING.getProjectRoute())}
           >
-            View project list
+            View dummy page
           </button>
         </div>
       </div>
@@ -39,5 +38,5 @@ export const HomepageComponent = ({ updateRoute }) => (
 );
 
 HomepageComponent.propTypes = {
-  updateRoute: ExtendedPropTypes.func.isRequired,
+  updateRoute: ExtendedPropTypes.func.isRequired
 };

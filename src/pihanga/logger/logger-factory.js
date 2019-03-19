@@ -4,7 +4,7 @@ const LOG_LEVEL = {
   INFO: 3,
   WARN: 2,
   ERROR: 1,
-  OFF: 0,
+  OFF: 0
 };
 
 /**
@@ -33,7 +33,7 @@ export class LoggerFactory {
       debug: (console.debug && console.debug.bind(console, `[DEBUG: ${module}]:`)) || (() => {}),
       info: (console.info && console.info.bind(console, `[INFO: ${module}]:`)) || (() => {}),
       warn: (console.warn && console.warn.bind(console, `[WARN: ${module}]:`)) || (() => {}),
-      error: (console.error && console.error.bind(console, `[ERROR: ${module}]:`)) || (() => {}),
+      error: (console.error && console.error.bind(console, `[ERROR: ${module}]:`)) || (() => {})
     };
 
     return new Proxy(logger, {
@@ -46,7 +46,7 @@ export class LoggerFactory {
 
           return undefined;
         };
-      },
+      }
     });
   }
 }

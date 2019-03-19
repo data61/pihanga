@@ -1,12 +1,19 @@
 {
-  "extends": "airbnb",
+  "extends": [
+    "airbnb",
+    "prettier",
+    "prettier/react"
+  ],
   "plugins" : [
-    "react"
+    "react",
+    "prettier"
   ],
   "env"     : {
     "browser" : true
   },
   "rules": {
+    "prettier/prettier": "error",
+
     // "export default" is not always ideal.
     //
     // Since we have those "index.js" files that do batch export with
@@ -20,6 +27,9 @@
     // Since we will more likely never use an object that shadows an Object.prototype method or does
     // not inherit from Object.prototype.
     "no-prototype-builtins": 0,
+
+    // Semantic UI React may require boolean values that are `true` to be passed into components.
+    "react/jsx-boolean-value": 0,
 
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }]
   },

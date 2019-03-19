@@ -1,17 +1,17 @@
 import { emitError } from './redux.actions';
 import { Reducer } from './reducer';
 
-jest.mock('../logger', () => ({
-  createLogger: jest.fn(() => ({
+jest.mock('LoggerFactory', () => ({
+  create: jest.fn(() => ({
     infoSilently: jest.fn(),
     debugSilently: jest.fn(),
-    error: jest.fn(),
-  })),
+    error: jest.fn()
+  }))
 }));
 
 jest.mock('./redux.actions', () => ({
   ACTION_TYPES: {},
-  emitError: jest.fn(),
+  emitError: jest.fn()
 }));
 
 jest.useFakeTimers();
@@ -45,12 +45,14 @@ describe('reducer', () => {
 
     it('should dispatch an error if there is any exception in the reducer', () => {
       const reducer = new Reducer({
-        'DO_SOMETHING': [() => {
-          throw Exception('test exception');
-        }],
+        DO_SOMETHING: [
+          () => {
+            throw Exception('test exception');
+          }
+        ]
       });
 
-      reducer.rootReducer({}, {type: 'DO_SOMETHING'});
+      reducer.rootReducer({}, { type: 'DO_SOMETHING' });
       expect(setTimeout).toHaveBeenCalledTimes(1);
 
       jest.runAllTimers();
@@ -59,10 +61,10 @@ describe('reducer', () => {
 
     it('should dispatch an error if the result of a reducer is not a plain object', () => {
       const reducer = new Reducer({
-        'DO_SOMETHING': [() => []],
+        DO_SOMETHING: [() => []]
       });
 
-      reducer.rootReducer({}, {type: 'DO_SOMETHING'});
+      reducer.rootReducer({}, { type: 'DO_SOMETHING' });
       expect(setTimeout).toHaveBeenCalledTimes(1);
 
       jest.runAllTimers();
@@ -71,13 +73,15 @@ describe('reducer', () => {
 
     it('should preserve the state if no reducer exists', () => {
       const reducer = new Reducer({
-        'DO_SOMETHING': [() => {
-          throw Exception('test exception');
-        }],
+        DO_SOMETHING: [
+          () => {
+            throw Exception('test exception');
+          }
+        ]
       });
 
       const beforeState = {};
-      const afterState = reducer.rootReducer(beforeState, {type: 'DO_SOMETHING_ELSE'});
+      const afterState = reducer.rootReducer(beforeState, { type: 'DO_SOMETHING_ELSE' });
 
       expect(beforeState).toEqual(afterState);
     });

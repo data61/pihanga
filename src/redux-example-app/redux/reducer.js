@@ -1,10 +1,10 @@
 import isPlainObject from 'lodash/isPlainObject';
 import stackinfo from 'stackinfo';
 
-import { createLogger } from '../logger';
+import { LoggerFactory } from 'pihanga';
 import { ACTION_TYPES, emitError } from './redux.actions';
 
-const logger = createLogger('reducer');
+const logger = LoggerFactory.create('reducer');
 
 function dispatchError(msg, e) {
   const si = stackinfo(e).map(s => s.traceline);
