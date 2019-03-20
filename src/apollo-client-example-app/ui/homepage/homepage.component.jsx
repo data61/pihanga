@@ -27,7 +27,7 @@ export const HomepageComponent = ({ updateRoute }) => (
             type="button"
             className="text-xs font-semibold rounded-full px-4 py-1 leading-normal bg-white
                 border border-purple text-purple hover:bg-purple hover:text-white"
-            onClick={() => updateRoute(PROJECT_ROUTING.getProjectRoute())}
+            onClick={() => updateRoute({ path: PROJECT_ROUTING.getProjectRoute() })}
           >
             View dummy page
           </button>

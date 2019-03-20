@@ -2,60 +2,79 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { ApolloProvider, graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import { compose } from 'recompose';
 import GraphQLJSON from 'graphql-type-json';
+import { compose, withProps } from 'recompose';
 
 import { loadModules } from 'pihanga';
 import { AppRouterComponent } from './ui';
-import { Resolvers, createApolloClient } from './apollo-client';
+import { ResolverRegister, createApolloClient } from './apollo-client';
 import { requireContext } from './require-context';
+import { previewQuery } from './ui/shared';
 
-const initialResolvers = {
+const typeDefs = `{
+  scalar JSON
+
+  type Route {
+    path: String!,
+    preventAddingHistory: Boolean
+    payload: JSON
+    paramValueByName: JSON
+  }
+}`;
+
+//
+// GraphQL resolvers that can be queried for mutation
+// Note: Resolvers must return something (even if null) to surpress a useless
+// warning. See https://github.com/apollographql/apollo-link-state/issues/160
+//
+export const initialResolvers = {
   JSON: GraphQLJSON,
-
   Mutation: {
-    updateRoute: (_, { route }, { cache }) => {
+    // Handle browser history between user navigations
+    updateRoute: (
+      _,
+      { route: { path, payload, paramValueByName, preventAddingHistory } },
+      { cache }
+    ) => {
       const query = gql`
         {
           route @client {
             path
             payload
+            paramValueByName
             preventAddingHistory
           }
         }
       `;
 
+      const { route: previous } = cache.readQuery({ query });
+
       cache.writeQuery({
         query,
         data: {
           route: {
-            __typename: 'Route',
-            path: route.path,
-            payload: route.payload || {},
-            preventAddingHistory: route.preventAddingHistory || false
+            path: path || previous.path,
+            preventAddingHistory: preventAddingHistory || previous.preventAddingHistory,
+            payload: { ...(payload || previous.payload), __typename: 'JSON' },
+            paramValueByName: {
+              ...(paramValueByName || previous.paramValueByName),
+              __typename: 'JSON'
+            },
+            __typename: 'Route'
           }
         }
       });
+      return null;
     }
   }
 };
-
-const typeDefs = `
-  scalar JSON
-
-  type Route {
-    path: String!,
-    payload: JSON,
-    preventAddingHistory: Boolean,
-  }
-}`;
 
 /**
  * Bootstrap the app on given DOM's element Id
  * @param appElementId
  */
 export function bootstrapApp(appElementId) {
-  const resolvers = new Resolvers().registerResolvers(initialResolvers);
+  const resolvers = new ResolverRegister().registerResolvers(initialResolvers);
   const routerComponentWrapper = loadModules(process.env.REACT_APP_LOG_LEVEL, requireContext(), [
     resolvers.registerResolvers.bind(resolvers)
   ]);
@@ -63,24 +82,29 @@ export function bootstrapApp(appElementId) {
   const defaults = {
     route: {
       __typename: 'Route',
-      path: routerComponentWrapper.getBrowserLocationPath()
-    }
+      path: routerComponentWrapper.getBrowserLocationPath(),
+      preventAddingHistory: false
+    },
+    payload: { __typename: 'JSON' },
+    paramValueByName: { __typename: 'JSON' }
   };
 
   const RouterComponent = compose(
-    graphql(
+    previewQuery(
       gql`
         query {
           route @client {
             path
+            preventAddingHistory
+            payload
+            paramValueByName
           }
         }
-      `,
-      {
-        props: ({ data }) => ({ route: data.route || {} })
-      }
+      `
     ),
-
+    withProps(({ data: { route } }) => {
+      return { route: route || {} };
+    }),
     graphql(
       gql`
         mutation($route: Route!) {
@@ -89,9 +113,18 @@ export function bootstrapApp(appElementId) {
       `,
       {
         props: ({ mutate }) => ({
-          // NOTE: this updateRoute is injected to every components
-          updateRoute: (path, payload, preventAddingHistory) =>
-            mutate({ variables: { route: { path, payload, preventAddingHistory } } })
+          // NOTE: this updateRoute is injected to every component
+          updateRoute: ({ path, payload, preventAddingHistory, paramValueByName }) =>
+            mutate({
+              variables: {
+                route: {
+                  path,
+                  payload,
+                  preventAddingHistory,
+                  paramValueByName
+                }
+              }
+            })
         })
       }
     )

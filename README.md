@@ -1,10 +1,10 @@
-# pihanga example
+# pihanga
 
-__NOTE__: This documentation is written for the apollo client example app. Some statements will
- need be changed.
+__TODO__: Once pihanga is published to npm registry, this README will need to be reviewed 
+and 
+changed.
 
-## Get started
-
+## Get started (to run example applications that use pihanga)
 Install [NodeJS](https://nodejs.org/en/) or via [package manager](https://nodejs.org/en/download/package-manager/)
 
 Like most `node.js` projects the workflow is:
@@ -20,7 +20,7 @@ default browser.
 The following scripts are available. In addition, there might be some other scripts supported by 
 `react-scripts` (see [react-scripts.README.md](./react-scripts.README.md)).
 
-* `npm run start`
+* `npm run start` (`REACT_APP_USE_REDUX=true npm run start` to run the pihanga redux example)
 * `npm run lint`
 * `npm run test`
 * `npm run test -- --coverage` 
@@ -38,14 +38,14 @@ and override variables there.
       index.html
       + images
     + src
-      + app
+      + app ('apollo-client-example-app' or 'redux-example-app')
         + shared
         + ui
            + component-abc
            + module-xyz
            + shared
         index.js
-      + framework
+      + pihanga
       index.js      
 - `coverage` contains test coverage report (this is only generated after running `npm run 
 test -- --coverage`)
@@ -57,8 +57,7 @@ test -- --coverage`)
         used by all sub-modules or modules that are on the same folder level as `shared`'s.
      - A module (e.g `module-xyz`) has a `module.js` file comparing to a component (e.g 
      `component-abc`) (See [Module definition](#module-definition) for more information).
-  - `framework` includes logger and router. `framework` members can be used in all modules and all 
-`shared` in the app.
+  - `pihanga` includes logger and router. This folder will be published to npm registry 
 
 ## Module definition
 
@@ -163,7 +162,7 @@ When it does so, `route` and `updateRoute` will be injected to `LoginComponent`:
  - `route`, injected by the router includes information about the current route path and any extra 
  data 
  (`payload`). See
- `framework/extended-prop-types.js` for more information.
+ `src/pihanga/extended-prop-types.js` for more information.
  - `updateRoute()` is a custom function injected by the application to change route path and pass 
  any variables with it.
   
@@ -192,4 +191,28 @@ to `'123'`.
       
       const ProjectComponent = (props) => {
         props.route.paramValueByName[projectId]; // = '123' if url is 'http://example.com/project/123'
+      };
+      
+- Pass extra data to route change and prevent adding the new route path to browser history (this is 
+helpful if you don't want user to use browser's back/forward to navigate back to these pages later)
+
+
+      export const LoginComponent = ({
+        user, 
+        
+        // These props are injected by the router
+        route, 
+        updateRoute,
+       }) => {
+        return (
+          <a 
+            onClick=() => updateRoute({
+              path: '/homepage',
+              payload: {
+                userDetail: user
+              },
+              preventAddingHistory: true
+            })
+          />
+        );
       };

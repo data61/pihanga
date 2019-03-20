@@ -1,7 +1,7 @@
 /**
  * Used for registering all resolvers from nested modules.
  */
-export class Resolvers {
+export class ResolverRegister {
   constructor() {
     this.resolvers = {};
   }

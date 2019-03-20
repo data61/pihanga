@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`preview-query.component.jsx #previewQuery snapshots renders child HOC when not loading 1`] = `
+<mockHoc
+  loading={false}
+/>
+`;
+
+exports[`preview-query.component.jsx #previewQuery snapshots renders spinner when loading 1`] = `
+<Spinner
+  loading={true}
+/>
+`;

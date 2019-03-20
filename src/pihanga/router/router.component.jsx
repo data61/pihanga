@@ -113,7 +113,7 @@ export class RouterComponentWrapper {
      * Given a "route" data in "props", retrieve the right component from the config, generated
      * in application bootstrap stage.
      *
-     * @param
+     * @param route
      * { route: { path: string, preventAddingHistory: boolean } } props
      *
      * @param updateRoute This function takes three arguments (path, payload, preventAddingHistory)
