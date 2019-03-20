@@ -102,9 +102,7 @@ export function bootstrapApp(appElementId) {
         }
       `
     ),
-    withProps(({ data: { route } }) => {
-      return { route: route || {} };
-    }),
+    withProps(({ data: { route } }) => ({ route })),
     graphql(
       gql`
         mutation($route: Route!) {

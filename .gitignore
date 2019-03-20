@@ -15,9 +15,6 @@
 # auto-generated files
 auto-generated.*
 
-# local custom environment file
-src/environments/environment.custom.js
-
 # misc
 .DS_Store
 .env.local

@@ -1,12 +1,14 @@
 import { emitError } from './redux.actions';
 import { Reducer } from './reducer';
 
-jest.mock('LoggerFactory', () => ({
-  create: jest.fn(() => ({
-    infoSilently: jest.fn(),
-    debugSilently: jest.fn(),
-    error: jest.fn()
-  }))
+jest.mock('pihanga', () => ({
+  LoggerFactory: {
+    create: jest.fn(() => ({
+      infoSilently: jest.fn(),
+      debugSilently: jest.fn(),
+      error: jest.fn()
+    }))
+  }
 }));
 
 jest.mock('./redux.actions', () => ({

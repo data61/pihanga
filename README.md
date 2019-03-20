@@ -1,10 +1,15 @@
 # pihanga
 
-__TODO__: Once pihanga is published to npm registry, this README will need to be reviewed 
-and 
-changed.
+__TODO__: Once pihanga is published to npm registry, this README will be updated to include:
+1) Instruction on how to install pihanga in existing codebase
+2) Upcoming development on pihanga (making it a plugin framework)
+3) ...
 
-## Get started (to run example applications that use pihanga)
+## Get started
+
+This project comes with two examples to show how you can use pihanga with apollo-client and redux. 
+However, pihanga should be compatible with any other state manager.
+
 Install [NodeJS](https://nodejs.org/en/) or via [package manager](https://nodejs.org/en/download/package-manager/)
 
 Like most `node.js` projects the workflow is:
@@ -20,7 +25,9 @@ default browser.
 The following scripts are available. In addition, there might be some other scripts supported by 
 `react-scripts` (see [react-scripts.README.md](./react-scripts.README.md)).
 
-* `npm run start` (`REACT_APP_USE_REDUX=true npm run start` to run the pihanga redux example)
+* `npm run start` 
+  * `REACT_APP_USE_REDUX=true npm run start` to run the pihanga redux example
+  * `REACT_APP_USE_REDUX=false npm run start` to run the pihanga apollo-client example
 * `npm run lint`
 * `npm run test`
 * `npm run test -- --coverage` 
@@ -53,8 +60,8 @@ test -- --coverage`)
 - `src` contains all the javascript sources including the bootstrap `index.js` file
   - `app`: The bulk of the functionality and also the most likely extension points are in the 
   this directory.
-     - In each module, there can be a `shared` folder which has all common components and utils that are
-        used by all sub-modules or modules that are on the same folder level as `shared`'s.
+     - In each module, there can be a `shared` folder which has all common components and utils that 
+     are used by all sub-modules or modules that are on the same folder level as `shared`'s.
      - A module (e.g `module-xyz`) has a `module.js` file comparing to a component (e.g 
      `component-abc`) (See [Module definition](#module-definition) for more information).
   - `pihanga` includes logger and router. This folder will be published to npm registry 
