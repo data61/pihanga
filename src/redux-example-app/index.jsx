@@ -4,10 +4,11 @@ import { compose, withProps } from 'recompose';
 import { Provider, connect } from 'react-redux';
 import { loadModules } from 'pihanga';
 
-import { AppRouterComponent, initialState } from './ui';
+import { AppRouterComponent } from './ui';
 import { requireContext } from './require-context';
 import { Reducer, update, createStore } from './redux';
 import { updateRoute, ACTION_TYPES } from './root.actions';
+
 /**
  * Bootstrap the app on given DOM's element Id
  * @param appElementId
@@ -34,7 +35,13 @@ export function bootstrapApp(appElementId) {
     )(AppRouterComponent(routerComponentWrapper))
   );
 
-  const store = createStore(reducer.rootReducer.bind(reducer), initialState);
+  const appInitialState = {
+    route: {
+      path: routerComponentWrapper.getBrowserLocationPath()
+    }
+  };
+
+  const store = createStore(reducer.rootReducer.bind(reducer), appInitialState);
 
   ReactDOM.render(
     <Provider store={store}>

@@ -44,7 +44,7 @@ export class RouterComponentWrapper {
 
     // Listen for changes to the current location (for browser back & forward).
     this.browserHistory.listen(location => {
-      if (this.routePath !== location.pathname) {
+      if (this.currentRoutePath !== location.pathname) {
         this.updateRoute({ path: location.pathname });
       }
     });
@@ -66,8 +66,7 @@ export class RouterComponentWrapper {
       return;
     }
 
-    const currentRoutePath = this.browserHistory.location.pathname;
-    if (currentRoutePath !== routePath) {
+    if (this.getBrowserLocationPath() !== routePath) {
       this.browserHistory.push(routePath);
     }
   }
@@ -113,7 +112,7 @@ export class RouterComponentWrapper {
      * Given a "route" data in "props", retrieve the right component from the config, generated
      * in application bootstrap stage.
      *
-     * @param route
+     * @param
      * { route: { path: string, preventAddingHistory: boolean } } props
      *
      * @param updateRoute This function takes three arguments (path, payload, preventAddingHistory)
@@ -122,7 +121,7 @@ export class RouterComponentWrapper {
      */
     const RouterComponent = ({ route, updateRoute, ...props }) => {
       that.updateRoute = updateRoute;
-      that.routePath = route.path;
+      that.currentRoutePath = route.path;
 
       const matchedComponent = RouterService.findComponentAndExtractParams(
         that.routingConfig,
