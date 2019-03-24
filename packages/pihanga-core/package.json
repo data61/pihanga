@@ -27,7 +27,7 @@
     "es"
   ],
   "scripts": {
-    "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir dist/lib",
+    "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib && touch lib/DO_NOT_EDIT",
     "build:es": "babel src --out-dir dist/es",
     "build:umd": "cross-env NODE_ENV=development rollup -c -o dist/pihanga-core.js",
     "build:umd:min": "cross-env NODE_ENV=production rollup -c -o dist/pihanga-core.min.js",
