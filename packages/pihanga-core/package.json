@@ -3,7 +3,7 @@
   "version": "0.5.0",
   "description": "Core module of the Pihanga framework",
   "homepage": "https://github.com/n1analytics/pihanga#readme",
-  "main": "dist/lib/index.js",
+  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/n1analytics/pihanga.git"
