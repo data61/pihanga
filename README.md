@@ -1,49 +1,70 @@
 # pihanga
 
-__TODO__: Once pihanga is published to npm registry, this README will be updated to include:
-1) Instruction on how to install pihanga in existing codebase
-2) Upcoming development on pihanga (making it a plugin framework)
-3) ...
+> [pihanga](https://s3.amazonaws.com/media.tewhanake.maori.nz/dictionary/38608.mp3)
+>  (noun) window, sliding slab of the traditional window of a wharenui.
+
+pihanga is a framework for dynamically extensible React apps
+
+It is implemented primarily in Javascript (ES6), using:
+- [react](https://facebook.github.io/react/) as a view library for the frontend.
+- [react-scripts](https://github.com/facebook/create-react-app#readme) to avoid the hassle of 
+managing multiple tools for bundling & optimising front-end assets (including JS, CSS and images).
+
+# Contents
+- [Motivation](#motivation)
+- [Approach & upcoming development](#approach-&-upcoming-development)
+- [Limitation](#limitation)
+- [Get started](#get-started)
+  - [Installation](#installation)
+  - [Recommended directory structure](#recommended-directory-structure)
+  - [Module definition](#module-definition)
+  - [Router](#router)
+- [Running the examples](#running-the-examples)
+
+## Motivation
+
+Most of the web frontends we are usually building are for a rather small user base to better use or 
+maintain rather complex backends. Many of those systems start out small but over time expand in 
+various directions by different teams using different technologies. Most likely a common scenario 
+for many business support services.
+
+We use micro services and similar technologies to avoid any unnecessary dependencies in the backend, 
+but our users, understandably want a unified UX in the frontend.
+
+This project is an attempt to achieve that while supporting the independent development of the 
+various parts and components surfacing specific backend capabilites. In other words, we want to 
+minimize the amount of code changes when adding new functionality while still supporting an 
+integrated UX experience.
+
+## Approach & upcoming development
+
+We started by modularising our UI into components and modules. Modules are then loaded dynamically.
+
+This later enabled us to develop full plugin capability where a component 
+or a module while being developed independently can still be plugged in to the the rest. This 
+feature is not yet completed. We are aiming to get it in pihanga@v1.0.0. 
+
+## Limitation
+
+The dynamic module loader depends on the use of `require.context(...)` which will need to be called
+in your application. Please checkout one of the examples in `src/example` on how to use it.
 
 ## Get started
 
-This project comes with two examples to show how you can use pihanga with apollo-client and redux. 
-However, pihanga should be compatible with any other state manager.
+### Installation
+    npm install --save pihanga
 
-Install [NodeJS](https://nodejs.org/en/) or via [package manager](https://nodejs.org/en/download/package-manager/)
+pihanga comes with these main utilities:
+1. `RouterComponentWrapper`: it lets you to customise the look and feel of the router component.
+1. `LoggerFactory`: A factory to create a logger object
+1. `loadModules(logLevel, moduleById, extraModuleInitArgs, serverSideRendering)`: This method 
+loads modules dynamically and inject extra callbacks to modules' init function. (__NOTE__: you 
+will need to use `require.context(...)` or alike to get all paths to `*.module.js`. See 
+`require-context.js` file in example application for more details)
+1. `ExtendedPropTypes`: The extended `PropTypes` that contains router's related types. 
 
-Like most `node.js` projects the workflow is:
+### Recommended directory structure
 
-    npm install
-    npm start
-
-The last command starts a development server and should also open the respective page in your 
-default browser.
-
-## Build scripts
-
-The following scripts are available. In addition, there might be some other scripts supported by 
-`react-scripts` (see [react-scripts.README.md](./react-scripts.README.md)).
-
-* `npm run start` 
-  * `REACT_APP_USE_REDUX=true npm run start` to run the pihanga redux example
-  * `REACT_APP_USE_REDUX=false npm run start` to run the pihanga apollo-client example
-* `npm run lint`
-* `npm run test`
-* `npm run test -- --coverage` 
-* `npm run build`
-
-These commands use environment variables from `.env.*`. (For more info, see [Create React App Environment Config](https://facebook.github.io/create-react-app/docs/adding-custom-environment-variables#what-other-env-files-can-be-used) )
-
-To run it with a local environment that will be ignored by git, create a file named `.env.local` 
-and override variables there.
-
-## Directory structure
-
-    + coverage (*)
-    + public
-      index.html
-      + images
     + src
       + app ('apollo-client-example-app' or 'redux-example-app')
         + shared
@@ -52,24 +73,18 @@ and override variables there.
            + module-xyz
            + shared
         index.js
-      + pihanga
       index.js      
-- `coverage` contains test coverage report (this is only generated after running `npm run 
-test -- --coverage`)
-- `public` contains all the static resources, such as images and common stylesheets.
-- `src` contains all the javascript sources including the bootstrap `index.js` file
-  - `app`: The bulk of the functionality and also the most likely extension points are in the 
-  this directory.
-     - In each module, there can be a `shared` folder which has all common components and utils that 
-     are used by all sub-modules or modules that are on the same folder level as `shared`'s.
-     - A module (e.g `module-xyz`) has a `module.js` file comparing to a component (e.g 
-     `component-abc`) (See [Module definition](#module-definition) for more information).
-  - `pihanga` includes logger and router. This folder will be published to npm registry 
+      
+- In each folder, there can be `shared` which has all common components and utils that 
+are used by all sub-modules or modules that are on the same directory level as `shared`'s.
+- A module (e.g `module-xyz`) has a `module.js` file comparing to a component (e.g `component-abc`) 
+(See [Module definition](#module-definition) for more information).
+- `index.js` files should export everything that other same level folders export, e.g `export * 
+from './ui'`
 
-## Module definition
+### Module definition
 
-Every module resides in its own directory under the top-level `app` directory. A 
-typical directory structure for a 'simple' module is:
+Every module resides in its own directory. A typical directory structure is:
 
     + ui
       + project
@@ -87,17 +102,13 @@ The `project.module.js` is used to register itself as a module.
 `*.jsx` files contains UI components with `*.css` and `*.routing.js` containing 
 the respective style and route path configuration.
 
-**Note:** UI components are encouraged to be _stateless_. This is not compulsory though since it
- is easier to have state in some cases like setting focus to a button.
+#### Module: `*.module.js`
 
-### Module: `*.module.js`
-
-The bootstrap process is checking all directories under the `app` tree for `*.module.js` files 
-with an exported `init` function. If such
-a function exists, it is called with a convenient function to simplify the registration of Routing 
-config (a map of route path and component to 
-display when user is on that path) and registration of any other custom objects like reducers in 
-Redux or resolvers in Apollo Client.
+The bootstrap process in example application is checking all directories under the `app` tree for `*
+.module.js` files with an exported `init` function. If such a function exists, it is called with 
+a convenient function to simplify the registration of Routing config (a map of route path and 
+component to display when user is on that path) and registration of any other custom objects like 
+reducers in Redux or resolvers in Apollo Client.
 
 An example of an `*.module.js` file looks like:
 
@@ -109,11 +120,10 @@ An example of an `*.module.js` file looks like:
       registerResolvers(RESOLVERS);
     }
 
-### Module: `*.jsx`
+#### Module: `*.jsx`
 
 Files with the extension `jsx` contain the definition of a single UI component.
-We are using the purely functional style of defining React components. A typical
-file may look like:
+The following example uses the purely functional style of defining React components.
 
     import { ExtendedPropTypes } from 'framework';
 
@@ -153,7 +163,7 @@ and made available as building blocks to others.
 1. To improve composition of components, we are using React's `PropTypes` support to 
 validate the state passed to the component function.
 
-## Router
+### Router
 A module might have a routing config to indicate what component to display when user is on a 
 matching route path.
 
@@ -167,9 +177,7 @@ Example of a routing config:
 This tells the router to display `LoginComponent` on `'/auth/login'`.
 When it does so, `route` and `updateRoute` will be injected to `LoginComponent`:
  - `route`, injected by the router includes information about the current route path and any extra 
- data 
- (`payload`). See
- `src/pihanga/extended-prop-types.js` for more information.
+ data (`payload`). See `src/pihanga/extended-prop-types.js` for more information.
  - `updateRoute()` is a custom function injected by the application to change route path and pass 
  any variables with it.
   
@@ -223,3 +231,34 @@ helpful if you don't want user to use browser's back/forward to navigate back to
           />
         );
       };
+
+## Running the examples
+
+pihanga is compatible with any other state manager. It comes with two examples to show 
+how you can use it with apollo-client and redux. 
+
+Like most `node.js` projects the workflow is:
+
+    npm install
+    npm start
+
+The last command starts a development server and should also open the respective page in your 
+default browser.
+
+### Build scripts
+
+The following scripts are available. In addition, there might be some other scripts supported by 
+`react-scripts` (see [react-scripts.README.md](./react-scripts.README.md)).
+
+* `npm run start` 
+  * `REACT_APP_USE_REDUX=true npm run start` to run the pihanga redux example
+  * `REACT_APP_USE_REDUX=false npm run start` to run the pihanga apollo-client example
+* `npm run lint`
+* `npm run test`
+* `npm run test -- --coverage` 
+* `npm run build`
+
+These commands use environment variables from `.env.*`. (For more info, see [Create React App Environment Config](https://facebook.github.io/create-react-app/docs/adding-custom-environment-variables#what-other-env-files-can-be-used) )
+
+To run it with a local environment ignored by git, create a file named `.env.local` 
+and override variables there.

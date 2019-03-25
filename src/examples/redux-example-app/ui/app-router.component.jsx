@@ -1,5 +1,5 @@
 import React from 'react';
-import 'shared/auto-generated.tailwind.css';
+import 'examples/shared/auto-generated.tailwind.css';
 
 export const AppRouterComponent = routerComponentWrapper => {
   const routeNotFoundElementFunc = invalidRoutePath => (

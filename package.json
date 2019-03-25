@@ -1,6 +1,6 @@
 {
   "name": "pihanga",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": true,
   "dependencies": {
     "apollo-boost": "^0.1.16",
@@ -45,8 +45,8 @@
     "tailwindcss": "^0.6.6"
   },
   "scripts": {
-    "build:css": "postcss src/shared/tailwind.css -o src/shared/auto-generated.tailwind.css",
-    "watch:css": "postcss src/shared/tailwind.css -o src/shared/auto-generated.tailwind.css",
+    "build:css": "postcss src/example/shared/tailwind.css -o src/example/shared/auto-generatedailwinds",
+    "watch:css": "postcss src/example/shared/tailwind.css -o src/example/shared/auto-generatedailwinds",
     "lint": "npm run build:css && eslint --ext .jsx,.js src/",
     "start": "npm run watch:css & react-scripts start",
     "build": "npm run build:css && react-scripts build",

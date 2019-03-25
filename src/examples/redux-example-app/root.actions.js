@@ -1,4 +1,4 @@
-import { dispatch } from 'redux-example-app/redux';
+import { dispatch } from 'examples/redux-example-app/redux';
 
 const Domain = 'ROOT:';
 

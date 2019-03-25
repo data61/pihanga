@@ -1,7 +1,6 @@
-import { bootstrapApp as bootstrapAppWithApolloClient } from './apollo-client-example-app';
-import { bootstrapApp as bootstrapAppWithRedux } from './redux-example-app';
-
-import * as serviceWorker from './serviceWorker';
+import { bootstrapApp as bootstrapAppWithApolloClient } from './examples/apollo-client-example-app';
+import { bootstrapApp as bootstrapAppWithRedux } from './examples/redux-example-app';
+import * as serviceWorker from './examples/serviceWorker';
 
 // bootstrap the app on given DOM's element ID in {@link ../public/index.html}
 if (process.env.REACT_APP_USE_REDUX === 'true') {
