@@ -48,7 +48,7 @@ them dynamically. To achieve this, we had to create our own [Router](#router).
 
 The [dynamic module loader](#features) enabled us to develop a plugin system that allows components
 to have a dynamic list of child components. A component or a module while being developed 
-independently can be plugged in to the existing application. This feature is not yet completed 
+independently can be plugged into the existing application. This feature is not yet completed 
 though. We are aiming to release it in pihanga@v1.0.0. 
 
 ## Known issues
