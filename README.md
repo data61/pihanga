@@ -3,12 +3,16 @@
 > [pihanga](https://s3.amazonaws.com/media.tewhanake.maori.nz/dictionary/38608.mp3)
 >  (noun) window, sliding slab of the traditional window of a wharenui.
 
-pihanga is a framework for dynamically extensible React apps
+pihanga is a framework for dynamically extensible React apps. It is implemented primarily in 
+Javascript (ES6), using [react](https://facebook.github.io/react/) as a view library for the 
+frontend.
 
-It is implemented primarily in Javascript (ES6), using:
-- [react](https://facebook.github.io/react/) as a view library for the frontend.
+The example apps use:
+- [apollo-client](https://github.com/apollographql/apollo-client) and [redux](https://github.com/reduxjs/redux)
+to showcase pihanga's compatibility
 - [react-scripts](https://github.com/facebook/create-react-app#readme) to avoid the hassle of 
 managing multiple tools for bundling & optimising front-end assets (including JS, CSS and images).
+- ... other libraries as shown in 'package.json'
 
 # Contents
 - [Motivation](#motivation)
