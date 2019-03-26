@@ -12,10 +12,11 @@ managing multiple tools for bundling & optimising front-end assets (including JS
 
 # Contents
 - [Motivation](#motivation)
-- [Approach & upcoming development](#approach-&-upcoming-development)
-- [Limitation](#limitation)
+- [Approach & upcoming development](#approach--upcoming-development)
+- [Known issues](#known-issues)
 - [Get started](#get-started)
   - [Installation](#installation)
+  - [Features](#features)
   - [Recommended directory structure](#recommended-directory-structure)
   - [Module definition](#module-definition)
   - [Router](#router)
@@ -38,22 +39,26 @@ integrated UX experience.
 
 ## Approach & upcoming development
 
-We started by modularising our UI into components and modules. Modules are then loaded dynamically.
+We started by modularising our UI into components and [modules](#module-definition) and loading 
+them dynamically. To achieve this, we had to create our own [Router](#router).
 
-This later enabled us to develop full plugin capability where a component 
-or a module while being developed independently can still be plugged in to the the rest. This 
-feature is not yet completed. We are aiming to get it in pihanga@v1.0.0. 
+The [dynamic module loader](#features) enabled us to develop a plugin system that allows components
+to have a dynamic list of child components. A component or a module while being developed 
+independently can be plugged in to the existing application. This feature is not yet completed 
+though. We are aiming to release it in pihanga@v1.0.0. 
 
-## Limitation
+## Known issues
 
-The dynamic module loader depends on the use of `require.context(...)` which will need to be called
-in your application. Please checkout one of the examples in `src/example` on how to use it.
+The dynamic module loader depends on the use of `require.context(...)` or alike to get all paths 
+to `*.module.js` files. It will need to be called in your application. Please checkout one of 
+the examples in `src/example` on how to use it.
 
 ## Get started
 
 ### Installation
     npm install --save pihanga
 
+### Features
 pihanga comes with these main utilities:
 1. `RouterComponentWrapper`: it lets you to customise the look and feel of the router component.
 1. `LoggerFactory`: A factory to create a logger object
@@ -66,7 +71,7 @@ will need to use `require.context(...)` or alike to get all paths to `*.module.j
 ### Recommended directory structure
 
     + src
-      + app ('apollo-client-example-app' or 'redux-example-app')
+      + app // 'apollo-client-example-app' or 'redux-example-app' in the examples
         + shared
         + ui
            + component-abc
@@ -84,7 +89,7 @@ from './ui'`
 
 ### Module definition
 
-Every module resides in its own directory. A typical directory structure is:
+Every module resides in its own directory. Its typical directory structure is:
 
     + ui
       + project
@@ -235,7 +240,8 @@ helpful if you don't want user to use browser's back/forward to navigate back to
 ## Running the examples
 
 pihanga is compatible with any other state manager. It comes with two examples to show 
-how you can use it with apollo-client and redux. 
+how you can use it with [apollo-client](https://github.com/apollographql/apollo-client) and 
+[redux](https://github.com/reduxjs/redux). 
 
 Like most `node.js` projects the workflow is:
 
