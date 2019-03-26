@@ -1,24 +1,26 @@
-
+/**
+ * A simple script which extracts all the exported functions from this
+ * library and presents them in a detailed manner allowing rollup to
+ * discover them - export * from ... does not work.
+ * 
+ * Usage: node src/create_index.js
+ */
 const dirs = [
   'logger', 'redux', 'router', 
   'utils', 'start', 'card.service'
 ];
 
 const gex = {};
-
+const l = [];
 dirs.forEach(d => {
-  const dn = d.replace('.', '_').toUpperCase();
-  console.log('import * as ' + dn + ' from \'./' + d + '\'');
+  l.push('export {');
   const ex = require('../lib/' + d);
   Object.keys(ex).forEach(f => {
     if (!f.startsWith('_')) {
-      gex[f] = dn + '.' + f
+      l.push('  ' + f + ',');
     }
   })
+  l.push('} from \'./' + d + '\'\n');
 })
 
-console.log('export default {');
-Object.keys(gex).forEach(k => {
-  console.log('  ' + k + ': ' + gex[k] + ',');
-});
-console.log('}');
+l.forEach(e => console.log(e))

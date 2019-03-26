@@ -2,20 +2,24 @@
 
 var dirs = ['logger', 'redux', 'router', 'utils', 'start', 'card.service'];
 var gex = {};
+var l = [];
 dirs.forEach(function (d) {
-  var dn = d.replace('.', '_').toUpperCase();
-  console.log('import * as ' + dn + ' from \'./' + d);
+  l.push('export {');
 
   var ex = require('../lib/' + d);
 
   Object.keys(ex).forEach(function (f) {
     if (!f.startsWith('_')) {
-      gex[f] = dn + '.' + f;
+      l.push('  ' + f + ',');
     }
   });
-});
-console.log('export default {');
-Object.keys(gex).forEach(function (k) {
-  console.log('  ' + k + ': ' + gex[k] + ',');
-});
-console.log('}');
+  l.push('} from \'./' + d + '\'\n');
+}); //console.log(l);
+
+l.forEach(function (e) {
+  return console.log(e);
+}); // console.log('export default {');
+// Object.keys(gex).forEach(k => {
+//   console.log('  ' + k + ': ' + gex[k] + ',');
+// });
+// console.log('}');
