@@ -2,7 +2,7 @@
 import React from 'react';
 
 import { PiPropTypes } from '@pihanga/core';
-import { TableCardComponent } from 'pihanga-material/card/table';
+import { TableCardComponent } from '../table';
 import { onShowDatasetDetail } from './listing.actions';
 import styled from './listing.style';
 

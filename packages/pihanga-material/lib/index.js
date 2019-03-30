@@ -1,26 +1,32 @@
 "use strict";
 
 exports.__esModule = true;
+exports.findInitFunctions = findInitFunctions;
 exports.getInitFunctions = getInitFunctions;
+exports.init = init;
 
 var _core = require("@pihanga/core");
 
+//import isFunction from 'lodash.isfunction';
+function findInitFunctions() {
+  var ctxt = require.context('.', true, /\.(\/[^/]*){2,}index\.js$/);
+
+  return ctxt;
+}
+
 function getInitFunctions() {
-  var ctxt = require.context('.', true, /\.(\/[^/]*){2,}index\.js$/); // const p = CONTEXT_INDEX_PATTERN;
-  // const c2 = require.context('.', true, CONTEXT_INDEX_PATTERN);
-  // const name2f= {};
-  // c.keys().forEach((m) => {
-  //   const f = c(m);
-  //   name2f[m] = f;
-  // });
-  // //return name2f;
-  // const ifs = c.keys().map((m) => {
-  //   const f = c(m);
-  //   return f;
-  // });
-
-
-  var x = _core.registerCards;
-  var initFunctions = (0, _core.context2InitFunctions)(ctxt);
+  var initFunctions = (0, _core.context2InitFunctions)(findInitFunctions());
   return initFunctions;
+}
+
+function init(register) {
+  var ctxt = require.context('.', true, /\.(\/[^/]*){2,}index\.js$/);
+
+  ctxt.keys().map(function (m) {
+    var c = ctxt(m);
+
+    if (c.init) {
+      c.init(register);
+    }
+  });
 }

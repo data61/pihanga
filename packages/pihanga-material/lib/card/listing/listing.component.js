@@ -9,7 +9,7 @@ var _react = _interopRequireDefault(require("react"));
 
 var _core = require("@pihanga/core");
 
-var _table = require("pihanga-material/card/table");
+var _table = require("../table");
 
 var _listing = require("./listing.actions");
 
