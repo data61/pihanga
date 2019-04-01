@@ -45,8 +45,8 @@
     "tailwindcss": "^0.6.6"
   },
   "scripts": {
-    "build:css": "postcss src/example/shared/tailwind.css -o src/example/shared/auto-generatedailwinds",
-    "watch:css": "postcss src/example/shared/tailwind.css -o src/example/shared/auto-generatedailwinds",
+    "build:css": "postcss src/examples/shared/tailwind.css -o src/examples/shared/auto-generated.tailwind.css",
+    "watch:css": "postcss src/examples/shared/tailwind.css -o src/examples/shared/auto-generated.tailwind.css",
     "lint": "npm run build:css && eslint --ext .jsx,.js src/",
     "start": "npm run watch:css & react-scripts start",
     "build": "npm run build:css && react-scripts build",

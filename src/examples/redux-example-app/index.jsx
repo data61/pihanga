@@ -23,9 +23,9 @@ export function bootstrapApp(appElementId) {
       })
   );
 
-  const routerComponentWrapper = loadModules(process.env.REACT_APP_LOG_LEVEL, requireContext(), [
-    reducer.registerReducer.bind(reducer)
-  ]);
+  const routerComponentWrapper = loadModules(process.env.REACT_APP_LOG_LEVEL, requireContext(), {
+    registerReducers: reducer.registerReducer.bind(reducer)
+  });
 
   const RouterComponent = connect(s => s)(
     compose(

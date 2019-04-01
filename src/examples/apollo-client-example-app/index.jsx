@@ -75,9 +75,9 @@ export const initialResolvers = {
  */
 export function bootstrapApp(appElementId) {
   const resolvers = new ResolverRegister().registerResolvers(initialResolvers);
-  const routerComponentWrapper = loadModules(process.env.REACT_APP_LOG_LEVEL, requireContext(), [
-    resolvers.registerResolvers.bind(resolvers)
-  ]);
+  const routerComponentWrapper = loadModules(process.env.REACT_APP_LOG_LEVEL, requireContext(), {
+    registerResolvers: resolvers.registerResolvers.bind(resolvers)
+  });
 
   const defaults = {
     route: {

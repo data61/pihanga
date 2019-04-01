@@ -20,13 +20,11 @@ export function loadModules(logLevel, moduleById, extraModuleInitArgs, serverSid
   moduleById.keys().forEach(m => {
     logger.debug(`Discovered module ${m}`);
     const module = moduleById(m);
-    if (module.init !== undefined) {
-      module.init.apply(
-        module.init,
-        [routerComponentWrapper.registerRouting.bind(routerComponentWrapper)].concat(
-          extraModuleInitArgs || []
-        )
-      );
+    if (typeof module.init === 'function') {
+      module.init.call(module.init, {
+        registerRouting: routerComponentWrapper.registerRouting.bind(routerComponentWrapper),
+        ...(extraModuleInitArgs || {})
+      });
     } else {
       // There can be lots of cases where there is no `init()` since the component doesn't need to
       // register any actions OR has any routing config.
