@@ -3,7 +3,7 @@
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 exports.__esModule = true;
-exports.start = exports.context2InitFunctions = void 0;
+exports.start = exports.enrollModule = exports.context2InitFunctions = void 0;
 
 var _reactDom = _interopRequireDefault(require("react-dom"));
 
@@ -49,6 +49,16 @@ function initReducer(register) {
   register.reducer = reducer.registerReducer.bind(reducer);
   return reducer;
 }
+
+var enrollModule = function enrollModule(initF) {
+  if ((0, _lodash.default)(initF)) {
+    initF(register);
+  } else {
+    logger.warn("Parameter to \"enrollModule\" - \"" + initF + "\" is not a function.");
+  }
+};
+
+exports.enrollModule = enrollModule;
 
 function initModules(register, _ref) {
   var inits = _ref.inits,

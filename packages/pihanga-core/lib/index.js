@@ -1,7 +1,7 @@
 "use strict";
 
 exports.__esModule = true;
-exports.Card = exports.pQuery = exports.ref = exports.card = exports.registerCardComponent = exports.registerCards = exports.start = exports.context2InitFunctions = exports.PiPropTypes = exports.prettifyNumber = exports.getIntegerNumberRandomiser = exports.INDETERMINATE_PROPERTY = exports.TIME_UNITS_TO_LABEL = exports.humaniseDuration = exports.renderTime = exports.prettifyPercentage = exports.sortBy = exports.RouterService = exports.pathToRegexPatternCache = exports.navigateToPage = exports.ROUTER_ACTION_TYPES = exports.init = exports.get = exports.update = exports.getState = exports.createStore = exports.doActionInReducer = exports.dispatch = exports.Reducer = exports.REDUX_ACTION_TYPES = exports.createLogger = void 0;
+exports.Card = exports.pQuery = exports.ref = exports.card = exports.registerCardComponent = exports.registerCards = exports.start = exports.context2InitFunctions = exports.enrollModule = exports.PiPropTypes = exports.prettifyNumber = exports.getIntegerNumberRandomiser = exports.INDETERMINATE_PROPERTY = exports.TIME_UNITS_TO_LABEL = exports.humaniseDuration = exports.renderTime = exports.prettifyPercentage = exports.sortBy = exports.RouterService = exports.pathToRegexPatternCache = exports.navigateToPage = exports.ROUTER_ACTION_TYPES = exports.init = exports.get = exports.update = exports.getState = exports.createStore = exports.doActionInReducer = exports.dispatch = exports.Reducer = exports.REDUX_ACTION_TYPES = exports.createLogger = void 0;
 
 var _logger = require("./logger");
 
@@ -40,6 +40,7 @@ exports.PiPropTypes = _utils.PiPropTypes;
 
 var _start = require("./start");
 
+exports.enrollModule = _start.enrollModule;
 exports.context2InitFunctions = _start.context2InitFunctions;
 exports.start = _start.start;
 

@@ -31,7 +31,7 @@ export {
   PiPropTypes
 } from './utils'
 
-export { context2InitFunctions, start } from './start'
+export { enrollModule, context2InitFunctions, start } from './start'
 
 export {
   registerCards,

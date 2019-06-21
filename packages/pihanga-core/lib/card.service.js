@@ -294,7 +294,7 @@ var Card = function Card(_ref4) {
 exports.Card = Card;
 
 var UnknownCard = function UnknownCard(cardName) {
-  return _react.default.createElement('div', null, "Unknown card \"" + cardName + "\"");
+  return _react.default.createElement('div', null, "Unknown cardX \"" + cardName + "\"");
 };
 
 var cardStates = {};
