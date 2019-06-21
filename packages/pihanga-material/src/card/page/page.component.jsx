@@ -79,7 +79,7 @@ const NavBar = styled(({
           <MenuIcon />
         </IconButton>
         { renderBreadcrumbs() }
-        <Typography type="title" color="inherit" noWrap className={classes.appBarTitle} >
+        <Typography variant="h6" color="inherit" noWrap className={classes.appBarTitle} >
         {subTitle}
         </Typography>
         { toolbarAddOns.map(f => f()) }
@@ -115,7 +115,7 @@ export const PageComponent = styled(({
     <div className={classes.root}>
       <AppBar position={appBarPosition} color="default">
         <Toolbar className={classes.topToolbar}>
-          <Typography type="title" color="inherit">
+          <Typography variant="h6" color="inherit">
             {title}
           </Typography>
         </Toolbar>

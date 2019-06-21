@@ -113,7 +113,7 @@ var NavBar = (0, _page.default)(function (_ref) {
     },
     className: (0, _classnames.default)(classes.menuButton, drawerIsOpen && classes.hide)
   }, _react.default.createElement(_Menu.default, null)), renderBreadcrumbs(), _react.default.createElement(_Typography.default, {
-    type: "title",
+    variant: "h6",
     color: "inherit",
     noWrap: true,
     className: classes.appBarTitle
@@ -155,7 +155,7 @@ var PageComponent = (0, _page.default)(function (_ref2) {
   }, _react.default.createElement(_Toolbar.default, {
     className: classes.topToolbar
   }, _react.default.createElement(_Typography.default, {
-    type: "title",
+    variant: "h6",
     color: "inherit"
   }, title))), _react.default.createElement("div", {
     className: classes.appFrame
