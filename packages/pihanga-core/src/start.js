@@ -27,23 +27,13 @@ function initRouting(register, opts) {
   const routerComponentWrapper = new RouterComponentWrapper({});
   const getRoute = routerComponentWrapper.getRoute.bind(routerComponentWrapper);
   routerInit(register.reducer, getRoute);
-  register.routing = routerComponentWrapper.registerRouting.bind(
-    routerComponentWrapper
-  );
+  register.routing = routerComponentWrapper.registerRouting.bind(routerComponentWrapper);
 }
 
 function initReducer(register) {
   const reducer = new Reducer({});
   register.reducer = reducer.registerReducer.bind(reducer);
   return reducer;
-}
-
-export const enrollModule = initF => {
-  if (isFunction(initF)) {
-    initF(register);
-  } else {
-    logger.warn(`Parameter to "enrollModule" - "${initF}" is not a function.`);
-  }
 }
 
 function initModules(register, { inits, initDirs }) {

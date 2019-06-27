@@ -1,6 +1,6 @@
 import React from 'react';
 import isString from 'lodash/isString';
-import createHistory from 'history/createBrowserHistory';
+import { createBrowserHistory as createHistory } from 'history';
 
 import { PiPropTypes } from '../utils';
 import { navigateToPage } from './router.actions';

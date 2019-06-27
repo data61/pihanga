@@ -81,6 +81,10 @@ export function ref(cardName, paramName) {
       }
     }
     const refDef = cards[cardName];
+    if (! refDef) {
+      logger.warn(`Requested reference to unknown card "${cardName}"`);
+      return null;
+    }
     const v = getValue(paramName, refDef, s);
     return v;
   }
@@ -201,6 +205,7 @@ function getCardState(cardName, state) {
   }
   const dynState = state.pihanga[cardName] || {};
   const cardState = Object.assign({}, cardDef, dynState);
+  cardState.cardName = cardName;
   const oldCardState = cache.cardState || {};
   var hasChanged = false;
   for (var k of Object.keys(cardState)) {
