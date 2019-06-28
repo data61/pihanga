@@ -1,5 +1,4 @@
 import 'whatwg-fetch';
-import environment from 'environments/environment';
 import { backendLogger } from './backend.logger';
 import {
   throwUnauthorisedError,
@@ -7,11 +6,13 @@ import {
 } from './backend.actions';
 import { getCookie } from './browser-cookie';
 
-export const AUTH_TOKEN_COOKIE_NAME = 'AUTH_TOKEN';
-
-// The value of this header will be checked by server. If missing, server will return 401 for
-// restricted access API
-const AUTH_TOKEN_HEADER = 'N1-Api-Key';
+const Config = {
+  API_BASE: '',
+  AUTH_TOKEN_COOKIE_NAME: undefined, //'AUTH_TOKEN',
+  // The value of this header will be checked by server. If missing, server will return 401 for
+  // restricted access API
+  AUTH_TOKEN_HEADER: undefined, // 'N1-Api-Key',
+};
 
 /**
  * Common API request properties
@@ -24,6 +25,14 @@ export const API_REQUEST_PROPERTIES = {
 
   credentials: 'include',
 };
+
+export function config(config) {
+  for (var k of Object.keys(Config)) {
+    if (config[k]) {
+      Config[k] = config[k];
+    }
+  }
+}
 
 /**
  * Unwrap data
@@ -87,7 +96,7 @@ async function checkStatusOrThrowError(url, response, silent) {
  * @returns {Promise} - NOTE: Error has been logged
  */
 export function fetchApi(apiUrl, request, silent) {
-  const fullApiUrl = `${environment.API_BASE}${apiUrl}`;
+  const fullApiUrl = `${Config.API_BASE}${apiUrl}`;
 
   // Need to stringtify JSON object
   const tmpRequest = request;
@@ -100,9 +109,11 @@ export function fetchApi(apiUrl, request, silent) {
     ...tmpRequest,
   };
 
-  const apiAuthToken = getCookie(AUTH_TOKEN_COOKIE_NAME);
-  if (apiAuthToken) {
-    requestProperties.headers[AUTH_TOKEN_HEADER] = apiAuthToken;
+  if (Config.AUTH_TOKEN_COOKIE_NAME) {
+    const apiAuthToken = getCookie(Config.AUTH_TOKEN_COOKIE_NAME);
+    if (apiAuthToken) {
+      requestProperties.headers[Config.AUTH_TOKEN_HEADER] = apiAuthToken;
+    }
   }
 
   // NOTE: The Promise returned from fetch() won't reject on HTTP error status even if the response

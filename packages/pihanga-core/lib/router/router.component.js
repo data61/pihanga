@@ -9,7 +9,7 @@ var _react = _interopRequireDefault(require("react"));
 
 var _isString = _interopRequireDefault(require("lodash/isString"));
 
-var _createBrowserHistory = _interopRequireDefault(require("history/createBrowserHistory"));
+var _history = require("history");
 
 var _utils = require("../utils");
 
@@ -63,7 +63,7 @@ function () {
     this.logger = (0, _logger.createLogger)('router');
     this.loadingRouteElement = loadingRouteElement;
     this.routeNotFoundElementFunc = routeNotFoundElementFunc;
-    this.browserHistory = (0, _createBrowserHistory.default)();
+    this.browserHistory = (0, _history.createBrowserHistory)();
     this.routingConfig = routingConfig; // Listen for changes to the current location.
 
     this.browserHistory.listen(function (location) {

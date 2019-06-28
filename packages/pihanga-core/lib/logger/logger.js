@@ -75,7 +75,8 @@ function createLogger(module) {
           args[_key] = arguments[_key];
         }
 
-        var logObject = args[args.length - 1]; // TODO: Reinstate logging events
+        //const logObject = args[args.length - 1];
+        // TODO: Reinstate logging events
         // if (logObject && logObject.type === LOGGER_ACTION_TYPES.EMIT_LOGGED_SOMETHING) {
         //   // Don't dispatch any action here to avoid an infinite loop of logging
         //   // because there can be a log call inside dispatching an action
@@ -87,7 +88,6 @@ function createLogger(module) {
         //   // Need to schedule this action because this log method can be executed inside a reducer
         //   doActionInReducer(emitLoggedSomething, [propKey, ...args])();
         // }
-
         return originalMethod.apply(_this, args);
       };
     }

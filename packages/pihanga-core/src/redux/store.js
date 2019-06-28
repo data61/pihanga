@@ -36,6 +36,19 @@ export function dispatch(event) {
 }
 
 /**
+ * Dispatch an event from inside a reducer, then an appropriate reducer will be in charge
+ * 
+ * It is anti-pattern to dispatch an action in a reducer. But here, we are performing a scheduled
+ * action, which is not anti-pattern.
+ * 
+ * @param event
+ */
+export function dispatchFromReducer(event) {
+  setTimeout(() => dispatch(event));
+}
+
+
+/**
  * Used for creating a reducer that dispatch another action.
  *
  * It is anti-pattern to dispatch an action in a reducer. But here, we are performing a scheduled

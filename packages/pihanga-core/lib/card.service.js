@@ -137,6 +137,12 @@ function ref(cardName, paramName) {
     }
 
     var refDef = cards[cardName];
+
+    if (!refDef) {
+      logger.warn("Requested reference to unknown card \"" + cardName + "\"");
+      return null;
+    }
+
     var v = getValue(paramName, refDef, s);
     return v;
   };
@@ -241,10 +247,6 @@ function pQuery(cardName, propName, value, optParams) {
 }
 
 function getValue(paramName, cardDef, s) {
-  if (paramName === 'contentCard') {
-    var i = 0;
-  }
-
   var v = cardDef[paramName];
 
   if ((0, _lodash.default)(v)) {
@@ -277,11 +279,6 @@ var Card = function Card(_ref4) {
       return cardState;
     } else {
       var cs = getCardState(cardName, s);
-
-      if (cs !== cardState) {
-        var x = 0;
-      }
-
       return cs;
     }
   })(cardComponent);
@@ -314,6 +311,7 @@ function getCardState(cardName, state) {
 
   var dynState = state.pihanga[cardName] || {};
   var cardState = Object.assign({}, cardDef, dynState);
+  cardState.cardName = cardName;
   var oldCardState = cache.cardState || {};
   var hasChanged = false;
 

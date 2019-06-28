@@ -1,8 +1,10 @@
-import isFunction from 'lodash/isFunction';
+import { update, dispatchFromReducer } from '../redux';
+import { createLogger } from '../logger';
 
-import { update, dispatch } from '../redux';
-//import environment from 'environments/environment';
-import {  ACTION_TYPES as ROUTER_ACTION_TYPES } from './router.actions';
+import {  ACTION_TYPES as ROUTER_ACTION_TYPES, navigateToPage } from './router.actions';
+import { browserHistory } from '.';
+
+const logger = createLogger('pihanga:router:reducer');
 
 const environment = {
   PATH_PREFIX: null
@@ -23,33 +25,29 @@ export default (registerReducer, getRoute) => {
     if (pa[0] === "") {
       pa.shift();
     }
-    const breadcrumbs = [];
-    // const breadcrumbs = pa.slice(1).map((x, i) => {
-    //   const p = pathPrefix + pa.slice(0, i + 2).join('/');
-    //   //const r = RouterService.findComponentAndExtractParams(routingConfig, p);
-    //   const r = getRoute(p);
-    //   const routeParam = (r && r.routeParamValueByName) ? r.routeParamValueByName : {};
-    //   const title = r.title ? (isFunction(r.title) ? r.title(routeParam) : r.title) : 'Unknown';
-    //   const showInBreadcrumb = !(r.breadcrumb === false);
-    //   return {
-    //     routePath: p,
-    //     routeParam,
-    //     pageType: r.type || 'unknown',
-    //     title,
-    //     showInBreadcrumb,
-    //   }
-    // })
-    // const r = breadcrumbs[breadcrumbs.length - 1];
-    setTimeout(() => dispatch({
+    dispatchFromReducer({
       type: ROUTER_ACTION_TYPES.SHOW_PAGE,
-      //...r,
       path: pa,
-    }));
+    });
     return update(state, ['route'], {
-      //...r,
       fromBrowser: action.fromBrowser,
-      breadcrumbs,
       path: pa,
     })
   });
+
+  registerReducer(ROUTER_ACTION_TYPES.SHOW_PAGE, (state, action) =>  {
+    const cp = `/${action.path.join('/')}`;
+    const hp = browserHistory.location.pathname;
+    if (cp !== hp) {
+      browserHistory.push(cp);
+    }
+    return state;
+  });
+
+  browserHistory.listen((location, action) => {
+    // location is an object like window.location
+    logger.info("Back in history to", location.pathname);
+    setTimeout(() => navigateToPage(location.pathname, true));
+  });
+
 }

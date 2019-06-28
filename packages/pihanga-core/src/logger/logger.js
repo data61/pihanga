@@ -72,7 +72,7 @@ export function createLogger(module) {
     get(target, propKey) {
       const originalMethod = target[propKey];
       return (...args) => {
-        const logObject = args[args.length - 1];
+        //const logObject = args[args.length - 1];
         // TODO: Reinstate logging events
         // if (logObject && logObject.type === LOGGER_ACTION_TYPES.EMIT_LOGGED_SOMETHING) {
         //   // Don't dispatch any action here to avoid an infinite loop of logging

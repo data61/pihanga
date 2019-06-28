@@ -3,9 +3,10 @@
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 exports.__esModule = true;
+exports.config = config;
 exports.fetchApi = fetchApi;
 exports.isConnectionError = isConnectionError;
-exports.API_REQUEST_PROPERTIES = exports.AUTH_TOKEN_COOKIE_NAME = void 0;
+exports.API_REQUEST_PROPERTIES = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
@@ -15,19 +16,21 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 require("whatwg-fetch");
 
-var _environment = _interopRequireDefault(require("environments/environment"));
-
 var _backend = require("./backend.logger");
 
 var _backend2 = require("./backend.actions");
 
 var _browserCookie = require("./browser-cookie");
 
-var AUTH_TOKEN_COOKIE_NAME = 'AUTH_TOKEN'; // The value of this header will be checked by server. If missing, server will return 401 for
-// restricted access API
+var Config = {
+  API_BASE: '',
+  AUTH_TOKEN_COOKIE_NAME: undefined,
+  //'AUTH_TOKEN',
+  // The value of this header will be checked by server. If missing, server will return 401 for
+  // restricted access API
+  AUTH_TOKEN_HEADER: undefined // 'N1-Api-Key',
 
-exports.AUTH_TOKEN_COOKIE_NAME = AUTH_TOKEN_COOKIE_NAME;
-var AUTH_TOKEN_HEADER = 'N1-Api-Key';
+};
 /**
  * Common API request properties
  * @type {{headers: {Content-Type: string}, credentials: string}}
@@ -39,13 +42,25 @@ var API_REQUEST_PROPERTIES = {
   },
   credentials: 'include'
 };
+exports.API_REQUEST_PROPERTIES = API_REQUEST_PROPERTIES;
+
+function config(config) {
+  var _arr = Object.keys(Config);
+
+  for (var _i = 0; _i < _arr.length; _i++) {
+    var k = _arr[_i];
+
+    if (config[k]) {
+      Config[k] = config[k];
+    }
+  }
+}
 /**
  * Unwrap data
  * @param response
  * @returns {Object}
  */
 
-exports.API_REQUEST_PROPERTIES = API_REQUEST_PROPERTIES;
 
 function unwrapData(response) {
   // Handle no content because response.json() doesn't handle it
@@ -139,7 +154,7 @@ function _checkStatusOrThrowError() {
 }
 
 function fetchApi(apiUrl, request, silent) {
-  var fullApiUrl = "" + _environment.default.API_BASE + apiUrl; // Need to stringtify JSON object
+  var fullApiUrl = "" + Config.API_BASE + apiUrl; // Need to stringtify JSON object
 
   var tmpRequest = request;
 
@@ -148,10 +163,13 @@ function fetchApi(apiUrl, request, silent) {
   }
 
   var requestProperties = (0, _extends2.default)({}, API_REQUEST_PROPERTIES, tmpRequest);
-  var apiAuthToken = (0, _browserCookie.getCookie)(AUTH_TOKEN_COOKIE_NAME);
 
-  if (apiAuthToken) {
-    requestProperties.headers[AUTH_TOKEN_HEADER] = apiAuthToken;
+  if (Config.AUTH_TOKEN_COOKIE_NAME) {
+    var apiAuthToken = (0, _browserCookie.getCookie)(Config.AUTH_TOKEN_COOKIE_NAME);
+
+    if (apiAuthToken) {
+      requestProperties.headers[Config.AUTH_TOKEN_HEADER] = apiAuthToken;
+    }
   } // NOTE: The Promise returned from fetch() won't reject on HTTP error status even if the response
   // is an HTTP 404 or 500
 

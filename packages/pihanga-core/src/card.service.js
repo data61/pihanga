@@ -148,9 +148,6 @@ export function pQuery(cardName, propName, value, optParams) {
 }
 
 function getValue(paramName, cardDef, s) {
-  if (paramName === 'contentCard') {
-    const i = 0;
-  }
   var v = cardDef[paramName];
   if (isFunction(v)) {
     v = v(s, (cn, pn) => {
@@ -177,9 +174,6 @@ export const Card = ({cardName}) => {
       return cardState;
     } else {
       const cs = getCardState(cardName, s);
-      if (cs !== cardState) {
-        const x  =0;
-      }
       return cs;
     }
   })(cardComponent);

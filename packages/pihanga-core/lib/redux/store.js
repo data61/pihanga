@@ -4,6 +4,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 
 exports.__esModule = true;
 exports.dispatch = dispatch;
+exports.dispatchFromReducer = dispatchFromReducer;
 exports.doActionInReducer = doActionInReducer;
 exports.createStore = createStore;
 exports.getState = getState;
@@ -42,6 +43,21 @@ function dispatch(event) {
       return dispatch(event);
     }, scheduleEventMs);
   }
+}
+/**
+ * Dispatch an event from inside a reducer, then an appropriate reducer will be in charge
+ * 
+ * It is anti-pattern to dispatch an action in a reducer. But here, we are performing a scheduled
+ * action, which is not anti-pattern.
+ * 
+ * @param event
+ */
+
+
+function dispatchFromReducer(event) {
+  setTimeout(function () {
+    return dispatch(event);
+  });
 }
 /**
  * Used for creating a reducer that dispatch another action.
