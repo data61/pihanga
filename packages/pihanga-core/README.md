@@ -1,3 +1,7 @@
+<div style="background-color: #f1f8ff; border-color: #0366d6">
+  <p>This is still <b>VERY</b> experimental</p>
+</div>
+
 Pihanga - Framework for dynamically extendible React apps
 ===
 
