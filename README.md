@@ -84,4 +84,9 @@ The `contentCard` property in the `page` card definition shows the use of query 
 
 
 
+# Developer Notes
 
+## Pulishing new release
+
+    lerna version prerelease
+    lerna publish from-git
