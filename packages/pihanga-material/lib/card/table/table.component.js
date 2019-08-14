@@ -79,7 +79,7 @@ var TableCardComponent = (0, _table.default)(function (_ref) {
   }
 
   rows = rows.slice(dataOffset, rowsPerPage);
-  var showFooter = dataSize != rows.length;
+  var showFooter = dataSize !== rows.length;
 
   var onSortingChange = function onSortingChange(column) {
     var order = 'asc';
@@ -127,7 +127,7 @@ var TableCardComponent = (0, _table.default)(function (_ref) {
     }).map(function (column) {
       return _react.default.createElement(_TableCell.default, {
         key: column.id,
-        numeric: column.numeric,
+        align: column.align | column.numeric ? 'right' : 'left',
         padding: column.padding || 'default',
         className: colCellClasses[column.id]
       }, _react.default.createElement(_TableSortLabel.default, {
@@ -148,12 +148,16 @@ var TableCardComponent = (0, _table.default)(function (_ref) {
     }
   };
 
-  var columnValue = function columnValue(row, column) {
+  var renderColumnValue = function renderColumnValue(row, column) {
     if (column.value) {
       return column.value(row);
     }
 
     var v = row[column.id];
+
+    if (isNaN(v) && typeof v !== 'string') {
+      v = _react.default.createElement("pre", null, JSON.stringify(v, null, 2));
+    }
 
     if (column.onSelect) {
       return _react.default.createElement(_link.LinkComponent, {
@@ -183,12 +187,12 @@ var TableCardComponent = (0, _table.default)(function (_ref) {
       }, columns.filter(function (c) {
         return c.visible === undefined || c.visible === true;
       }).map(function (column) {
-        var value = columnValue(row, column);
+        var value = renderColumnValue(row, column);
         var cn = colCellClasses[column.id]; // classes.tableCell
 
         return _react.default.createElement(_TableCell.default, {
           key: column.id,
-          numeric: column.numeric,
+          align: column.align | column.numeric ? 'right' : 'left',
           padding: column.padding || 'default',
           onClick: function onClick() {
             if (onColumnSelected) onColumnSelected({
@@ -207,7 +211,7 @@ var TableCardComponent = (0, _table.default)(function (_ref) {
     var o = page * rowsPerPage;
     var offset = o < 0 ? 0 : o;
 
-    if (offset == dataOffset) {
+    if (offset === dataOffset) {
       // same value, ignore
       return;
     }
@@ -224,7 +228,7 @@ var TableCardComponent = (0, _table.default)(function (_ref) {
     var t = evt.target;
     var rpp = t.value;
 
-    if (rpp == rowsPerPage) {
+    if (rpp === rowsPerPage) {
       // same value, igonore
       return;
     }

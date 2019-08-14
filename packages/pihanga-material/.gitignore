@@ -1,3 +1,5 @@
+lib
+src-old
 node_modules
 npm-debug.log
 .DS_Store

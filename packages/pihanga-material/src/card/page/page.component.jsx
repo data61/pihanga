@@ -1,28 +1,16 @@
 import React from 'react';
-///import { connect } from 'react-redux';
 import classNames from 'classnames';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-// import Drawer from '@material-ui/core/Drawer';
-// import List from '@material-ui/core/List';
-// import ListItem from '@material-ui/core/ListItem';
-// import ListItemText from '@material-ui/core/ListItemText';
-// import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-// import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import RefreshIcon from '@material-ui/icons/Refresh';
-
-//import { NavDrawerCard } from 'n1-core/card/nav-drawer';
-
 import { PiPropTypes } from '@pihanga/core';
 import { Card } from '@pihanga/core';
 
 import environment from 'environments/environment';
-
-//import { clickNavMenu, clickOpenDrawer, clickCloseDrawer, refreshContent, } from './page.actions';
 import styled from './page.style';
 
 let components = [];
@@ -44,16 +32,14 @@ const NavBar = styled(({
 }) => {
 
   function renderBreadcrumbs() {
-        //<a className={classes.appBarBreadcrumb}> 
-    return breadcrumbs
-      .map(b => (
+    return breadcrumbs.slice(0, -1).map(b => (
         <div key={b.title} className={classes.appBarBreadcrumbContainer}>
+            <Typography variant="h6" noWrap className={classes.appBarBreadcrumbText} >
           <a onClick={ () => onNavMenuClicked(b) } className={classes.appBarBreadcrumbLink}>
-            <Typography type="title" noWrap className={classes.appBarBreadcrumbText} >
               {b.title}
-            </Typography>
           </a>
           <KeyboardArrowRightIcon className={classes.appBarBreadcrumbText} />
+          </Typography>
         </div>
       ));
   }
@@ -89,18 +75,13 @@ const NavBar = styled(({
   );
 });
 
-
-// export const PageComponent = connect(s => s)(styled(({ 
-//   version, user, page, route, 
-//   toolbarAddOns = [], showRefreshButton = false, topMargin = true,
-//   children, classes 
-// }) => {
 export const PageComponent = styled(({
   cardName, 
   contentCard, 
   navDrawerCard, 
   title, 
   subTitle,
+  breadcrumbs,
   topMargin, 
   showRefreshButton = false,
   toolbarAddOns = [], 
@@ -123,6 +104,7 @@ export const PageComponent = styled(({
       <div className={classes.appFrame}>
         <NavBar page={ {} } 
           subTitle={ subTitle }
+          breadcrumbs={ breadcrumbs }
           drawerIsOpen={ drawerIsOpen } 
           route={ route } 
           toolbarAddOns={ toolbarAddOns }
@@ -147,7 +129,6 @@ export const PageComponent = styled(({
 PageComponent.propTypes = {
   version: PiPropTypes.shape(),
   user: PiPropTypes.shape(),
-  //children: N1PropTypes.children.isRequired,
 };
 
 PageComponent.defaultProps = {

@@ -9,30 +9,24 @@ var _immutabilityHelper = _interopRequireDefault(require("immutability-helper"))
 
 var _page = require("./page.actions");
 
-var _core = require("@pihanga/core");
-
+//import {  ROUTER_ACTION_TYPES } from '@pihanga/core';
 var _default = function _default(registerReducer) {
-  registerReducer(_core.ROUTER_ACTION_TYPES.SHOW_PAGE, function (state, action) {
-    var bc = state.route.breadcrumbs.slice(0, state.route.breadcrumbs.length - 1).filter(function (b) {
-      return b.showInBreadcrumb;
-    }).map(function (e) {
-      return {
-        title: e.title,
-        path: e.routePath
-      };
-    }); //const last = bc.pop();
-
-    return (0, _immutabilityHelper.default)(ensurePage(state), {
-      page: {
-        subTitle: {
-          $set: state.route.title
-        },
-        breadcrumbs: {
-          $set: bc
-        }
-      }
-    });
-  });
+  // registerReducer(ROUTER_ACTION_TYPES.SHOW_PAGE, (state, action) => {
+  //   const bc = state.route.breadcrumbs
+  //   .slice(0, state.route.breadcrumbs.length - 1)
+  //   .filter(b => b.showInBreadcrumb)
+  //   .map(e => ({
+  //     title: e.title,
+  //     path: e.routePath,
+  //   }));
+  //   //const last = bc.pop();
+  //   return update(ensurePage(state), {
+  //     page: { 
+  //       subTitle: { $set: state.route.title },
+  //       breadcrumbs: { $set: bc } 
+  //     }
+  //   });
+  // });
   registerReducer(_page.ACTION_TYPES.OPEN_DRAWER, function (state, action) {
     return drawerState(state, true);
   });

@@ -39,12 +39,13 @@ export default withStyles(theme => ({
   },
   appBarBreadcrumbLink: {
     '&:hover': {
-      textDecoration: 'none',
+      textDecoration: 'underline',
     }
   },
   appBarBreadcrumbText: {
     color: 'rgba(255,255,255,.54)', //theme.palette.text.primary,
     marginRight: 10,
+    fontSize: 'inherit',
   },
   appBarTitle: {
     flex: 1,

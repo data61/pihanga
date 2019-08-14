@@ -47,7 +47,7 @@ export const TableCardComponent = styled(({
     }
   }
   rows = rows.slice(dataOffset, rowsPerPage);
-  const showFooter = dataSize != rows.length;
+  const showFooter = dataSize !== rows.length;
 
   const onSortingChange = (column) => {
     let order = 'asc';
@@ -87,7 +87,7 @@ export const TableCardComponent = styled(({
     .map(column => (
       <TableCell
         key={column.id}
-        numeric={column.numeric}
+        align={column.align | column.numeric ? 'right' : 'left' }
         padding={column.padding || 'default'}
         className={colCellClasses[column.id]}
       >
@@ -114,11 +114,14 @@ export const TableCardComponent = styled(({
     }
   }
 
-  const columnValue = (row, column) => {
+  const renderColumnValue = (row, column) => {
     if (column.value) {
       return column.value(row);
     } 
-    const v = row[column.id];
+    var v = row[column.id];
+    if (isNaN(v) && typeof v !== 'string' ) {
+      v = (<pre>{JSON.stringify(v, null, 2)}</pre>);
+    }
     if (column.onSelect) {
       return (
         <LinkComponent onClick={() => column.onSelect(row)}>{v}</LinkComponent>
@@ -141,12 +144,12 @@ export const TableCardComponent = styled(({
           { columns
             .filter(c => c.visible === undefined || c.visible === true)
             .map(column => {
-              const value = columnValue(row, column);
+              const value = renderColumnValue(row, column);
               const cn = colCellClasses[column.id]; // classes.tableCell
               return (
                 <TableCell
                   key={column.id}
-                  numeric={column.numeric}
+                  align={column.align | column.numeric ? 'right' : 'left' }
                   padding={column.padding || 'default'}
                   onClick={ () => { if (onColumnSelected) onColumnSelected({value, column, row}); } }
                   className={ cn }
@@ -163,7 +166,7 @@ export const TableCardComponent = styled(({
   function onChangePage(ev, page) {
     const o = page * rowsPerPage;
     const offset = o < 0 ? 0 : o;
-    if (offset == dataOffset) {
+    if (offset === dataOffset) {
       // same value, ignore
       return;
     }
@@ -173,7 +176,7 @@ export const TableCardComponent = styled(({
   function onChangeRowsPerPage(evt) {
     const t = evt.target;
     const rpp = t.value;
-    if (rpp == rowsPerPage) {
+    if (rpp === rowsPerPage) {
       // same value, igonore
       return;
     }

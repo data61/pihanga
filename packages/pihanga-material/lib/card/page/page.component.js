@@ -29,15 +29,6 @@ var _environment = _interopRequireDefault(require("environments/environment"));
 
 var _page = _interopRequireDefault(require("./page.style"));
 
-///import { connect } from 'react-redux';
-// import Drawer from '@material-ui/core/Drawer';
-// import List from '@material-ui/core/List';
-// import ListItem from '@material-ui/core/ListItem';
-// import ListItemText from '@material-ui/core/ListItemText';
-// import Divider from '@material-ui/core/Divider';
-// import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-//import { NavDrawerCard } from 'n1-core/card/nav-drawer';
-//import { clickNavMenu, clickOpenDrawer, clickCloseDrawer, refreshContent, } from './page.actions';
 var components = [];
 var pathPrefix = _environment.default.PATH_PREFIX || '';
 
@@ -68,23 +59,22 @@ var NavBar = (0, _page.default)(function (_ref) {
       classes = _ref.classes;
 
   function renderBreadcrumbs() {
-    //<a className={classes.appBarBreadcrumb}> 
-    return breadcrumbs.map(function (b) {
+    return breadcrumbs.slice(0, -1).map(function (b) {
       return _react.default.createElement("div", {
         key: b.title,
         className: classes.appBarBreadcrumbContainer
+      }, _react.default.createElement(_Typography.default, {
+        variant: "h6",
+        noWrap: true,
+        className: classes.appBarBreadcrumbText
       }, _react.default.createElement("a", {
         onClick: function onClick() {
           return onNavMenuClicked(b);
         },
         className: classes.appBarBreadcrumbLink
-      }, _react.default.createElement(_Typography.default, {
-        type: "title",
-        noWrap: true,
+      }, b.title), _react.default.createElement(_KeyboardArrowRight.default, {
         className: classes.appBarBreadcrumbText
-      }, b.title)), _react.default.createElement(_KeyboardArrowRight.default, {
-        className: classes.appBarBreadcrumbText
-      }));
+      })));
     });
   }
 
@@ -120,18 +110,14 @@ var NavBar = (0, _page.default)(function (_ref) {
   }, subTitle), toolbarAddOns.map(function (f) {
     return f();
   }), _react.default.createElement(RefreshButton, null)));
-}); // export const PageComponent = connect(s => s)(styled(({ 
-//   version, user, page, route, 
-//   toolbarAddOns = [], showRefreshButton = false, topMargin = true,
-//   children, classes 
-// }) => {
-
+});
 var PageComponent = (0, _page.default)(function (_ref2) {
   var cardName = _ref2.cardName,
       contentCard = _ref2.contentCard,
       navDrawerCard = _ref2.navDrawerCard,
       title = _ref2.title,
       subTitle = _ref2.subTitle,
+      breadcrumbs = _ref2.breadcrumbs,
       topMargin = _ref2.topMargin,
       _ref2$showRefreshButt = _ref2.showRefreshButton,
       showRefreshButton = _ref2$showRefreshButt === void 0 ? false : _ref2$showRefreshButt,
@@ -162,6 +148,7 @@ var PageComponent = (0, _page.default)(function (_ref2) {
   }, _react.default.createElement(NavBar, {
     page: {},
     subTitle: subTitle,
+    breadcrumbs: breadcrumbs,
     drawerIsOpen: drawerIsOpen,
     route: route,
     toolbarAddOns: toolbarAddOns,
@@ -182,8 +169,7 @@ var PageComponent = (0, _page.default)(function (_ref2) {
 exports.PageComponent = PageComponent;
 PageComponent.propTypes = {
   version: _core.PiPropTypes.shape(),
-  user: _core.PiPropTypes.shape() //children: N1PropTypes.children.isRequired,
-
+  user: _core.PiPropTypes.shape()
 };
 PageComponent.defaultProps = {
   version: undefined,

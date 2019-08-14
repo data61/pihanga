@@ -7,8 +7,6 @@ exports.NavDrawerCard = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
-var _classnames = _interopRequireDefault(require("classnames"));
-
 var _Drawer = _interopRequireDefault(require("@material-ui/core/Drawer"));
 
 var _List = _interopRequireDefault(require("@material-ui/core/List"));
@@ -25,11 +23,9 @@ var _ChevronLeft = _interopRequireDefault(require("@material-ui/icons/ChevronLef
 
 var _core = require("@pihanga/core");
 
-var _navDrawer = require("./nav-drawer.actions");
+var _navDrawer = _interopRequireDefault(require("./nav-drawer.style"));
 
-var _navDrawer2 = _interopRequireDefault(require("./nav-drawer.style"));
-
-var NavDrawerCard = (0, _navDrawer2.default)(function (_ref) {
+var NavDrawerCard = (0, _navDrawer.default)(function (_ref) {
   var drawerIsOpen = _ref.drawerIsOpen,
       navItems = _ref.navItems,
       onOpenDrawer = _ref.onOpenDrawer,

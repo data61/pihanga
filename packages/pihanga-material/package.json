@@ -1,6 +1,6 @@
 {
   "name": "@pihanga/material-ui",
-  "version": "0.5.0",
+  "version": "0.2.0-rc8",
   "description": "Various cards based on Material UI for the Pihanga framework",
   "homepage": "https://github.com/n1analytics/pihanga-material-ui#readme",
   "main": "lib/index.js",
@@ -18,8 +18,8 @@
     "Max Ott <max@winlab.rutgers.edu> (http://linkedin.com/in/max-ott)",
     "Pihanga Team"
   ],
-  "license": "Undefined",
-  "unpkg": "dist/pihanga-material-ui.js",
+  "license": "MIT",
+  "unpkg": "dist/pihanga-material-ui.min.js",
   "module": "lib/index.js",
   "files": [
     "dist",
@@ -30,29 +30,34 @@
   "scripts": {
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib && touch lib/DO_NOT_EDIT",
     "build:es": "babel src --out-dir dist/es",
-    "build:umd": "cross-env NODE_ENV=development rollup -c -o dist/pihanga-material-ui.js",
-    "build:umd:min": "cross-env NODE_ENV=production rollup -c -o dist/pihanga-material-ui.min.js",
-    "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
-    "clean": "rimraf dist coverage",
+    "build:umd": "cross-env NODE_ENV=development rollup -c -o dist/pihanga-core.js",
+    "build:umd:min": "cross-env NODE_ENV=production rollup -c -o dist/pihanga-core.min.js",
+    "xxx-build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
+    "build": "npm run build:commonjs && npm run build:es",
+    "clean": "rimraf lib dist coverage",
     "format": "prettier --write \"{src,test}/**/*.{js,ts}\" index.d.ts \"docs/**/*.md\"",
     "lint": "eslint src test/utils test/components",
     "prepare": "npm run clean && npm run build",
     "pretest": "npm run lint",
     "test": "node ./test/run-tests.js",
-    "coverage": "codecov"
+    "coverage": "codecov",
+    "publish": "npm publish --tag latest --access=public",
+    "x-prepublishOnly": "npm run build",
+    "x-prepublish": "yarn run lint && yarn run test && yarn run build"
   },
   "dependencies": {
     "@material-ui/core": "^3.1.0",
     "@material-ui/icons": "^3.0.1",
-    "@pihanga/core": "github:n1analytics/pihanga-core#experiment1",
+    "chart.js": "2.7.3",
+    "chartkick": "3.0.2",
+    "@pihanga/core": "^0.2.0-rc1",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "prop-types": "^15.7.2",
     "@babel/runtime": "^7.3.1"
   },
   "peerDependencies": {
-    "react": "^16.4.0-0",
-    "redux": "^2.0.0 || ^3.0.0 || ^4.0.0-0"
+    "react": "^16.4.0-0"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
@@ -90,6 +95,7 @@
     "rollup-plugin-node-resolve": "^4.0.0",
     "rollup-plugin-replace": "^2.1.0",
     "rollup-plugin-terser": "^4.0.4",
+    "rimraf": "^2.6.3",
     "semver": "^5.6.0"
   },
   "browserify": {

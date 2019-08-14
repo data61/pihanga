@@ -1,5 +1,4 @@
 import React from 'react';
-import classNames from 'classnames';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -10,7 +9,6 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 import { PiPropTypes } from '@pihanga/core';
 
-import { clickOpenDrawer, clickCloseDrawer, clickNavMenu } from './nav-drawer.actions';
 import styled from './nav-drawer.style';
 
 export const NavDrawerCard = styled(({

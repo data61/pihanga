@@ -20,7 +20,8 @@ const config = {
   },
   plugins: [
     nodeResolve({
-      jsnext: true,
+      mainFields: ['module', 'main'],
+      //jsnext: true,
       extensions: ['.js', '.jsx', '.json']
     }),
     babel({
@@ -35,6 +36,9 @@ const config = {
         'node_modules/react-is/index.js': [
           'isValidElementType',
           'isContextConsumer'
+        ],
+        'node_modules/@pihanga/core/lib/index.js': [
+          'dispatch'
         ]
       }
     })

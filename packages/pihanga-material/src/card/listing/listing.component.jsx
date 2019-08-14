@@ -1,19 +1,8 @@
-
 import React from 'react';
 
-import { PiPropTypes } from '@pihanga/core';
 import { TableCardComponent } from '../table';
-import { onShowDatasetDetail } from './listing.actions';
-import styled from './listing.style';
 
-
-
-export const ListingCard = styled(({ columns, data, cardName, scratch = {}, classes }) => {
-
-  function onSelect(row) {
-    onShowDatasetDetail(row.name);
-  }
-
+export const ListingCard = ({ columns, data, cardName, scratch = {} }) => {
   return (
     <TableCardComponent
       id={cardName}
@@ -22,7 +11,7 @@ export const ListingCard = styled(({ columns, data, cardName, scratch = {}, clas
       scratch={scratch}
     />
   );
-});
+};
 
 ListingCard.propTypes = {
   //scratch: N1PropTypes.shape().isRequired,

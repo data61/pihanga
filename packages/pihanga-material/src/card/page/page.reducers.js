@@ -1,26 +1,26 @@
 import update from 'immutability-helper';
 
 import { ACTION_TYPES as PAGE_ACTION_TYPES } from './page.actions';
-import {  ROUTER_ACTION_TYPES } from '@pihanga/core';
+//import {  ROUTER_ACTION_TYPES } from '@pihanga/core';
 
 export default (registerReducer) => {
 
-  registerReducer(ROUTER_ACTION_TYPES.SHOW_PAGE, (state, action) => {
-    const bc = state.route.breadcrumbs
-    .slice(0, state.route.breadcrumbs.length - 1)
-    .filter(b => b.showInBreadcrumb)
-    .map(e => ({
-      title: e.title,
-      path: e.routePath,
-    }));
-    //const last = bc.pop();
-    return update(ensurePage(state), {
-      page: { 
-        subTitle: { $set: state.route.title },
-        breadcrumbs: { $set: bc } 
-      }
-    });
-  });
+  // registerReducer(ROUTER_ACTION_TYPES.SHOW_PAGE, (state, action) => {
+  //   const bc = state.route.breadcrumbs
+  //   .slice(0, state.route.breadcrumbs.length - 1)
+  //   .filter(b => b.showInBreadcrumb)
+  //   .map(e => ({
+  //     title: e.title,
+  //     path: e.routePath,
+  //   }));
+  //   //const last = bc.pop();
+  //   return update(ensurePage(state), {
+  //     page: { 
+  //       subTitle: { $set: state.route.title },
+  //       breadcrumbs: { $set: bc } 
+  //     }
+  //   });
+  // });
 
 
   registerReducer(PAGE_ACTION_TYPES.OPEN_DRAWER, (state, action) => {
