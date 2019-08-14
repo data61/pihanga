@@ -17,6 +17,6 @@ exports.navigateToPage = _router2.navigateToPage;
 var browserHistory = (0, _history.createBrowserHistory)();
 exports.browserHistory = browserHistory;
 
-function init(registerReducer) {
-  (0, _router.default)(registerReducer, browserHistory);
+function init(registerReducer, opts) {
+  (0, _router.default)(registerReducer, browserHistory, opts);
 }

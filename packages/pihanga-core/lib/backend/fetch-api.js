@@ -6,6 +6,7 @@ exports.__esModule = true;
 exports.config = config;
 exports.fetchApi = fetchApi;
 exports.isConnectionError = isConnectionError;
+exports.backendGET = backendGET;
 exports.API_REQUEST_PROPERTIES = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
@@ -21,6 +22,8 @@ var _backend = require("./backend.logger");
 var _backend2 = require("./backend.actions");
 
 var _browserCookie = require("./browser-cookie");
+
+var _redux = require("../redux");
 
 var Config = {
   API_BASE: '',
@@ -187,4 +190,58 @@ function fetchApi(apiUrl, request, silent) {
 function isConnectionError(error) {
   var INTERNAL_FETCH_ERROR = 'Failed to fetch';
   return error && error.message === INTERNAL_FETCH_ERROR;
+}
+/**
+ * Returns a convenience function for common backend interaction. It starts by 
+ * dispatching an action of type `getAction`. It then sends a GET request
+ * to a specific url and dispatches the result in an action of type `replyAction`.
+ * If the http request fails, an action with type `errorAction` is dispatched.
+ * 
+ * The result of the http request is added to the `replyAction` under the `result`
+ * key, while the error is added under the `error` key.
+ * 
+ * If the first parameter is a string, then it is used for any subsequent requests. 
+ * However, if the first parameter is a function, then this function is called with
+ * all paramters provided to the activating function and is expected to return the 
+ * calling url as a string. In addition, the first parameter to the activating function
+ * is interpreted as an `id` and is added to all actions under the `id` key.
+ * 
+ * @param {string|function} urlOrFunc 
+ * @param {string} getAction 
+ * @param {string} replyAction 
+ * @param {string} errorAction 
+ */
+
+
+function backendGET(urlOrFunc, getAction, replyAction, errorAction) {
+  var isFunc = urlOrFunc instanceof Function;
+  return function (id) {
+    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    var url = isFunc ? urlOrFunc.apply(void 0, [id].concat(args)) : urlOrFunc;
+    var p = {
+      type: getAction
+    };
+    if (id) p.id = id;
+    (0, _redux.dispatch)(p);
+    fetchApi(url, {
+      method: 'GET'
+    }).then(function (reply) {
+      var p = {
+        type: replyAction,
+        reply: reply
+      };
+      if (id) p.id = id;
+      (0, _redux.dispatch)(p);
+    }).catch(function (error) {
+      var p = {
+        type: errorAction,
+        error: error
+      };
+      if (id) p.id = id;
+      (0, _redux.dispatch)(p);
+    });
+  };
 }

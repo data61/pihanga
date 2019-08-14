@@ -25,7 +25,7 @@ export const context2InitFunctions = (ctxt) => {
 }
 
 function initRouting(register, opts) {
-  routerInit(register.reducer);
+  routerInit(register.reducer, opts);
 }
 
 function initReducer(register) {
@@ -64,21 +64,7 @@ function initStore(reducer, opts) {
 }
 
 function getPath(opts) {
-  // Get the current location.
-  var location = browserHistory.location.pathname;
-  if (location === '/' && opts.defPath) {
-    location = opts.defPath;
-  }
-
-  const sa = location.split('?');
-  if (sa.length === 2) {
-    // ignoring search
-    // const search = sa[1];
-  }
-  const path = sa[0].split('/');
-  if (path[0] === '') {
-    path.shift();
-  }
+  const path = opts.currentPath();
   return path;
 }
 

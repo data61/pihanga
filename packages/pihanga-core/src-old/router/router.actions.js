@@ -6,10 +6,10 @@ export const ACTION_TYPES = {
   NAVIGATE_TO_PAGE: `${Domain}NAVIGATE_TO_PAGE`,
 };
 
-export function navigateToPage(url, fromBrowser = false) {
+export function navigateToPage(path, fromBrowser = false) {
   dispatch({
     type: ACTION_TYPES.NAVIGATE_TO_PAGE,
-    url,
+    path,
     fromBrowser,
   });
 }

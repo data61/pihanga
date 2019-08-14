@@ -40,7 +40,7 @@ var context2InitFunctions = function context2InitFunctions(ctxt) {
 exports.context2InitFunctions = context2InitFunctions;
 
 function initRouting(register, opts) {
-  (0, _router.init)(register.reducer);
+  (0, _router.init)(register.reducer, opts);
 }
 
 function initReducer(register) {
@@ -87,25 +87,7 @@ function initStore(reducer, opts) {
 }
 
 function getPath(opts) {
-  // Get the current location.
-  var location = _router.browserHistory.location.pathname;
-
-  if (location === '/' && opts.defPath) {
-    location = opts.defPath;
-  }
-
-  var sa = location.split('?');
-
-  if (sa.length === 2) {// ignoring search
-    // const search = sa[1];
-  }
-
-  var path = sa[0].split('/');
-
-  if (path[0] === '') {
-    path.shift();
-  }
-
+  var path = opts.currentPath();
   return path;
 }
 

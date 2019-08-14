@@ -1,6 +1,6 @@
 {
   "name": "@pihanga/core",
-  "version": "0.1.0",
+  "version": "0.2.0-rc11",
   "description": "Core module of the Pihanga framework",
   "homepage": "https://github.com/n1analytics/pihanga#readme",
   "main": "lib/index.js",
@@ -17,8 +17,8 @@
     "Max Ott <max@winlab.rutgers.edu> (http://linkedin.com/in/max-ott)",
     "Pihanga Team"
   ],
-  "license": "Undefined",
-  "unpkg": "dist/pihanga-core.js",
+  "license": "MIT",
+  "unpkg": "dist/pihanga-core.min.js",
   "module": "lib/index.js",
   "files": [
     "dist",
@@ -39,7 +39,9 @@
     "pretest": "npm run lint",
     "test": "node ./test/run-tests.js",
     "coverage": "codecov",
-    "release": "npm build && npm publish build --tag latest"
+    "publish": "npm publish --tag latest --access=public",
+    "x-prepublishOnly": "npm run build",
+    "x-prepublish": "yarn run lint && yarn run test && yarn run build"
   },
   "dependencies": {
     "react": "^16.4.2",

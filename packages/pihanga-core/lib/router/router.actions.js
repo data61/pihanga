@@ -13,14 +13,14 @@ var ACTION_TYPES = {
 };
 exports.ACTION_TYPES = ACTION_TYPES;
 
-function navigateToPage(path, fromBrowser) {
+function navigateToPage(url, fromBrowser) {
   if (fromBrowser === void 0) {
     fromBrowser = false;
   }
 
   (0, _redux.dispatch)({
     type: ACTION_TYPES.NAVIGATE_TO_PAGE,
-    path: path,
+    url: url,
     fromBrowser: fromBrowser
   });
 }
