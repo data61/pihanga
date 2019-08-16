@@ -18,8 +18,7 @@ export default (defTheme = createMuiTheme()) => {
       danger: 'orange',
     },
     typography: {
-      // fontFamily: '-apple-system,system-ui,BlinkMacSystemFont,' +
-      //   '"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif',
+      useNextVariants: true,
       versionFootNote: {
         fontWeight: defTheme.typography.fontWeightMedium,
         fontSize: 10,

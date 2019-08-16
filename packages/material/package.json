@@ -52,6 +52,7 @@
     "@pihanga/core": "^0.2.0-rc1",
     "chart.js": "2.7.3",
     "chartkick": "3.0.2",
+    "immutability-helper": "^3.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.4.2",
     "react-dom": "^16.4.2"
