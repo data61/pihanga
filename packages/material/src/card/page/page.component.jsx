@@ -7,18 +7,17 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import RefreshIcon from '@material-ui/icons/Refresh';
-import { PiPropTypes } from '@pihanga/core';
-import { Card } from '@pihanga/core';
+import { Card, PiPropTypes } from '@pihanga/core';
 
-import environment from 'environments/environment';
+// import environment from 'environments/environment';
 import styled from './page.style';
 
-let components = [];
-const pathPrefix = environment.PATH_PREFIX || '';
-export const registerComponent = (name, priority, path) => {
-  components.push({name, priority, path: pathPrefix + path});
-  components = components.sort((a, b) => b.priority - a.priority);
-}
+// let components = [];
+// const pathPrefix = environment.PATH_PREFIX || '';
+// export const registerComponent = (name, priority, path) => {
+//   components.push({name, priority, path: pathPrefix + path});
+//   components = components.sort((a, b) => b.priority - a.priority);
+// }
 
 const NavBar = styled(({ 
   breadcrumbs = [], 
