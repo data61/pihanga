@@ -1,6 +1,6 @@
 {
   "name": "@pihanga/material-ui",
-  "version": "0.2.0-rc.10",
+  "version": "0.2.0",
   "description": "Various cards based on Material UI for the Pihanga framework",
   "homepage": "https://github.com/n1analytics/pihanga-material-ui#readme",
   "main": "lib/index.js",
@@ -49,7 +49,7 @@
     "@babel/runtime": "^7.3.1",
     "@material-ui/core": "^3.1.0",
     "@material-ui/icons": "^3.0.1",
-    "@pihanga/core": "^0.2.0-rc1",
+    "@pihanga/core": "^0.2.0",
     "chart.js": "2.7.3",
     "chartkick": "3.0.2",
     "immutability-helper": "^3.0.0",
@@ -102,5 +102,6 @@
     "transform": [
       "loose-envify"
     ]
-  }
+  },
+  "gitHead": "edc1fa3db18c6f974f86b27adab1205af65fe6e0"
 }
