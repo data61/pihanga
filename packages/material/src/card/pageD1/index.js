@@ -11,8 +11,9 @@ export const ACTION_TYPES = {
 export function init(register) {
   initReducers(register.reducer);
   register.cardComponent({
-    name: 'Page', 
+    name: 'PageD1', 
     component: PageComponent, 
+    actions: PAGE_ACTION_TYPES,
     events: {
       onNavMenuClicked: PAGE_ACTION_TYPES.NAVIGATE_TO,
       onRefreshContent: PAGE_ACTION_TYPES.REFRESH_CONTENT,

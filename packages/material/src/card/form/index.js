@@ -8,8 +8,9 @@ export * from './form.actions';
 export function init(register) {
   initReducers(register.reducer);
   register.cardComponent({
-    name: 'PiForm', 
-    component: PiForm, 
+    name: 'PiForm',
+    component: PiForm,
+    actions: ACTION_TYPES,
     events: {
       onValueChanged: ACTION_TYPES.VALUE_CHANGED,
       onFormSubmit: ACTION_TYPES.FORM_SUBMIT

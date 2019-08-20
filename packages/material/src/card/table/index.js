@@ -8,8 +8,9 @@ export * from './table.actions';
 export function init(register) {
   initReducers(register.reducer);
   register.cardComponent({
-    name: 'Table', 
-    component: TableCardComponent, 
+    name: 'PiTable',
+    component: TableCardComponent,
+    actions: ACTION_TYPES,
     events: {
       onRowSelected: ACTION_TYPES.ROW_SELECTED,
       onColumnSelected: ACTION_TYPES.COLUMN_SELECTED,
