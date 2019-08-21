@@ -1,5 +1,5 @@
 
-import { start as pihangaStart, createLogger, exportModule } from '@pihanga/core';
+import { start as pihangaStart } from '@pihanga/core';
 import { RootComponent } from '@pihanga/material-ui';
 import { init as materialInit } from '@pihanga/material-ui';
 
@@ -11,7 +11,6 @@ import { init as spinnerInit } from 'spinner';
 import { init as answerInit } from 'answer';
 import { init as workflowInit } from 'workflow';
 
-const logger = createLogger('n1-dashboard:init');
 const rootEl = document.getElementById('root');
 
 /**

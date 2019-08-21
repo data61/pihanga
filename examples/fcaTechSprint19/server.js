@@ -10,15 +10,13 @@ const port = 8080;
 
 app.use(express.static('build'));
 
-// app.get('/passport/:id', (req, res, next) => {
-//   console.log(">>>>", req.params)
-//   const r = {id: req.params.id, count: 2, banks: 3};
-//   res.setHeader('Content-Type', 'application/json');
-//   res.end(JSON.stringify(r, null, 3));
-// });
+const mockResult = {
+  '44444': {count: 2, banks: 3},
+  default: {count: 0, banks: 3},
+}
 
 app.get('/passport/:id', function(req, res) {
-  doStuff(req.params.id).then(function(result) {
+  mockStuff(req.params.id).then(function(result) {
     console.log(">>> res >>", result);
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(result, null, 3));
@@ -30,8 +28,8 @@ app.get('/passport/:id', function(req, res) {
 const mockStuff = (id) => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      console.log(">>> PING >>");
-      const r = {id: id, count: 2, banks: 3};
+      const r = mockResult[id] || mockResult.default;
+      r.id = id;
       resolve(r);
     }, 3000);
   });

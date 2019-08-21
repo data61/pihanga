@@ -15,7 +15,7 @@ const QUESTIONS = [
 
 const page = {
   page: {
-    cardType: 'SimplePage',
+    cardType: 'PiSimplePage',
     contentCard: s => s.step, //'entryForm',
     maxWidth: '700px', //'md',
     signature: 'Built with love by the TechLaunderers'
@@ -61,7 +61,7 @@ const page = {
     question: s => s.question,
   },
   scoring: {
-    cardType: 'Table',
+    cardType: 'PiTable',
     showHeader: true, 
     columns: [
       { id: 'id', isKey: true, visible: false },

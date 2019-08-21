@@ -24,7 +24,7 @@ export const AnswerComponent = styled(({
       <Typography variant="h4" align="center" className={classes.sentence}>
         Found <b> {answer.count} </b> 
         { answer.count === '1' ? 'account' : 'accounts' } <br/>
-        across <b> {answer.count} </b> 
+        across <b> {answer.banks} </b> 
         { pluralize('bank', answer.banks) } <br/>
       </Typography>
       <Button
