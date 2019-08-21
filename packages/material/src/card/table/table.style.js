@@ -8,9 +8,9 @@ export default withStyles(theme => ({
     overflowX: 'auto',
   },
   title: {
-    marginLeft: theme.spacing.unit(3),
-    marginTop: theme.spacing.unit(2),
-    marginBottom: theme.spacing.unit(1),
+    marginLeft: theme.spacing(3),
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(1),
   },
   tableCell: {
     cursor: 'pointer',

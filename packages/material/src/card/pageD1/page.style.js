@@ -110,7 +110,7 @@ export default withStyles(theme => ({
     flexFlow: 'column',
   },
   contentTopMargin: {
-    padding: theme.spacing.unit(3),
+    padding: theme.spacing(3),
   }, 
   contentShift: {
     marginLeft: 0,
