@@ -182,7 +182,8 @@ export const Card = ({cardName}) => {
 };
 
 const UnknownCard = (cardName) => {
-  return React.createElement('div', null, `Unknown card "${cardName}"`);
+  const s = `Unknown card "${cardName}" - (${cards.join(', ')})`;
+  return React.createElement('div', null, s);
 };
 
 const cardStates = {};
