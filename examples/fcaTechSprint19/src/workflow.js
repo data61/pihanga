@@ -1,21 +1,19 @@
 import { update } from '@pihanga/core';
 import { backendGET } from '@pihanga/core';
+import { dispatchFromReducer, actions, registerActions } from '@pihanga/core';
 
 import { ACTION_TYPES as ANSWER_TYPES } from 'answer';
-import { ACTION_TYPES as FORM_TYPES } from '@pihanga/material-ui/lib/card/form';
 import { ACTION_TYPES as SPINNER_TYPES } from 'spinner';
-
-const Domain = 'BACKEND:';
 
 function getPassportCountURL(id) {
   return `/passport/${id}`;
 }
 
-export const ACTION_TYPES = {
-  GET_PASSPORT: `${Domain}GET_PASSPORT`,
-  GET_PASSPORT_FAILED: `${Domain}GET_PASSPORT_FAILED`,
-  UPDATE_PASSPORT: `${Domain}UPDATE_PASSPORT`,
-};
+export const ACTION_TYPES = registerActions('BACKEND', [
+  'GET_PASSPORT',
+  'GET_PASSPORT_FAILED',
+  'UPDATE_PASSPORT',
+]);
 
 const getPassportCount = backendGET(getPassportCountURL, 
   ACTION_TYPES.GET_PASSPORT, 
@@ -29,8 +27,8 @@ export function init(register) {
   register.reducer(SPINNER_TYPES.CANCEL_REQUEST, (state) => {
     return update(state, ['step'], 'passport');
   });
-  register.reducer(FORM_TYPES.FORM_SUBMIT, (state,action) => {
-    setTimeout(() => {
+  register.reducer(actions('PiForm').FORM_SUBMIT, (state,action) => {
+    dispatchFromReducer(() => {
       getPassportCount(action.passport || 999);
     });
     const s = update(state, ['step'], 'spinner');

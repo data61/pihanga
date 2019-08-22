@@ -16,14 +16,11 @@ const QUESTIONS = [
 const page = {
   page: {
     cardType: 'PiSimplePage',
-    contentCard: s => s.step, //'entryForm',
+    contentCard: s => s.step,
     maxWidth: '700px', //'md',
     signature: 'Built with love by the TechLaunderers'
   },
-  // router: {
-  //   cardType: 'Router',
-  //   contentCard: s => s.step, //'entryForm',
-  // },
+
   passport: {
     cardType: 'PiTitledPage',
     contentCard: 'form',
