@@ -35,8 +35,10 @@ const config = {
         'node_modules/react-is/index.js': [
           'isValidElementType',
           'isContextConsumer'
-        ]
-      }
+        ],
+      },
+      exclude: [],
+      ignore: [],
     })
   ]
 }

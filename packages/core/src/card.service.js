@@ -2,7 +2,7 @@ import React from 'react';
 import isFunction from 'lodash.isfunction';
 import isEqual from 'lodash.isequal';
 
-import { getState, dispatch } from './redux';
+import { getState, dispatch, registerActions } from './redux';
 import { connect } from 'react-redux';
 import { createLogger } from './logger';
 
@@ -29,7 +29,8 @@ function registerSingleCard(cardName, card) {
   }
   const cardComponent = cardComponents[cardType];
   if (!cardComponent) {
-    logger.error(`Reject registration of card "${cardName}" due to unknown cardType "${cardType}"`);
+    const known = Object.keys(cardComponents).join(', ');
+    logger.error(`Reject registration of card "${cardName}" due to unknown cardType "${cardType}" - (${known})`);
     return;
   }
   const events = cardComponent.events;
@@ -53,9 +54,12 @@ function registerSingleCard(cardName, card) {
   cards[cardName] = card;
 }
 
-export function registerCardComponent({name, component, events, defaults}) {
+export function registerCardComponent({name, component, actions, events, defaults}) {
   if (cardComponents[name]) {
     logger.warn(`Overwriting card component "${name}"`);
+  }
+  if (actions) {
+    registerActions(name, actions);
   }
   cardComponents[name] = {cardComponent: component, events, defaults};
 }
@@ -182,7 +186,8 @@ export const Card = ({cardName}) => {
 };
 
 const UnknownCard = (cardName) => {
-  return React.createElement('div', null, `Unknown card "${cardName}"`);
+  const s = `Unknown card "${cardName}" - (${Object.keys(cards).join(', ')})`;
+  return React.createElement('div', null, s);
 };
 
 const cardStates = {};
