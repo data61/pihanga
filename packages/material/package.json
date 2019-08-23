@@ -1,6 +1,6 @@
 {
   "name": "@pihanga/material-ui",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Various cards based on Material UI for the Pihanga framework",
   "homepage": "https://github.com/n1analytics/pihanga-material-ui#readme",
   "main": "lib/index.js",
