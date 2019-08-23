@@ -38,7 +38,7 @@ export default {
   page: {
     cardType: 'PageD1',
     title: 'Cool Corp',
-    subTitle: (s, ref) => {
+    subTitle: (_, ref) => {
       const c = ref('page', 'contentCard');
       const title = ref(c, 'title');
       return title;
