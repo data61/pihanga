@@ -6,8 +6,8 @@
   "dependencies": {
     "@material-ui/core": "^4.3.2",
     "@material-ui/icons": "^4.2.0",
-    "@pihanga/core": "^0.2.0",
-    "@pihanga/material-ui": "^0.2.0",
+    "@pihanga/core": "^0.3.0",
+    "@pihanga/material-ui": "^0.3.0",
     "express": "^4.17.0",
     "immutability-helper": "^3.0.0",
     "prop-types": "^15.7.0",

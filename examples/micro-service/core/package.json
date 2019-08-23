@@ -4,8 +4,8 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
-    "@pihanga/core": "^0.2.2",
-    "@pihanga/material-ui": "^0.2.5",
+    "@pihanga/core": "^0.3.0",
+    "@pihanga/material-ui": "^0.3.0",
     "express": "^4.17.0",
     "lodash.flow": "^3.5.0",
     "prop-types": "^15.7.0",

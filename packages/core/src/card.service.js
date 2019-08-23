@@ -96,11 +96,16 @@ export function ref(cardName, paramName) {
 
 /**
  * Perform a simple query over the pihanga card states
- * and return an array of results where each elements
- * is a hash of `{cardName, params}`, where `params`
- * is a hash of the `{name, value}`. The parameters listed
- * in `params` include the initial `paramName` (if defined),
- * and all parameters listed in `optParams`.
+ * and return an array of query matches where each element
+ * is a hash of property bindings for that respective card
+ * as listed in `{resProps}` (if defined) in addition to the default
+ * `cardName` property.
+ * 
+ * A match succeeds if the targeted property value matches `value` which
+ * can either by a 'normal' value responding to `===`, or a function
+ * which is expected to return true for a match when called with two parameters,
+ * the first being the targeted properties value and the second one being the
+ * _Redux_ state.
  * 
  * The queries are limited to either declare any of
  * the paramters as wildcard (set to NULL) or an exact
@@ -108,42 +113,49 @@ export function ref(cardName, paramName) {
  * returns all the cards with a parameter 'isTopLevel' with
  * value 'true'.
  * 
- * @param {string} cardName 
- * @param {string} propName 
+ * @param {string|function} cardName name/function of card or null indicting a wild card
+ * @param {string|function} propName name/function of property to filter on
+ * @param {any|function} match value/function to test against property value for match
+ * @param {[string]} array of additional card properties to add to each matched result  
  */
-export function pQuery(cardName, propName, value, optParams) {
+export function pQuery(cardName, propName, match, resProps) {
   return (s) => {
     const cName = isFunction(cardName) ? cardName(s) : cardName;
     const pName = isFunction(propName) ? propName(s) : propName;
-    const val = isFunction(value) ? value(s) : value;
+    const matchIsFunction = isFunction(match);
     const cardNames = cName ? [cName] : Object.keys(cards);
     const result = [];
     const addResult = (cn, pn, v) => {
-      const params = {};
-      params[pn] = v;
-      if (optParams) {
-        for (var opn of optParams) {
-          const ov = ref(cn, opn)(s);
-          params[opn] = ov;
+      const params = { cardName: cn };
+      params[pn] = v; // matched property
+      if (resProps) {
+        for (var opn of resProps) {
+          if (opn !== pn) { // avoid duplication
+            const ov = ref(cn, opn)(s);
+            params[opn] = ov;
+          }
         }
       }
-      result.push({cardName: cn, params});
+      result.push(params);
     };
+    function addResultIf(cn, pn) {
+      const v = ref(cn, pn)(s);
+      if (v) {
+        const m = matchIsFunction ? match(v, s) : v === match;
+        if (m) {
+          addResult(cn, pn, v);
+        }
+      }
+    }
     for (var cn of cardNames) {
       if (pName) {
         // single property
-        const v = ref(cn, pName)(s);
-        if (!val || (val && val === v)) {
-          addResult(cn, pName, v);
-        }
+        addResultIf(cn, pName);
       } else {
         // parameter wild card
         const cs = getCardState(cn, s);
         for (var pn of Object.keys(cs)) {
-          const v = ref(cn, pn)(s);
-          if (!val || (val && val === v)) {
-            addResult(cn, pn, v);
-          }
+          addResultIf(cn, pn);
         }
       }
     }

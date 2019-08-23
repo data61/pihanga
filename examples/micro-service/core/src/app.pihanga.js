@@ -38,7 +38,7 @@ export default {
   page: {
     cardType: 'PageD1',
     title: 'Cool Corp',
-    subTitle: (s, ref) => {
+    subTitle: (_, ref) => {
       const c = ref('page', 'contentCard');
       const title = ref(c, 'title');
       return title;
@@ -67,7 +67,7 @@ export default {
     drawerIsOpen: true,
     navItems: flow(
       pQuery(null, 'isTopLevel', true, ['title', 'path']),
-      mapF(e => ({name: e.params.title, path: e.params.path}))
+      mapF(e => ({name: e.title, path: e.path}))
     ),
     onClickNavMenu: () => ({item}) => {
       navigateToPage(item.path);
