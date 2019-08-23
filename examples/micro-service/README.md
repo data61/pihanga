@@ -223,7 +223,7 @@ The last missing piece in setting up the app's page structure is the nav drawer 
         drawerIsOpen: true,
         navItems: flow(
             pQuery(null, 'isTopLevel', true, ['title', 'path']),
-            mapF(e => ({name: e.params.title, path: e.params.path}))
+            mapF(e => ({name: e.title, path: e.path}))
         ),
         onClickNavMenu: () => ({item}) => {
            navigateToPage(item.path);
@@ -248,7 +248,6 @@ modify the _Redux_ state for `pihanga.navDrawer.drawerOpen` as can be seen in [n
         }
     }
 
-The list of services to display in the nav drawer is bound to `navItems`. Like in `page`, [flow](https://lodash.com/docs#flow), `pQuery`, and a `map` variant
-are used to a) find all cards whose `topLevel` property is bound to `true` and b) map their respective `title` and `path` properties to a dictionary with keys `name` and `path`.
+The list of services to display in the nav drawer is bound to `navItems`. Like in `page`, [flow](https://lodash.com/docs#flow), `pQuery`, and a `flatMap` variant are used to a) find all cards whose `topLevel` property is bound to `true` and b) map their respective `title` and `path` properties to a dictionary with keys `name` and `path`.
 
-Finally, the `onClick` handler for the above generated list is bound to a function which dispatches a `ROUTER:NAVIGATE_TO_PAGE` action through the `navigateToPage` helper function. The associated reducer will change the _Redux_ state of `route.path` to the respective value, which in turn may change the displayed content in hte above described `isRouteSelected: routeSel(...)` property and binding function.
+Finally, the `onClick` handler for the above generated list is bound to a function which dispatches a `ROUTER:NAVIGATE_TO_PAGE` action through the `navigateToPage` helper function. The associated reducer will change the _Redux_ state of `route.path` to the respective value, which in turn may change the displayed content in the above described `isRouteSelected: routeSel(...)` property and binding function.
