@@ -49,9 +49,6 @@
     "@babel/runtime": "^7.5.0",
     "@material-ui/core": "^4.3.0",
     "@material-ui/icons": "^4.2.0",
-    "@pihanga/core": "^0.3.0",
-    "chart.js": "2.7.3",
-    "chartkick": "3.0.2",
     "classnames": "^2.2.6",
     "immutability-helper": "^3.0.0",
     "prop-types": "^15.7.0",
@@ -59,7 +56,7 @@
     "react-dom": "^16.9.0"
   },
   "peerDependencies": {
-    "react": "^16.9.0"
+    "@pihanga/core": "^0.3.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.0",
