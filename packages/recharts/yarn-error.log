@@ -1,0 +1,95 @@
+Arguments: 
+  /usr/local/Cellar/node/12.4.0/bin/node /usr/local/bin/yarn build
+
+PATH: 
+  /Users/max/bin:/usr/local/opt/icu4c/sbin:/usr/local/opt/icu4c/bin:/Users/max/.jabba/jdk/1.8.192/Contents/Home/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/laps:/usr/local/munki:/opt/X11/bin
+
+Yarn version: 
+  1.16.0
+
+Node version: 
+  12.4.0
+
+Platform: 
+  darwin x64
+
+Trace: 
+  SyntaxError: /Users/max/src/pihanga/packages/recharts/package.json: Unexpected token } in JSON at position 1122
+      at JSON.parse (<anonymous>)
+      at /usr/local/lib/node_modules/yarn/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/usr/local/lib/node_modules/yarn/lib/cli.js:304:30)
+      at /usr/local/lib/node_modules/yarn/lib/cli.js:315:13
+
+npm manifest: 
+  {
+    "name": "@pihanga/recharts",
+    "version": "0.1.0",
+    "homepage": "https://github.com/n1analytics/pihanga#readme",
+    "main": "lib/index.js",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/n1analytics/pihanga.git"
+    },
+    "bugs": "https://github.com/n1analytics/pihanga/issues",
+    "keywords": [
+      "UI",
+      "material",
+      "framework"
+    ],
+    "contributors": [
+      "Max Ott <max@winlab.rutgers.edu> (http://linkedin.com/in/max-ott)",
+      "Pihanga Team"
+    ],
+    "license": "MIT",
+    "unpkg": "dist/pihanga-recharts.min.js",
+    "module": "lib/index.js",
+    "files": [
+      "dist",
+      "lib",
+      "src",
+      "es"
+    ],
+    "dependencies": {
+      "@pihanga/core": "^0.3.0",
+      "recharts": "^1.7.0",
+      "@rehooks/component-size": "^1.0.0",
+      "d3-scale-chromatic": "1.5.0",
+      "prop-types": "^15.7.0",
+      "react": "^16.9.0"
+    },
+    "devDependencies": {
+      "@babel/runtime": "^7.5.0",
+      "@material-ui/core": "^4.3.0",
+      "@material-ui/icons": "^4.2.0",
+      "@pihanga/core": "^0.3.0",
+      "chart.js": "2.7.3",
+      "chartkick": "3.0.2",
+      "classnames": "^2.2.6",
+      "immutability-helper": "^3.0.0",
+    },
+    "scripts": {
+      "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib && touch lib/DO_NOT_EDIT",
+      "build:es": "babel src --out-dir dist/es",
+      "build:umd": "cross-env NODE_ENV=development rollup -c -o dist/pihanga-core.js",
+      "build:umd:min": "cross-env NODE_ENV=production rollup -c -o dist/pihanga-core.min.js",
+      "xxx-build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
+      "build": "npm run build:commonjs && npm run build:es",
+      "clean": "rimraf lib dist coverage",
+      "format": "prettier --write \"{src,test}/**/*.{js,ts}\" index.d.ts \"docs/**/*.md\"",
+      "lint": "eslint src test/utils test/components",
+      "prepare": "npm run clean && npm run build",
+      "pretest": "npm run lint",
+      "test": "node ./test/run-tests.js",
+      "coverage": "codecov",
+      "publish": "npm publish --tag latest --access=public",
+      "x-prepublishOnly": "npm run build",
+      "x-prepublish": "yarn run lint && yarn run test && yarn run build"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
