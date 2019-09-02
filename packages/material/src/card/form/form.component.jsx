@@ -91,7 +91,7 @@ export const PiForm = styled(({
     const {id, label, required = false, grid = {xs: 12, sm:12}, mui = {}} = r;
     const v = values[id] || '';
     return (
-      <Grid item {...grid}>
+      <Grid key={id} item {...grid}>
         <TextField
           id={id}
           label={label}
@@ -112,7 +112,7 @@ export const PiForm = styled(({
     let {id, label, required = false, grid={xs: 12, sm:12}, mui = {color: "primary"}} = r;
     const v = values[id] || '';
     return (
-      <Grid item {...grid}>
+      <Grid key={id} item {...grid}>
         <FormControlLabel 
           label={label}
           required={required} 
