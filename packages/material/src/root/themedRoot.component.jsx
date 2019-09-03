@@ -1,7 +1,7 @@
 import React from 'react';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import { createMuiTheme } from '@material-ui/core/styles';
-import RootComponent from './root.component';
+import { RootComponent } from './root.component';
 
 export const ThemedRootComponent = (themeF) => {
   const defTheme = createMuiTheme();
