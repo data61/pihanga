@@ -12,6 +12,12 @@ On 'submit` the UI changes to a waiting animation roughly animating what is happ
 a query message is being sent to various organisations in a ring like fashion. When the answer to the
 query is calculated and returned to the frontend, the final screen shows the result.
 
+## Building
+
+To build the javascript bundle and front page, run the `yarn build`
+script which will create all the necessary artifacts to run the UI
+in the `build` directory.
+
 ## Running
 
     % node server.js
@@ -22,12 +28,6 @@ your web browser at `http://__this_machine_name__:8080`.
 This demo is faking the backend by returning a pre-determined answer stored in 
 `mockResult` in `server.js`. The `key` in `mockResult` refers to the `Passport#`
 in the initial form.
-
-## Building
-
-To build the javascript bundle and front page, run the `yarn build`
-script which will create all the necessary artifacts to run the UI
-in the `build` directory.
 
 # How does it work?
 
