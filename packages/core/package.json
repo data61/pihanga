@@ -60,6 +60,7 @@
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "redux": "^4.0.0",
+    "react-redux": "^7.1.0",
     "redux-thunk": "^2.3.0",
     "stackinfo": "^1.1.5",
     "whatwg-fetch": "~3.0.0"

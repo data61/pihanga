@@ -76,7 +76,7 @@ function initPathEvent(opts) {
 
 export const start = (opts) => {
   const reducer = initReducer(register, opts);
-  
+
   initRouting(register, opts);
   initModules(register, opts);
 
@@ -93,8 +93,8 @@ export const start = (opts) => {
   const rcf = () => {
     const rc = React.createElement(opts.rootComponent);
     return rc;
-  }
-  const mainComponent = React.createElement(Provider, {store: store}, rcf());
+  };
+  const mainComponent = React.createElement(Provider, {store}, rcf());
   ReactDOM.render(mainComponent, opts.rootEl);
 }
   

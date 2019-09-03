@@ -22,17 +22,11 @@ export const TitledPage = styled(({
           <Typography variant="srOnly">Create a user</Typography>
         </React.Fragment>
       )
-      // return (
-      //   <Avatar className={classes.avatar} {...m} color='primary' >
-      //     <Icon {...m} color='primary'>{avatar}</Icon>
-      //     <Typography variant="srOnly">Create a user</Typography>
-      //   </Avatar>
-      // )
     } else {
       return null;
     }
-
   }
+
   const tm = mui.title || { component:"h1",  variant:"h5" };
   return (
     <div className={classes.card}>
