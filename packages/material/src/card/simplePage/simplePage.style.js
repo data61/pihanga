@@ -1,6 +1,6 @@
 import { withStyles } from '@material-ui/core/styles';
 
-export default withStyles(theme => ({
+export default withStyles((theme) => ({
   '@global': {
     body: {
       backgroundColor: theme.palette.common.backgroundColor,
@@ -16,6 +16,6 @@ export default withStyles(theme => ({
   },
   signature: {
     marginTop: 0,
-    //'max-width': 600,
-  }
+    // 'max-width': 600,
+  },
 }));

@@ -52,13 +52,16 @@
     "classnames": "^2.2.6",
     "immutability-helper": "^3.0.0",
     "prop-types": "^15.7.0",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0"
   },
   "peerDependencies": {
-    "@pihanga/core": "^0.3.0"
+    "react": "^16.9.0-0",
+    "react-dom": "^16.9.0-0",
+    "@pihanga/core": "^0.3.0-0"
   },
   "devDependencies": {
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "@pihanga/core": "file:../core",
     "@babel/cli": "^7.5.0",
     "@babel/core": "^7.5.0",
     "@babel/plugin-proposal-decorators": "^7.4.0",
@@ -75,11 +78,12 @@
     "cross-env": "^5.2.0",
     "cross-spawn": "^6.0.5",
     "es3ify": "^0.2.0",
-    "eslint": "^5.16.0",
-    "eslint-config-prettier": "^4.3.0",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-prettier": "^3.1.0",
-    "eslint-plugin-react": "^7.14.3",
+    "eslint": "^6.1.0",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-jsx-a11y": "^6.2.0",
+    "eslint-plugin-react": "^7.14.0",
+    "eslint-plugin-react-hooks": "^1.7.0",
+    "eslint-config-airbnb": "^18.0.1",
     "glob": "^7.1.4",
     "jest": "^24.9.0",
     "jest-dom": "^3.5.0",

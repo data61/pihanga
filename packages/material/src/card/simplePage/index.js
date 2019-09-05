@@ -1,9 +1,9 @@
 
-import { SimplePageComponent } from './simplePage.component';
+import SimplePageComponent from './simplePage.component';
 
 export function init(register) {
   register.cardComponent({
-    name: 'PiSimplePage', 
-    component: SimplePageComponent, 
+    name: 'PiSimplePage',
+    component: SimplePageComponent,
   });
 }

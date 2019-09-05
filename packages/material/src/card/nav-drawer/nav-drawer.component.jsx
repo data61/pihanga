@@ -12,21 +12,21 @@ import { PiPropTypes } from '@pihanga/core';
 import styled from './nav-drawer.style';
 
 export const NavDrawerCard = styled(({
-  drawerIsOpen, 
-  navItems = [], 
-  onOpenDrawer, onCloseDrawer,
+  drawerIsOpen,
+  navItems = [],
+  onOpenDrawer,
+  onCloseDrawer,
   onClickNavMenu,
-  classes
+  classes,
 }) => {
-
-  const NavEntry = ({item}) => (
-    <ListItem key={ item.name } button  onClick={() => onClickNavMenu({item})}>
-      <ListItemText primary={ item.name } />
+  const NavEntry = ({ item }) => (
+    <ListItem key={item.name} button onClick={() => onClickNavMenu({ item })}>
+      <ListItemText primary={item.name} />
     </ListItem>
   );
 
   return (
-    <Drawer variant="persistent" classes={{ paper: classes.drawerPaper, }} open={drawerIsOpen}>
+    <Drawer variant="persistent" classes={{ paper: classes.drawerPaper }} open={drawerIsOpen}>
       <div className={classes.drawerInner}>
         <div className={classes.drawerHeader}>
           <IconButton onClick={() => onCloseDrawer()}>
@@ -35,11 +35,11 @@ export const NavDrawerCard = styled(({
         </div>
         <Divider />
         {/* Menu items style={{height: '100%'}} */}
-        <List >
-          { navItems.map(item => NavEntry({item})) }
+        <List>
+          { navItems.map((item) => NavEntry({ item })) }
         </List>
         <Divider />
-        
+
         {/* <Typography type="versionFootNote">V0.8</Typography> */}
       </div>
     </Drawer>
@@ -48,6 +48,4 @@ export const NavDrawerCard = styled(({
 
 NavDrawerCard.propTypes = {
   card: PiPropTypes.shape(),
-  //user: N1PropTypes.shape(),
-  //children: N1PropTypes.children.isRequired,
 };

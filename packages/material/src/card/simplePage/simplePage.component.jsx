@@ -4,12 +4,12 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import { Card } from '@pihanga/core';
-import { PiPropTypes } from '@pihanga/core';
+import { Card, PiPropTypes } from '@pihanga/core';
 
 import styled from './simplePage.style';
 
-function SignatureBlock({signature, className}) {
+// eslint-disable-next-line react/prop-types
+function SignatureBlock({ signature, className }) {
   if (signature) {
     return (
       <Box className={className}>
@@ -18,41 +18,43 @@ function SignatureBlock({signature, className}) {
         </Typography>
       </Box>
     );
-  } else {
-    return null;
   }
+  return null;
 }
 
-export const SimplePageComponent = styled(({
-  cardName, 
+const SimplePageComponent = styled(({
+  cardName,
   contentCard, // what to display on this page
   signature, // what, if anything to display as simple signature (e.g. 'Built with love by ...')
-  maxWidth= '100%', // max width of content page (MUI Paper)
+  maxWidth = '100%', // max width of content page (MUI Paper)
   grid = { sm: 10 }, // enclosing grid constraints
-  classes
-}) => {
-  return (
-    <div>
-      <CssBaseline />
-      <Grid item container
-        direction="column"
-        justify="center"
-        alignItems="center"
-      >
-        <Grid item {...grid} className={classes.inner} style={{maxWidth}} >
-          <Paper className={classes.paper2} 
-            elevation={1} 
-          >
-            <Card key={0} cardName={contentCard} parentCard={cardName} />
-          </Paper>
-          <SignatureBlock signature={signature} className={classes.signature} />
-        </Grid>
-        
+  classes,
+}) => (
+  <div>
+    <CssBaseline />
+    <Grid
+      item
+      container
+      direction="column"
+      justify="center"
+      alignItems="center"
+    >
+      <Grid item {...grid} className={classes.inner} style={{ maxWidth }}>
+        <Paper
+          className={classes.paper2}
+          elevation={1}
+        >
+          <Card key={0} cardName={contentCard} parentCard={cardName} />
+        </Paper>
+        <SignatureBlock signature={signature} className={classes.signature} />
       </Grid>
-    </div>
-  );
-});
+
+    </Grid>
+  </div>
+));
 
 SimplePageComponent.propTypes = {
   contentCard: PiPropTypes.string,
 };
+
+export default SimplePageComponent;

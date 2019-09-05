@@ -3,8 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 const drawerWidth = 150;
 const appBarHeight = 50;
 
-export default withStyles(theme => ({
-
+export default withStyles(() => ({
   hide: {
     display: 'none',
   },

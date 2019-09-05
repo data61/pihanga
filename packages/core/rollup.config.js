@@ -15,7 +15,8 @@ const config = {
     name: 'ReactRedux',
     globals: {
       react: 'React',
-      redux: 'Redux'
+      redux: 'Redux',
+      reactDom: 'ReactDOM',
     }
   },
   plugins: [

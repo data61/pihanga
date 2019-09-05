@@ -6,32 +6,31 @@ import { Card } from '@pihanga/core';
 import styled from './titledPage.style';
 
 export const TitledPage = styled(({
-  cardName, 
+  cardName,
   title = '???',
   avatar = null,
   contentCard,
   mui = {},
-  classes
+  classes,
 }) => {
   function addAvatar() {
     if (avatar) {
-      const m = mui.avatar || {color: 'primary'};
+      const m = mui.avatar || { color: 'primary' };
       return (
-        <React.Fragment>
+        <>
           <Icon className={classes.avatar} {...m}>{avatar}</Icon>
           <Typography variant="srOnly">Create a user</Typography>
-        </React.Fragment>
-      )
-    } else {
-      return null;
+        </>
+      );
     }
+    return null;
   }
 
-  const tm = mui.title || { component:"h1",  variant:"h5" };
+  const tm = mui.title || { component: 'h1', variant: 'h5' };
   return (
     <div className={classes.card}>
       { addAvatar() }
-      <Typography {...tm} >
+      <Typography {...tm}>
         {title}
       </Typography>
       <div className={classes.content} {...mui.content}>
@@ -40,4 +39,3 @@ export const TitledPage = styled(({
     </div>
   );
 });
-
