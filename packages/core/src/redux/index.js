@@ -1,9 +1,9 @@
+import { createLogger } from '../logger';
+
 export * from './reducer';
 export { ACTION_TYPES as REDUX_ACTION_TYPES } from './redux.actions';
 export * from './store';
 export * from './update';
-
-import { createLogger } from '../logger';
 
 const logger = createLogger('card.service');
 const ns2Actions = [];
@@ -21,18 +21,18 @@ const ns2Actions = [];
  * @param {string} namespace 
  * @param {hash||array} actions 
  */
-export function registerActions(namespace, actions) {
+export function registerActions(namespace, actionsAL) {
   if (ns2Actions[namespace]) {
     logger.warn(`Overwriting action namespace  "${namespace}"`);
   }
-  var ah;
-  if (Array.isArray(actions)) {
+  let ah;
+  if (Array.isArray(actionsAL)) {
     ah = {};
-    actions.forEach(a => {
+    actionsAL.forEach((a) => {
       ah[a] = `${namespace}:${a}`;
-    })
+    });
   } else {
-    ah = actions;
+    ah = actionsAL;
   }
   logger.info(`Register action namespace "${namespace}"`);
   ns2Actions[namespace] = ah;

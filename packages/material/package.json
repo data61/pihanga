@@ -67,7 +67,7 @@
     "@babel/plugin-transform-react-jsx": "^7.3.0",
     "@babel/plugin-transform-runtime": "^7.5.0",
     "@babel/preset-env": "^7.5.0",
-    "@pihanga/core": "file:../core",
+    "@pihanga/core": "^0.3.3",
     "babel-core": "^6.23.0",
     "babel-eslint": "^10.0.2",
     "babel-jest": "^24.9.0",
@@ -105,5 +105,5 @@
       "loose-envify"
     ]
   },
-  "gitHead": "2f0018dd363375bced3001835d50e3aa38f9c69b"
+  "gitHead": "ec060a11c91fee1e2a4d1da9471d7749fc63749a"
 }
