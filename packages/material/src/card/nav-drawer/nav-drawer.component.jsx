@@ -13,7 +13,7 @@ import styled from './nav-drawer.style';
 
 export const NavDrawerCard = styled(({
   drawerIsOpen, 
-  navItems, 
+  navItems = [], 
   onOpenDrawer, onCloseDrawer,
   onClickNavMenu,
   classes
