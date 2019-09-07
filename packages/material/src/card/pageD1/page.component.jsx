@@ -19,15 +19,15 @@ import styled from './page.style';
 //   components = components.sort((a, b) => b.priority - a.priority);
 // }
 
-const NavBar = styled(({ 
-  breadcrumbs = [], 
+const NavBar = styled(({
+  breadcrumbs = [],
   subTitle = '???',
-  drawerIsOpen, 
-  toolbarAddOns, 
-  showRefreshButton, 
-  route, 
+  drawerIsOpen,
+  toolbarAddOns,
+  showRefreshButton,
+  route,
   onNavMenuClicked, onRefreshContent, onOpenDrawer,
-  classes 
+  classes,
 }) => {
 
   function renderBreadcrumbs() {
@@ -46,12 +46,12 @@ const NavBar = styled(({
   function RefreshButton() {
     if (! showRefreshButton) return null;
     return (
-      <IconButton color="inherit" aria-label="refresh logs" 
+      <IconButton color="inherit" aria-label="refresh logs"
         onClick={() => onRefreshContent(route.pageType)}
         className={classes.refreshButton}
       >
         <RefreshIcon/>
-      </IconButton>  
+      </IconButton>
     );
   }
 
@@ -75,19 +75,19 @@ const NavBar = styled(({
 });
 
 export const PageComponent = styled(({
-  cardName, 
-  contentCard, 
-  navDrawerCard, 
-  title, 
+  cardName,
+  contentCard,
+  navDrawerCard,
+  title,
   subTitle,
   breadcrumbs,
-  topMargin, 
+  topMargin,
   showRefreshButton = false,
-  toolbarAddOns = [], 
-  drawerIsOpen = true, 
-  route = {}, 
+  toolbarAddOns = [],
+  drawerIsOpen = true,
+  route = {},
   onNavMenuClicked, onRefreshContent, onOpenDrawer,
-  classes
+  classes,
 }) => {
   const appBarPosition = "static"; //"absolute"; // static
 
@@ -101,26 +101,27 @@ export const PageComponent = styled(({
         </Toolbar>
       </AppBar>
       <div className={classes.appFrame}>
-        <NavBar page={ {} } 
+        <NavBar page={ {} }
           subTitle={ subTitle }
           breadcrumbs={ breadcrumbs }
-          drawerIsOpen={ drawerIsOpen } 
-          route={ route } 
+          drawerIsOpen={ drawerIsOpen }
+          route={ route }
           toolbarAddOns={ toolbarAddOns }
           showRefreshButton={ showRefreshButton }
-          onNavMenuClicked={ onNavMenuClicked } 
+          onNavMenuClicked={ onNavMenuClicked }
           onRefreshContent={ onRefreshContent }
           onOpenDrawer={ onOpenDrawer }
         />
         <Card cardName={navDrawerCard} parentCard={cardName} />
         <main className={
-          classNames(classes.content, 
-            topMargin && classes.contentTopMargin,  
+          classNames(classes.content,
+            topMargin && classes.contentTopMargin,
             drawerIsOpen && classes.contentShift)
-        }>
+        }
+        >
           <Card cardName={contentCard} parentCard={cardName} />
         </main>
-      </div>      
+      </div>
     </div>
   );
 });

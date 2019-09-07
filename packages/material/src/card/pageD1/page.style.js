@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 const drawerWidth = 150;
 const appBarHeight = 50;
 
-export default withStyles(theme => ({
+export default withStyles((theme) => ({
   root: {
     width: '100%',
     height: '100%',
@@ -62,7 +62,7 @@ export default withStyles(theme => ({
   appToolbar: {
     minHeight: '50px',
   },
-  
+
   menuButton: {
     marginLeft: 12,
     marginRight: 20,
@@ -111,12 +111,12 @@ export default withStyles(theme => ({
   },
   contentTopMargin: {
     padding: theme.spacing(3),
-  }, 
+  },
   contentShift: {
     marginLeft: 0,
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
-  },  
+  },
 }));
