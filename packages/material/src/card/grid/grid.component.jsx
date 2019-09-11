@@ -9,7 +9,7 @@ export const GridComp = styled(({
   content = [],
   spacing = 0,
   mui = {},
-  classes
+  classes,
 }) => {
   const muiComb = {
     container: true,
@@ -18,15 +18,16 @@ export const GridComp = styled(({
     // direction: 'row',
     // justify: 'flex-start',
     // wrap: 'nowrap',
-    ...mui
+    ...mui,
   };
 
   const defContentOpts = {
     item: true,
-    ...{xs: 12, sm: 12, md: 6 }
-  }
+    ...{ xs: 12, sm: 12, md: 6 },
+  };
+
   function addContent(opts, id) {
-    let {cardName, ...p} = isObject(opts) ? opts : {cardName: opts, ...defContentOpts};
+    const { cardName, ...p } = isObject(opts) ? opts : { cardName: opts, ...defContentOpts };
     if (cardName) {
       return (
         <Grid key={id} {...p} className={classes[cardName] || ''}>
@@ -43,7 +44,7 @@ export const GridComp = styled(({
   }
 
   return (
-    <Grid  spacing={spacing} {...muiComb} className={classes.card}>
+    <Grid spacing={spacing} {...muiComb} className={classes.card}>
       { content.map(addContent) }
     </Grid>  );
 });

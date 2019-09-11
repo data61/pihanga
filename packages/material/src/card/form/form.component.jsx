@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -14,7 +15,7 @@ import styled from './form.style';
 
 /*
  * A card displaying a form:
- 
+
  <code>
    registerForm: {
     cardType: 'PiForm',
@@ -36,33 +37,33 @@ import styled from './form.style';
     mui: {outer: {style: {paddingTop: 30}}},
   },
 </code>
- * 
+ *
  */
 
 export const PiForm = styled(({
-  cardName, 
   fields,
   autoFocus,
   values = {},
   submitLabel = 'Submit',
+  showSubmit = true,
   spacing = 2,
   onFormSubmit,
   onValueChanged,
-  grid = {xs: 12, sm:12},
+  grid = { xs: 12, sm: 12 },
   mui = {},
-  classes
+  classes,
 }) => {
   const requiredFields = {};
-  fields.forEach(r => {
+  fields.forEach((r) => {
     if (r.required) {
-      requiredFields[r.id] = (values[r.id] || '') === ''
+      requiredFields[r.id] = (values[r.id] || '') === '';
     }
   });
 
   function onSubmit(event) {
     const el = event.target.elements;
     const s = {};
-    fields.forEach(r => {
+    fields.forEach((r) => {
       if (r.type === 'checkBox') {
         s[r.id] = el[r.id].checked ? r.id : '';
       } else {
@@ -74,8 +75,7 @@ export const PiForm = styled(({
   }
 
   function anyRequiredNotSet() {
-    console.log(requiredFields, values);
-    return Object.values(requiredFields).find(f => f) !== undefined;
+    return Object.values(requiredFields).find((f) => f) !== undefined;
   }
 
   function onChange(id, value) {
@@ -83,13 +83,19 @@ export const PiForm = styled(({
     onValueChanged({
       fieldID: id,
       value,
-      valid: !missing
+      valid: !missing,
     });
   }
 
   function addEntryField(r) {
-    const {id, label, required = false, grid = {xs: 12, sm:12}, mui = {}} = r;
-    const v = values[id] || '';
+    const {
+      id, label,
+      defValue = '',
+      required = false,
+      grid = { xs: 12, sm: 12 },
+      mui = {},
+    } = r;
+    const v = values[id] || defValue;
     return (
       <Grid key={id} item {...grid}>
         <TextField
@@ -101,7 +107,7 @@ export const PiForm = styled(({
           fullWidth
           autoComplete={id}
           autoFocus={autoFocus === id}
-          onChange={ev => onChange(id, ev.target.value)}
+          onChange={(ev) => onChange(id, ev.target.value)}
           {...mui}
         />
       </Grid>
@@ -109,22 +115,31 @@ export const PiForm = styled(({
   }
 
   function addCheckboxField(r) {
-    let {id, label, required = false, grid={xs: 12, sm:12}, mui = {color: "primary"}} = r;
-    const v = values[id] || '';
+    const {
+      id, label,
+      defValue = '',
+      required = false,
+      grid = { xs: 12, sm: 12 },
+      mui = { color: 'primary' },
+    } = r;
+    const v = values[id] || defValue;
     return (
       <Grid key={id} item {...grid}>
-        <FormControlLabel 
+        <FormControlLabel
           label={label}
-          required={required} 
-          control={<Checkbox 
-                      id={id} 
-                      value={v} 
-                      checked={v === id}
-                      {...mui}
-                      onChange={ev => onChange(id, ev.target.checked ? id : '')}  />}
+          required={required}
+          control={(
+            <Checkbox
+              id={id}
+              value={v}
+              checked={v === id}
+              {...mui}
+              onChange={(ev) => onChange(id, ev.target.checked ? id : '')}
+            />
+          )}
         />
       </Grid>
-    )
+    );
   }
 
   function getOption(o, i) {
@@ -135,11 +150,17 @@ export const PiForm = styled(({
   }
 
   function addSelectField(r) {
-    const {id, label, required = false, options = [], help, grid = {xs: 12, sm:12}} = r;
-    const v = values[id] || '';
+    const {
+      id, label,
+      defValue = '',
+      required = false,
+      options = [], help,
+      grid = { xs: 12, sm: 12 },
+    } = r;
+    const v = values[id] || defValue;
     return (
       <Grid key={id} required={required} item {...grid}>
-        <FormControl className={classes.selectControl} required={required} >
+        <FormControl className={classes.selectControl} required={required}>
           <InputLabel htmlFor={id}>{label}</InputLabel>
           <Select
             native
@@ -147,9 +168,9 @@ export const PiForm = styled(({
             fullWidth
             inputProps={{
               name: label,
-              id: id,
+              id,
             }}
-            onChange={ev => onChange(id, ev.target.value)}
+            onChange={(ev) => onChange(id, ev.target.value)}
           >
             <option value="" />
             { options.map(getOption) }
@@ -157,18 +178,18 @@ export const PiForm = styled(({
           { help ? <FormHelperText>{help}</FormHelperText> : null }
         </FormControl>
       </Grid>
-    )
+    );
   }
 
   function addFields() {
-    return fields.map(r => {
-      let {type} = r;
+    return fields.map((r) => {
+      const { type } = r;
       switch (type) {
-        case "textField": 
+        case 'textField':
           return addEntryField(r);
-        case "checkBox": 
+        case 'checkBox':
           return addCheckboxField(r);
-        case "selectField":
+        case 'selectField':
           return addSelectField(r);
         default:
           throw new Error(`Unsupported type '${type}`);
@@ -177,13 +198,16 @@ export const PiForm = styled(({
   }
 
   function addSubmitButton() {
-    const slh = isObject(submitLabel) ? submitLabel : {label: submitLabel, mui: {}};
-    const {variant = 'contained', fullWidth = true, color = 'primary' } = slh.mui || {};
-    let {disabled = false} = slh;
+    if (!showSubmit) {
+      return null;
+    }
+    const slh = isObject(submitLabel) ? submitLabel : { label: submitLabel, mui: {} };
+    const { variant = 'contained', fullWidth = true, color = 'primary' } = slh.mui || {};
+    let { disabled = false } = slh;
     if (!disabled) {
       disabled = anyRequiredNotSet();
     }
-    return (       
+    return (
       <Button
         type="submit"
         disabled={disabled}
@@ -197,11 +221,11 @@ export const PiForm = styled(({
       </Button>
     );
   }
- 
+
   return (
     <Grid item {...grid} {...mui.outer} className={classes.card}>
       <form className={classes.form} onSubmit={onSubmit} noValidate {...mui.form}>
-        <Grid container spacing={spacing} >
+        <Grid container spacing={spacing}>
           {addFields() }
         </Grid>
         { addSubmitButton() }

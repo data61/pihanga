@@ -15,6 +15,7 @@ const register = {
   cardComponent: registerCardComponent,
   cards: registerCards,
   metaCard: registerMetaCard,
+  // environment: {}, // overridden in 'start'
 };
 
 export const context2InitFunctions = (ctxt) => {
@@ -77,6 +78,7 @@ function initPathEvent(opts) {
 }
 
 export const start = (opts) => {
+  register.environment = opts.environment;
   const reducer = initReducer(register, opts);
 
   initRouting(register, opts);
