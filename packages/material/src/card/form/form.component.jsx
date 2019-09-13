@@ -157,7 +157,7 @@ export const PiForm = styled(({
       options = [], help,
       grid = { xs: 12, sm: 12 },
     } = r;
-    const v = values[id] || defValue;
+    const v = values[id] ? values[id] : defValue;
     return (
       <Grid key={id} required={required} item {...grid}>
         <FormControl className={classes.selectControl} required={required}>
