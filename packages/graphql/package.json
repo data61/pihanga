@@ -1,0 +1,96 @@
+{
+  "name": "@pihanga/graphql",
+  "version": "0.1.0",
+  "description": "Implemnts a graphql based backend for local state management",
+  "homepage": "https://github.com/n1analytics/pihanga#readme",
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/n1analytics/pihanga.git"
+  },
+  "bugs": "https://github.com/n1analytics/pihanga/issues",
+  "keywords": [
+    "graphql",
+    "framework"
+  ],
+  "contributors": [
+    "Max Ott <max@winlab.rutgers.edu> (http://linkedin.com/in/max-ott)",
+    "Pihanga Team"
+  ],
+  "license": "MIT",
+  "unpkg": "dist/pihanga-graphql.min.js",
+  "module": "lib/index.js",
+  "files": [
+    "dist",
+    "lib",
+    "src"
+  ],
+  "dependencies": {
+    "apollo-cache-inmemory": "^1.6.0",
+    "apollo-client": "^2.6.0",
+    "apollo-link": "^1.2.0",
+    "apollo-link-error": "^1.1.0",
+    "apollo-link-http": "^1.5.0",
+    "graphql": "^14.5.0",
+    "graphql-tag": "^2.10.0"
+  },
+  "peerDependencies": {
+    "@pihanga/core": "^0.3.0"
+  },
+  "devDependencies": {
+    "@pihanga/core": "^0.3.0",
+    "@babel/cli": "^7.5.0",
+    "@babel/core": "^7.5.0",
+    "@babel/plugin-proposal-decorators": "^7.4.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.5.0",
+    "@babel/plugin-transform-react-display-name": "^7.2.0",
+    "@babel/plugin-transform-react-jsx": "^7.3.0",
+    "@babel/plugin-transform-runtime": "^7.5.0",
+    "@babel/preset-env": "^7.5.0",
+    "babel-core": "^6.23.0",
+    "babel-eslint": "^10.0.2",
+    "babel-jest": "^24.9.0",
+    "codecov": "^3.5.0",
+    "cross-env": "^5.2.0",
+    "cross-spawn": "^6.0.5",
+    "es3ify": "^0.2.0",
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-jsx-a11y": "^6.2.0",
+    "eslint-plugin-react": "^7.14.0",
+    "eslint-plugin-react-hooks": "^1.7.0",
+    "glob": "^7.1.4",
+    "jest": "^24.9.0",
+    "jest-dom": "^3.5.0",
+    "npm-run": "^5.0.1",
+    "prettier": "^1.18.2",
+    "rimraf": "^2.7.1",
+    "rollup": "^1.19.4",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-commonjs": "^9.3.4",
+    "rollup-plugin-node-resolve": "^4.2.4",
+    "rollup-plugin-replace": "^2.2.0",
+    "rollup-plugin-terser": "^4.0.4",
+    "semver": "^5.7.1"
+  },
+  "scripts": {
+    "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib && touch lib/DO_NOT_EDIT",
+    "build:es": "babel src --out-dir dist/es",
+    "build:umd": "cross-env NODE_ENV=development rollup -c -o dist/pihanga-core.js",
+    "build:umd:min": "cross-env NODE_ENV=production rollup -c -o dist/pihanga-core.min.js",
+    "xxx-build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
+    "build": "npm run build:commonjs && npm run build:es",
+    "clean": "rimraf lib dist coverage",
+    "format": "prettier --write \"{src,test}/**/*.{js,ts}\" index.d.ts \"docs/**/*.md\"",
+    "lint": "eslint src test/utils test/components",
+    "prepare": "npm run clean && npm run build",
+    "pretest": "npm run lint",
+    "test": "node ./test/run-tests.js",
+    "coverage": "codecov",
+    "publish": "npm publish --tag latest --access=public",
+    "x-prepublishOnly": "npm run build",
+    "x-prepublish": "yarn run lint && yarn run test && yarn run build"
+  },
+  "gitHead": "aa43c27ff6344d6ead75a83e1d23ff69a7f4feb4"
+}
