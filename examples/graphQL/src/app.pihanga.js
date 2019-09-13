@@ -23,21 +23,20 @@ const page = {
 
   search: {
     cardType: 'PiForm',
-    fields: [
-      {
-        id: "type", 
-        type: "selectField", 
-        label: "Type", 
-        required: true, 
-        options: TYPES.map((t) => ({id: t, label: t})), 
-        defValue: 0,
-        grid: {xs: 6, sm:4}, item: true },
-      {
-        id: "name", 
-        type: "textField", 
-        label: "Name", 
-        required: true, 
-        grid: {xs: 6, sm:8}, item: true, mui: {}},
+    fields: [{
+      id: "type", 
+      type: "selectField", 
+      label: "Type", 
+      required: true, 
+      options: TYPES.map((t) => ({id: t, label: t})), 
+      defValue: 0,
+      grid: {xs: 6, sm:4}, item: true 
+    }, {
+      id: "name", 
+      type: "textField", 
+      label: "Name", 
+      required: true, 
+      grid: {xs: 6, sm:8}, item: true, mui: {}},
     ],
     values: (s) => s.form,
     showSubmit: false,

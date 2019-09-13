@@ -8,14 +8,6 @@ export function init() {
         players(match: $pattern, limit: $limit) {
           id
           name
-          represents {
-            id
-            name
-          }
-          playsFor {
-            id
-            name
-          }
         }
       }`, 
     trigger: actions('PiForm').VALUE_CHANGED,

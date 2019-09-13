@@ -1,5 +1,5 @@
 const express = require('express');
-//const { ApolloServer, gql } = require('apollo-server-express');
+const ApolloExpress = require('apollo-server-express');
 const Fuse = require('fuse.js');
 const { ApolloServer, gql } = require('apollo-server');
 const DataBase = require('./uefa-euro-2016');
@@ -110,14 +110,21 @@ function dictQ(opts, dict) {
   return results;
 }
 
-const server = new ApolloServer({ typeDefs, resolvers });
-server.listen().then(({ url }) => {
-  console.log(`🚀  Server ready at ${url}`);
-});
+const isDevelopment = process.env.NODE_ENV === 'development';
+if (isDevelopment) {
+  const server = new ApolloServer({ typeDefs, resolvers });
+  server.listen().then(({ url }) => {
+    console.log(`🚀  Development server ready at ${url}`);
+  });
+} else {
+  const server = new ApolloExpress.ApolloServer({ typeDefs, resolvers });
+  const app = express();
+  server.applyMiddleware({ app });
+  app.use(express.static('build'));
 
-// const app = express();
-// server.applyMiddleware({ app });
+  app.listen({ port: 4000 }, () =>
+    console.log(`🚀 Production server with GraphQL API ready at http://localhost:4000${server.graphqlPath}`)
+  );
+}
 
-// app.listen({ port: 4000 }, () =>
-//   console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
-// );
+
