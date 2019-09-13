@@ -30,7 +30,11 @@ in the `build` directory.
     % yarn server.js
 
 This will start a web server listening at port 4000, and pointing
-your web browser at `http://__this_machine_name__:4000`. 
+your web browser at `http://__this_machine_name__:4000` should show the following: 
+
+![Screenshot](doc/screenshot2.png)
+
+Hovering over any of the elements and clicking it, will issue new queries for more information, potentially leading to:
 
 ![Screenshot](doc/screenshot1.png)
 
