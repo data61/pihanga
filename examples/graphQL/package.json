@@ -1,0 +1,72 @@
+{
+  "name": "graphql-example",
+  "version": "0.1.0",
+  "description": "Example using graphql",
+  "keywords": [
+    "GraphQL",
+    "Apollo",
+    "Server",
+    "Express"
+  ],
+  "author": "max@winlab.rutgers.edu",
+  "license": "MIT",
+  "dependencies": {
+    "@pihanga/core": "^0.3.6",
+    "@pihanga/material-ui": "^0.3.8",
+    "@pihanga/graphql": "^0.1.0",
+    "d3-force": "^2.0.0",
+
+    "apollo-server": "^2.9.0",
+    "apollo-server-express": "^2.9.0",
+    "graphql": "^14.5.0",
+    "fuse.js": "^3.4.0",
+    "moment": "^2.24.0",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-force-graph": "^1.24.0",
+    "react-measure": "^2.3.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "10.0.2",
+    "eslint": "^6.1.0",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-jsx-a11y": "^6.2.0",
+    "eslint-plugin-react": "^7.14.0",
+    "eslint-plugin-react-hooks": "^1.7.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "licensecheck": "^1.3.0",
+    "react-scripts": "^3.1.0",
+    "shelljs": "^0.8.0"
+  },
+  "scripts": {
+    "server": "node server.js",
+    "licenses": "licensecheck --once --flat --tsv | cut -f1,2",
+    "preinstall": "npm version",
+    "lint": "node scripts/lint.js --env=dev",
+    "lint:prod": "node scripts/lint.js --env=prod",
+    "start": "node scripts/start.js --env=dev",
+    "start:prod": "node scripts/start.js --env=prod",
+    "build": "node scripts/build.js --env=dev",
+    "build:prod": "node scripts/build.js --env=prod",
+    "test": "node scripts/test.js --env=dev",
+    "test:prod": "node scripts/test.js --env=prod",
+    "test-cover": "node scripts/test.js --coverage-threshold=0 --env=dev",
+    "test-cover:prod": "node scripts/test.js --coverage-threshold=1 --env=prod",
+    "eject": "react-scripts eject",
+    "storybook": "start-storybook -p 9009 -s public",
+    "buildStorybook": "build-storybook -s public"
+  },
+  "proxy": "http://localhost:4000",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
