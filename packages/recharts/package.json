@@ -1,6 +1,6 @@
 {
   "name": "@pihanga/recharts",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Implemnts various Pihanga cards based on the 'recharts' library",
   "homepage": "https://github.com/n1analytics/pihanga#readme",
   "main": "lib/index.js",
