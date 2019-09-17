@@ -1,4 +1,4 @@
-import fetch from 'whatwg-fetch';
+import { fetch } from 'whatwg-fetch';
 // import { backendLogger } from './backend.logger';
 import {
   throwUnauthorisedError,
