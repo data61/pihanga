@@ -16,7 +16,10 @@ const rootEl = document.getElementById('root');
 /**
  * Setup environment for plugins and collect all their init function.
  */
-const inits = [materialInit, spinnerInit, answerInit, workflowInit];
+const inits = [
+  materialInit, 
+  spinnerInit, answerInit, workflowInit,
+];
 
 pihangaStart({
   // defPath: ['graphs'],

@@ -18,9 +18,12 @@ To build the javascript bundle and front page, run the `yarn build`
 script which will create all the necessary artifacts to run the UI
 in the `build` directory.
 
+    % yarn
+    % yarn build
+
 ## Running
 
-    % node server.js
+    % yarn server
 
 This will start a web server listening at port 8080, and pointing
 your web browser at `http://__this_machine_name__:8080`. 

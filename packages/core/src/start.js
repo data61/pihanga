@@ -8,6 +8,7 @@ import { Reducer, createStore } from './redux';
 import { createLogger } from './logger';
 import { registerCards, registerMetaCard, registerCardComponent } from './card.service';
 import { config as backendConfig } from './backend';
+import { init as initRestClient } from './rest_client';
 
 const logger = createLogger('pihanga:core:start');
 
@@ -39,14 +40,13 @@ function initReducer(rf) {
 
 function initModules(rf, { inits }) {
   if (inits) {
-    for (const i in inits) {
-      const f = inits[i];
+    inits.forEach((f) => {
       if (isFunction(f)) {
         f(rf);
       } else {
-        logger.warn('Init function "' + f + '" is not a function.');
+        logger.warn(`Init function "${f}" is not a function.`);
       }
-    }
+    });
   }
 }
 
@@ -82,6 +82,7 @@ export const start = (opts) => {
   const reducer = initReducer(register, opts);
 
   initRouting(register, opts);
+  initRestClient(register, opts);
   initModules(register, opts);
 
   if (opts.initialCards) {
