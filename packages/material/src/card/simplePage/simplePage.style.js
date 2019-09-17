@@ -9,10 +9,13 @@ export default withStyles((theme) => ({
   paper2: {
     padding: theme.spacing(3, 2),
     marginBottom: theme.spacing(3),
-    marginTop: theme.spacing(2),
+    [theme.breakpoints.up(600)]: {
+      marginTop: theme.spacing(2),
+    },
   },
   inner: {
     width: '100%',
+    padding: theme.spacing(1),
   },
   signature: {
     marginTop: 0,

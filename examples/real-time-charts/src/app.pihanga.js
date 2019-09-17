@@ -9,7 +9,13 @@ import moment from 'moment';
 export function init(register) {
   // x axis is time in `h:mm:ss` format.
   const xAxisFormatter = (ts) => moment(ts).format("h:mm:ss");
-  const xAxisOpts = {dataKey: 'ts', domain: ['dataMin', 'dataMax'], type: 'number', tickFormatter: xAxisFormatter};
+  const xAxisOpts = {
+    dataKey: 'ts', 
+    domain: ['dataMin', 'dataMax'], 
+    type: 'number', 
+    tickFormatter: xAxisFormatter,
+    //padding: { left: 0, right: 20 },
+  };
 
   register.metaCard('WrappedCard', (name, defs) => {
     const { 
@@ -31,6 +37,7 @@ export function init(register) {
       yAxisOpts: {domain: [0, maxY], label: {value: yLabel, angle: -90, position: 'insideLeft'}},
       tooltipOpts: {labelFormatter: ts => `Time: ${xAxisFormatter(ts)}`},
       height: 300,
+      chartOpts: {margin: { top: 5, right: 35, bottom: 15, left: 20 }},
       ...inner,
     }
     return h;
@@ -46,7 +53,6 @@ const page = {
     cardType: 'PiPageR1',
     contentCard: 'graphs',
     title: 'Realtime Charts',
-    //titleIcon: 'rotate_right',
     footer: {copyright: 'The Pihanga Team'}
   },
 

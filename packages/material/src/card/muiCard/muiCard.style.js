@@ -1,9 +1,12 @@
 import { withStyles } from '@material-ui/core/styles';
 
 
-export default withStyles(theme => ({
+export default withStyles((theme) => ({
+  outer: {
+    padding: theme.spacing(1),
+  },
   card: {
-    //maxWidth: 345,
+    // maxWidth: 345,
   },
   media: {
     height: 0,
@@ -20,6 +23,6 @@ export default withStyles(theme => ({
     transform: 'rotate(180deg)',
   },
   avatar: {
-    //backgroundColor: red[500],
+    // backgroundColor: red[500],
   },
 }));

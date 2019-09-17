@@ -8,6 +8,12 @@ for the CPU load and one for the memory consumption.
 
 Periodically the front end is querying a REST API provided by the serving web server for the most recent measurements.
 
+## Demonstrates:
+
+* Meta cards
+* Periodic GET from REST Client
+* Recharts package
+
 ## Building
 
 To build the javascript bundle and front page, run the `yarn build`
@@ -16,10 +22,13 @@ in the `build` directory.
 
 ## Running
 
+    % yarn
     % yarn server
 
 This will start a web server listening at port 8080, and pointing
-your web browser at `http://__this_machine_name__:8080`. 
+your web browser at `http://__this_machine_name__:8080` and you should see something like:
+
+![Screenshot](doc/screenshot1.png)
 
 # How does it work?
 
@@ -133,3 +142,12 @@ To further develop the UI start the development server with
 
     % yarn start
 
+and start the server in a different shell with:
+
+    % yarn server
+
+Any API request to the development server on port 3000 will be forwarded to the app server according to the
+
+    "proxy": "http://localhost:8080",
+
+setting in `package.json'.

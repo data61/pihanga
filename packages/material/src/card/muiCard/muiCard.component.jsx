@@ -1,5 +1,7 @@
+/* eslint-disable react/jsx-tag-spacing */
+/* eslint-disable no-trailing-spaces */
 import React from 'react';
-import clsx from 'clsx';
+//import clsx from 'clsx';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -23,10 +25,10 @@ export const MuiCard = styled(({
   titleAvatar,
   titleMedia, // {image, title}
   content, // ["para1, "para2"]
-  contentCard, 
+  contentCard,
   grid = {},
   mui = {},
-  classes
+  classes,
 }) => {
   const [expanded, setExpanded] = React.useState(false);
 
@@ -35,7 +37,7 @@ export const MuiCard = styled(({
   }
 
   function addHeader() {
-    const h = {title: title || '???'};
+    const h = { title: title || '???' };
     if (subTitle) {
       h.subheader = subTitle;
     }
@@ -58,7 +60,7 @@ export const MuiCard = styled(({
 
   function addMedia() {
     if (titleMedia) {
-      return (      
+      return (
         <CardMedia
           className={classes.media}
           image="/static/images/cards/paella.jpg"
@@ -82,7 +84,7 @@ export const MuiCard = styled(({
     if (contentCard) {
       return (
         <PiCard cardName={contentCard} parentCard={cardName} />
-      )
+      );
     } else {
       const ca = content || ['Missing \'content\''];
       return (
@@ -94,34 +96,36 @@ export const MuiCard = styled(({
   }
 
   function addActions() {
-    if (false) {
-      return (
-        <CardActions disableSpacing>
-          <IconButton aria-label="add to favorites">
-            <FavoriteIcon />
-          </IconButton>
-          <IconButton aria-label="share">
-            <ShareIcon />
-          </IconButton>
-          <IconButton
-            className={clsx(classes.expand, {
-              [classes.expandOpen]: expanded,
-            })}
-            onClick={handleExpandClick}
-            aria-expanded={expanded}
-            aria-label="show more"
-          >
-            <ExpandMoreIcon />
-          </IconButton>
-        </CardActions>
-      );
-    } else {
-      return null;
-    }
+    return null;
+
+    // if (false) {
+    //   return (
+    //     <CardActions disableSpacing>
+    //       <IconButton aria-label="add to favorites">
+    //         <FavoriteIcon />
+    //       </IconButton>
+    //       <IconButton aria-label="share">
+    //         <ShareIcon />
+    //       </IconButton>
+    //       <IconButton
+    //         className={clsx(classes.expand, {
+    //           [classes.expandOpen]: expanded,
+    //         })}
+    //         onClick={handleExpandClick}
+    //         aria-expanded={expanded}
+    //         aria-label="show more"
+    //       >
+    //         <ExpandMoreIcon />
+    //       </IconButton>
+    //     </CardActions>
+    //   );
+    // } else {
+    //   return null;
+    // }
   }
 
   return (
-    <Grid item {...grid}>
+    <Grid item {...grid} className={classes.outer}>
       <Card className={classes.card}>
         { addHeader() }
         { addMedia() }
