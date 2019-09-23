@@ -7,6 +7,6 @@ export const RootComponent = () => {
   reloadBackend();
 
   return (
-    <Card cardName={'page'} />
+    <Card cardName="page" />
   );
 };

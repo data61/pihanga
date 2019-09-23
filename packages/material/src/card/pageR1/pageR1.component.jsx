@@ -199,7 +199,7 @@ export const PageR1Component = styled(({
   }
 
   return (
-    <>
+    <div className={classes.outer}>
       <CssBaseline />
       { addSidePanel() }
       <AppBar position="relative">
@@ -228,6 +228,6 @@ export const PageR1Component = styled(({
         </Grid>
       </main>
       { addFooter() }
-    </>
+    </div>
   );
 });

@@ -21,6 +21,11 @@ export default withStyles((theme) => {
         backgroundColor: theme.palette.common.backgroundColor,
       },
     },
+    outer: {
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+    },
     content: {
       width: '100%',
       flexGrow: 1,

@@ -37,102 +37,107 @@ declares all the used cards, their properties and how it fits together.
 
 But before we have a look at that, we need to understand the workflow implemented by this app.
 
-# FIX ME
+## Single Page App
 
-As mentioned in the overview the app takes a user through three different step, `passport`, `spinner`, and `answer`. The currently active step is stored in the `step` property of the _Redux_ state (see [app.initial-state.js](src/app.initial-state.js)).
+We build a very simple app with titled page containing a single grid layout card for the content, which in turn holds two cards dispaying a line chart, one for CPU and one for memory use.
 
-Now let us get back to [app.pihanga.js](src/app.pihanga.js) and look at the entry point `page`.
+![Wireframe](doc/wireframe.png)
 
-    page: {
-        cardType: 'PiSimplePage',
-        contentCard: s => s.step,
-        ...
-    },
+    const page = {
+        page: {
+            cardType: 'PiPageR1',
+            contentCard: 'graphs',
+            title: 'Realtime Charts',
+            footer: {copyright: 'The Pihanga Team'}
+        },
 
-`PiSimplePage` is a card provided by the standard __Pihanga__ library and provides ust minimal scaffolding for displaying a single child card identified through `contentCard`. In our case we
-simply use the workflow `step` from the _Redux_ state.
+        graphs: {
+            cardType: 'PiGrid',
+            spacing: 3,
+            content: ['cpuGraph', 'memoryGraph', ],
+        }, 
 
-The initial workflow state is `passport` and indeed we find a `passport` entry in [app.pihanga.js](src/app.pihanga.js):
-
-    passport: {
-        cardType: 'PiTitledPage',
-        contentCard: 'form',
-        ...
-    },
-
-    form: {
-        cardType: 'PiForm',
-        title: 'Ask the Ring',
-        submitLabel: 'Send Query',
-        fields: [
+        cpuGraph: {
+            cardType: 'WrappedCard',
+            title: 'CPU User',
             ...
-        ],
-        ...
-    },
+        },
 
-![Passport Page](doc/passport.png)
+        memoryGraph: {
+            cardType: 'WrappedCard',
+            title: 'Memory',
+            ...
+        }
+    };
 
-The `passport` page consists of a titled page and an embedded form (`form`). Pressing the 'submit' button will trigger the default action:
+The first two card definitions are rather straight forward, while the
+card type `WrappedCard` is a locally defined _Meta Card_. A _Meta Card_ does not represents any actual cards, but will instead return a named list of new cards which are dynamically inserted into the card declaraton list. Please note, that any of the returned cards can be a
+_Meta Card_ leading to a recursive expansion.
 
-    {
-        type: "PI_FORM:FORM_SUBMIT"
-        id: "form"
-        passport: "44444"
-        question: "0"
-        ring: "0"
+Now lets have a look at the definition of `WrappedCard` which we can 
+find at the beginning of [app.pihanga.js](src/app.pihanga.js):
+
+```
+export function init(register) {
+  ...
+  register.metaCard('WrappedCard', (name, defs) => {
+    const {
+      cardType, title,
+      yLabel, metricsType, maxY = 100,
+      ...inner
+    } = defs;
+    const innerName = `${name}-inner`;
+    const h = {};
+    h[name] = {
+      cardType: 'MuiCard',
+      title,
+      contentCard: innerName,
     }
+    h[innerName] = {
+      cardType: 'ReLineChart',
+      data: s => s.metrics[metricsType],
+      ...
+    }
+    return h;
+  });
+}
+```
 
-which is 'reduced' in [workflow.js](src/workflow.js):
+## Realtime Updates
 
-    register.reducer(actions('PiForm').FORM_SUBMIT, (state, action) => {
-        dispatchFromReducer(() => {
-            getPassportCount(action.passport);
-        });
-        const s = update(state, ['step'], 'spinner');
-        return update(s, ['question'], action.question);
-    });
+[backend.js](src/backend.js):
+```
+const METRICS_URL = '/metrics?after=:after';
+const UPDATE_INTERVAL_MS = 2000;
 
-The reducer first initiates an API call `getPassportCount`, and then changes both the `step`, as well 
-as the `answer` property of the _Redux_ state. Changing the `step` property to `spinner` will, according 
-to the `page.contentCard` declaration in [app.pihanga.js](src/app.pihanga.js), now display the `spinner` card 
-which is defined as:
+export function init(register) {
+  registerPeriodicGET({
+    name: 'getMetrics',
+    url: METRICS_URL,
+    intervalMS: UPDATE_INTERVAL_MS,
 
-    spinner: {
-        cardType: 'Spinner',
-        ...
+    start: '@@INIT',
+    init: (state) => {
+      const m = {metrics: {...}};
+      return update(state, [], m);
     },
 
-'Spinner' is an application specific card and defined in the [spinner](src/spinner) directory.
-
-![Spinner Page](doc/spinner.png)
-
-The above referenced `getPassportCount` function will dispatch a `UPDATE_PASSPORT` event on successful
-completion of the API request, which in turn is reduced in [workflow.js](src/workflow.js):
-
-    register.reducer(ACTION_TYPES.UPDATE_PASSPORT, (state, action) => {
-        const s = update(state, ['step'], 'answer');
-        return update(s, ['answer'], action.reply);
-    });
-
-The first update is setting the step to `answer` which in turn will display the `answer` card defined in 
-[app.pihanga.js](src/app.pihanga.js) as follows: 
-
-    answer: {
-        cardType: 'Answer',
-        answer: s => s.answer,
-        question: s => s.question,
+    request: (state) => {
+      const lastTS = state...
+      return {after: lastTS};
     },
+    reply: onMetricsUpdate,
+  });
+}
 
-As with the `Spinner` card type, `Answer` is also an app specific card and defined in the [answer](src/answer) directory. It's properties `answer` and `question` are bound to the equally named properties in _Redux_.
+function onMetricsUpdate(state, reply) {
+  ...
+  return update(state, ['metrics'], metrics);
+}
+```
 
-![Answer Page](doc/answer.png)
 
-Finally, the action `NEW_REQUEST` associated with the `NEW REQUEST` button on the answer page is reduced in 
-[workflow.js](src/workflow.js) to return to the `passport` page:
 
-    register.reducer(ANSWER_TYPES.NEW_REQUEST, (state) => {
-        return update(state, ['step'], 'passport');
-    });
 
 
 
