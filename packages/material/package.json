@@ -52,7 +52,8 @@
     "classnames": "^2.2.6",
     "immutability-helper": "^3.0.0",
     "lodash.isobject": "^3.0.0",
-    "prop-types": "^15.7.0"
+    "prop-types": "^15.7.0",
+    "deepmerge": "^4.2.0"
   },
   "peerDependencies": {
     "@pihanga/core": "^0.3.0-0",
@@ -106,5 +107,5 @@
       "loose-envify"
     ]
   },
-  "gitHead": "c2459c308dbfd376545b3682bba4b5c487fd5599"
+  "gitHead": "4a8a195f62e006172d1022d6faf0b5a2252a8ec4"
 }
