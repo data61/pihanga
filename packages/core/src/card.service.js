@@ -232,6 +232,43 @@ export const Card = ({ cardName }) => {
   return el;
 };
 
+const extCardStates = {};
+
+export const Card2 = (opts) => {
+  const { cardName } = opts;
+  if (!cards[cardName]) {
+    return UnknownCard(cardName);
+  }
+
+  const state = getState();
+  const cardState = getCardState(cardName, state);
+  if (!cardState) {
+    return UnknownCard(cardName);
+  }
+  const { cardComponent } = cardComponents[cardState.cardType];
+  if (!cardComponent) {
+    return UnknownCard(cardName);
+  }
+  const cc = connect((s) => {
+    const cs = { ...getCardState(cardName, s), ...opts };
+    const cache = extCardStates[cardName];
+    if (cache && mapsAreEqual(cache, cs)) {
+      return cache;
+    }
+    extCardStates[cardName] = cs;
+    return cs;
+  })(cardComponent);
+  const el = React.createElement(cc);
+  return el;
+};
+
+const mapsAreEqual = (map1, map2) => {
+  if (map1.size !== map2.size) {
+    return false;
+  }
+  return Object.entries(map1).find(([k, v]) => map2[k] !== v) === undefined;
+}
+
 const UnknownCard = (cardName) => {
   const s = `Unknown card "${cardName}" - (${Object.keys(cards).join(', ')})`;
   return React.createElement('div', null, s);
