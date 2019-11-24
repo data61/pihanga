@@ -297,9 +297,16 @@ function getCardState(cardName, state) {
     if (!hasChanged && v !== ov) {
       // if 'v' is a function ignore difference,
       // but also check for deep differences when object
-      if (!isFunction(v) && !isEqual(v, ov)) {
+      // if (!isFunction(v) && !isEqual(v, ov)) {
+      //   hasChanged = true;
+      // }
+
+      // As redux and related state is supposed to be close to immutable
+      // a simple equivalence check should suffice. 
+      if (v !== ov) {
         hasChanged = true;
       }
+
     }
     cardState[k] = v;
   }
