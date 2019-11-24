@@ -1,6 +1,6 @@
 {
   "name": "@pihanga/core",
-  "version": "0.3.13",
+  "version": "0.3.14",
   "description": "Core module of the Pihanga framework",
   "homepage": "https://github.com/n1analytics/pihanga#readme",
   "main": "lib/index.js",
