@@ -235,8 +235,8 @@ const createConnectedCard = (cardName ) => {
   }
   // const cardComponent = cardComponents[cardState.cardType].cardComponent;
   const { cardComponent } = cardComponents[cardState.cardType];
-  return connect((s) => {
-    const cs = getCardState(cardName, s);
+  return connect((state, ownProps) => {
+    const cs = getCardState(cardName, state, ownProps);
     return cs;
   })(cardComponent);
 };
@@ -285,7 +285,7 @@ const UnknownCard = (cardName) => {
 
 const cardStates = {};
 
-function getCardState(cardName, state) {
+function getCardState(cardName, state, ownProps = {}) {
   const cache = cardStates[cardName] || {};
   if (cache.state === state) {
     return cache.cardState;
@@ -296,8 +296,7 @@ function getCardState(cardName, state) {
     return undefined;
   }
   const dynState = state.pihanga[cardName] || {};
-  const cardState = { ...cardDef, ...dynState };
-  cardState.cardName = cardName;
+  const cardState = { ...cardDef, ...dynState, ...ownProps };
   const oldCardState = cache.cardState || {};
   let hasChanged = false;
   for (var k of Object.keys(cardState)) {
