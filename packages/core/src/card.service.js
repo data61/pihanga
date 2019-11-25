@@ -1,6 +1,6 @@
 import React from 'react';
 import isFunction from 'lodash.isfunction';
-import isEqual from 'lodash.isequal';
+//import isEqual from 'lodash.isequal';
 import { connect } from 'react-redux';
 import { getState, dispatch, registerActions } from './redux';
 import { createLogger } from './logger';
@@ -208,7 +208,22 @@ function getValue(paramName, cardDef, s) {
   return v;
 }
 
+// We should create a 'redux connected' wrapper for each card only once
+// This is a potential memory leak as we aren't cleaning up, but the entries
+// should be limited by the number of defined cards.
+//
+const ConnectedCards = {};
+
 export const Card = ({ cardName }) => {
+  let cc = ConnectedCards[cardName];
+  if (!cc) {
+    cc = ConnectedCards[cardName] = createConnectedCard(cardName);
+  }
+  const el = React.createElement(cc);
+  return el;
+};
+
+const createConnectedCard = (cardName ) => {
   if (!cards[cardName]) {
     return UnknownCard(cardName);
   }
@@ -220,54 +235,48 @@ export const Card = ({ cardName }) => {
   }
   // const cardComponent = cardComponents[cardState.cardType].cardComponent;
   const { cardComponent } = cardComponents[cardState.cardType];
-  const cc = connect((s) => {
-    if (s === state) {
-      return cardState;
-    } else {
-      const cs = getCardState(cardName, s);
-      return cs;
-    }
-  })(cardComponent);
-  const el = React.createElement(cc);
-  return el;
-};
-
-const extCardStates = {};
-
-export const Card2 = (opts) => {
-  const { cardName } = opts;
-  if (!cards[cardName]) {
-    return UnknownCard(cardName);
-  }
-
-  const state = getState();
-  const cardState = getCardState(cardName, state);
-  if (!cardState) {
-    return UnknownCard(cardName);
-  }
-  const { cardComponent } = cardComponents[cardState.cardType];
-  if (!cardComponent) {
-    return UnknownCard(cardName);
-  }
-  const cc = connect((s) => {
-    const cs = { ...getCardState(cardName, s), ...opts };
-    const cache = extCardStates[cardName];
-    if (cache && mapsAreEqual(cache, cs)) {
-      return cache;
-    }
-    extCardStates[cardName] = cs;
+  return connect((s) => {
+    const cs = getCardState(cardName, s);
     return cs;
   })(cardComponent);
-  const el = React.createElement(cc);
-  return el;
 };
 
-const mapsAreEqual = (map1, map2) => {
-  if (map1.size !== map2.size) {
-    return false;
-  }
-  return Object.entries(map1).find(([k, v]) => map2[k] !== v) === undefined;
-}
+// const extCardStates = {};
+
+// export const Card2 = (opts) => {
+//   const { cardName } = opts;
+//   if (!cards[cardName]) {
+//     return UnknownCard(cardName);
+//   }
+
+//   const state = getState();
+//   const cardState = getCardState(cardName, state);
+//   if (!cardState) {
+//     return UnknownCard(cardName);
+//   }
+//   const { cardComponent } = cardComponents[cardState.cardType];
+//   if (!cardComponent) {
+//     return UnknownCard(cardName);
+//   }
+//   const cc = connect((s) => {
+//     const cs = { ...getCardState(cardName, s), ...opts };
+//     const cache = extCardStates[cardName];
+//     if (cache && mapsAreEqual(cache, cs)) {
+//       return cache;
+//     }
+//     extCardStates[cardName] = cs;
+//     return cs;
+//   })(cardComponent);
+//   const el = React.createElement(cc);
+//   return el;
+// };
+
+// const mapsAreEqual = (map1, map2) => {
+//   if (map1.size !== map2.size) {
+//     return false;
+//   }
+//   return Object.entries(map1).find(([k, v]) => map2[k] !== v) === undefined;
+// }
 
 const UnknownCard = (cardName) => {
   const s = `Unknown card "${cardName}" - (${Object.keys(cards).join(', ')})`;
@@ -294,19 +303,15 @@ function getCardState(cardName, state) {
   for (var k of Object.keys(cardState)) {
     const v = getValue(k, cardState, state);
     const ov = oldCardState[k];
+    // As redux and related state is supposed to be close to immutable
+    // a simple equivalence check should suffice. 
     if (!hasChanged && v !== ov) {
       // if 'v' is a function ignore difference,
       // but also check for deep differences when object
       // if (!isFunction(v) && !isEqual(v, ov)) {
       //   hasChanged = true;
       // }
-
-      // As redux and related state is supposed to be close to immutable
-      // a simple equivalence check should suffice. 
-      if (v !== ov) {
-        hasChanged = true;
-      }
-
+      hasChanged = true;
     }
     cardState[k] = v;
   }
