@@ -214,16 +214,17 @@ function getValue(paramName, cardDef, s) {
 //
 const ConnectedCards = {};
 
-export const Card = ({ cardName }) => {
+export const Card = (props) => {
+  const { cardName, key, ...dynProps } = props;
   let cc = ConnectedCards[cardName];
   if (!cc) {
-    cc = ConnectedCards[cardName] = createConnectedCard(cardName);
+    cc = ConnectedCards[cardName] = createConnectedCard(cardName, dynProps);
   }
   const el = React.createElement(cc);
   return el;
 };
 
-const createConnectedCard = (cardName ) => {
+const createConnectedCard = (cardName, dynProps) => {
   if (!cards[cardName]) {
     return UnknownCard(cardName);
   }
@@ -236,7 +237,8 @@ const createConnectedCard = (cardName ) => {
   // const cardComponent = cardComponents[cardState.cardType].cardComponent;
   const { cardComponent } = cardComponents[cardState.cardType];
   return connect((state, ownProps) => {
-    const cs = getCardState(cardName, state, ownProps);
+    // const cs = getCardState(cardName, state, ownProps);
+    const cs = getCardState(cardName, state, dynProps);
     return cs;
   })(cardComponent);
 };
