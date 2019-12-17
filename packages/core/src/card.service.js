@@ -215,7 +215,7 @@ function getValue(paramName, cardDef, s) {
 const ConnectedCards = {};
 
 export const Card = (props) => {
-  const { cardName, key, ...dynProps } = props;
+  const { cardName, ...dynProps } = props;
   let cc = ConnectedCards[cardName];
   if (!cc) {
     cc = ConnectedCards[cardName] = createConnectedCard(cardName, dynProps);
