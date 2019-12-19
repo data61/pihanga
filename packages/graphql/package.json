@@ -1,6 +1,6 @@
 {
   "name": "@pihanga/graphql",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "Implemnts a graphql based backend for local state management",
   "homepage": "https://github.com/n1analytics/pihanga#readme",
   "main": "lib/index.js",
@@ -46,7 +46,7 @@
     "@babel/plugin-transform-react-jsx": "^7.3.0",
     "@babel/plugin-transform-runtime": "^7.5.0",
     "@babel/preset-env": "^7.5.0",
-    "@pihanga/core": "^0.3.19",
+    "@pihanga/core": "^0.3.20",
     "babel-core": "^6.23.0",
     "babel-eslint": "^10.0.2",
     "babel-jest": "^24.9.0",
