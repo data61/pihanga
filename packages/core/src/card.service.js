@@ -220,22 +220,22 @@ export const Card = (props) => {
   if (!cc) {
     cc = ConnectedCards[cardName] = createConnectedCard(cardName, dynProps);
   }
-  const el = React.createElement(cc);
+  const el = React.createElement(cc, dynProps);
   return el;
 };
 
-const createConnectedCard = (cardName, dynProps) => {
+const createConnectedCard = (cardName, props) => {
   if (!cards[cardName]) {
     return UnknownCard(cardName);
   }
 
   const state = getState();
-  const cardState = getCardState(cardName, state, dynProps);
+  const cardState = getCardState(cardName, state, props);
   if (!cardState) {
     return UnknownCard(cardName);
   }
   const { cardComponent } = cardComponents[cardState.cardType];
-  return connect((state) => {
+  return connect((state, dynProps) => {
     const cs = getCardState(cardName, state, dynProps);
     return cs;
   })(cardComponent);
