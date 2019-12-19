@@ -230,55 +230,16 @@ const createConnectedCard = (cardName, dynProps) => {
   }
 
   const state = getState();
-  const cardState = getCardState(cardName, state);
+  const cardState = getCardState(cardName, state, dynProps);
   if (!cardState) {
     return UnknownCard(cardName);
   }
-  // const cardComponent = cardComponents[cardState.cardType].cardComponent;
   const { cardComponent } = cardComponents[cardState.cardType];
-  return connect((state, ownProps) => {
-    // const cs = getCardState(cardName, state, ownProps);
+  return connect((state) => {
     const cs = getCardState(cardName, state, dynProps);
     return cs;
   })(cardComponent);
 };
-
-// const extCardStates = {};
-
-// export const Card2 = (opts) => {
-//   const { cardName } = opts;
-//   if (!cards[cardName]) {
-//     return UnknownCard(cardName);
-//   }
-
-//   const state = getState();
-//   const cardState = getCardState(cardName, state);
-//   if (!cardState) {
-//     return UnknownCard(cardName);
-//   }
-//   const { cardComponent } = cardComponents[cardState.cardType];
-//   if (!cardComponent) {
-//     return UnknownCard(cardName);
-//   }
-//   const cc = connect((s) => {
-//     const cs = { ...getCardState(cardName, s), ...opts };
-//     const cache = extCardStates[cardName];
-//     if (cache && mapsAreEqual(cache, cs)) {
-//       return cache;
-//     }
-//     extCardStates[cardName] = cs;
-//     return cs;
-//   })(cardComponent);
-//   const el = React.createElement(cc);
-//   return el;
-// };
-
-// const mapsAreEqual = (map1, map2) => {
-//   if (map1.size !== map2.size) {
-//     return false;
-//   }
-//   return Object.entries(map1).find(([k, v]) => map2[k] !== v) === undefined;
-// }
 
 const UnknownCard = (cardName) => {
   const s = `Unknown card "${cardName}" - (${Object.keys(cards).join(', ')})`;
@@ -287,9 +248,15 @@ const UnknownCard = (cardName) => {
 
 const cardStates = {};
 
-function getCardState(cardName, state, ownProps = {}) {
+function isEqualMap(a,b) {
+  const ae = Object.entries(a);
+  if (ae.length !== Object.keys(b).length) return false;
+  return !ae.find(([k,v]) => b[k] !== v);
+}
+
+function getCardState(cardName, state, dynProps = {}) {
   const cache = cardStates[cardName] || {};
-  if (cache.state === state) {
+  if (cache.state === state && isEqualMap(cache.dynProps || {}, dynProps)) {
     return cache.cardState;
   }
 
@@ -298,7 +265,7 @@ function getCardState(cardName, state, ownProps = {}) {
     return undefined;
   }
   const dynState = state.pihanga[cardName] || {};
-  const cardState = { ...cardDef, ...dynState, ...ownProps };
+  const cardState = { cardName, ...cardDef, ...dynState, ...dynProps };
   const oldCardState = cache.cardState || {};
   let hasChanged = false;
   for (var k of Object.keys(cardState)) {
@@ -317,13 +284,13 @@ function getCardState(cardName, state, ownProps = {}) {
     cardState[k] = v;
   }
   if (hasChanged) {
-    cacheCardState(cardName, cardState, state);
+    cacheCardState(cardName, cardState, state, dynProps);
     return cardState;
   } else {
     return oldCardState;
   }
 }
 
-function cacheCardState(cardName, cardState, state) {
-  cardStates[cardName] = { state, cardState };
+function cacheCardState(cardName, cardState, state, dynProps) {
+  cardStates[cardName] = { state, cardState, dynProps };
 }
