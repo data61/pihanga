@@ -1,14 +1,10 @@
-// export * from './backend.logger';
-// export * from './fetch-api';
-// export * from './backend.actions';
-// export * from './browser-cookie';
-// export * from './utils';
 import { init as getInit } from './get';
 import { init as getPeriodicInit } from './get-periodic';
+import { init as postPutInit } from './postPut';
 
-
-export { registerGET } from './get';
+export { registerGET, runGET } from './get';
 export { registerPeriodicGET } from './get-periodic';
+export { registerPOST, registerPUT, runPOST, runPUT } from './postPut';
 
 /**
  * Standard pihanga init function to initialize this package.
@@ -16,4 +12,5 @@ export { registerPeriodicGET } from './get-periodic';
 export function init(register) {
   getInit(register);
   getPeriodicInit(register);
+  postPutInit(register);
 }
