@@ -13,7 +13,7 @@ import TablePagination  from '@material-ui/core/TablePagination';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
-import { PiPropTypes } from '@pihanga/core';
+import { Card, PiPropTypes } from '@pihanga/core';
 
 import { LinkComponent } from '../../component/link';
 import styled from './table.style';
@@ -68,6 +68,9 @@ export const TableCardComponent = styled(({
     if (c.fill === true) {
       ov.push(classes.tableCell_fill);
     }
+    if (c.overflow === true) {
+      ov.push(classes.tableCell_overflow);
+    }
     colCellClasses[c.id] = ov.length > 0 ? classNames(...ov, classes.tableCell) : classes.tableCell;
     return c;
   });
@@ -87,9 +90,10 @@ export const TableCardComponent = styled(({
     .map(column => (
       <TableCell
         key={column.id}
-        align={column.align | column.numeric ? 'right' : 'left' }
+        align={column.align || column.numeric ? 'right' : 'left' }
         padding={column.padding || 'default'}
         className={colCellClasses[column.id]}
+        style={column.headerStyle}
       >
         <TableSortLabel
           active={orderBy === column.id}
@@ -115,10 +119,10 @@ export const TableCardComponent = styled(({
   }
 
   const renderColumnValue = (row, column) => {
-    if (column.value) {
-      return column.value(row);
+    if (column.renderer) {
+      return (<Card cardName={column.renderer} row={row} column={column}/>);
     } 
-    var v = row[column.id];
+    let v = column.value ? column.value(row) : row[column.id];
     if (isNaN(v) && typeof v !== 'string' ) {
       v = (<pre>{JSON.stringify(v, null, 2)}</pre>);
     }

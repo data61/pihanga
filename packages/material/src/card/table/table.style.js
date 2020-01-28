@@ -23,6 +23,12 @@ export default withStyles(theme => ({
   tableCell_fill: {
     width: '100%',
   },
+  tableCell_overflow: { // need to set 'width' in header cells
+    maxWidth: 0,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whitSpace: 'nowrap',
+  },
   table_head_row: {
     height: 40,
   },
