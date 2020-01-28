@@ -18,7 +18,7 @@ The basic scaffolding is implemented in `core`. To build it:
     yarn build
     cd ..
 
-This is a _normal__ React application and could already be previewed by running `npm start` in the `core` directory.
+This is a _normal__ React application and could already be previewed by running `yarn start` in the `core` directory.
 
 ## Step 2: Start Test Server
 
@@ -39,8 +39,8 @@ Pointing a web browser to `http://localhost:8080` should show a page like:
 If we want to add a new 'Cars' service and make accesible through the left menu, do the following:
 
     cd car-service
-    npm install
-    npm run build
+    yarn install
+    yarn build
 
 This creates a `car-service.js` file in the `build` directory.
 
