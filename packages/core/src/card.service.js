@@ -1,13 +1,13 @@
 import React from 'react';
 import isFunction from 'lodash.isfunction';
-//import isEqual from 'lodash.isequal';
 import { connect } from 'react-redux';
-import { getState, dispatch, registerActions } from './redux';
+import { getState, registerActions } from './redux';
 import { createLogger } from './logger';
 
 const logger = createLogger('card.service');
 
-const cards = {};
+//const cards = {};
+const cards2 = {};
 const metaCards = {};
 const cardComponents = {};
 
@@ -31,7 +31,7 @@ export function registerMetaCard(type, transformF) {
 
 export function registerCards(newCards) {
   Object.keys(newCards).forEach((k) => {
-    if (cards[k]) {
+    if (cards2[k]) {
       logger.warn(`Overwriting card "${k}"`);
     }
     const cardDef = { ...newCards[k] };
@@ -55,25 +55,18 @@ function registerSingleCard(cardName, cardDef) {
     logger.error(`Reject registration of card "${cardName}" due to unknown cardType "${cardType}" - (${known})`);
     return;
   }
-  const { events } = cardComponent;
-  if (events) {
-    Object.keys(events).forEach((en) => {
-      if (!cardDef[en]) {
-        // set default event handler: Need to return indirectly as it's going
-        // be 'value resolved' in 'getCardState'
-        const evtType = events[en];
-        // eslint-disable-next-line no-param-reassign
-        cardDef[en] = () => (opts = {}) => {
-          dispatch({
-            type: evtType,
-            id: cardName,
-            ...opts,
-          });
-        };
-      }
-    });
-  }
-  cards[cardName] = cardDef;
+  const { events, eventKeys, defaults } = cardComponent;
+  const {props, eventProps} = Object.entries({...(defaults || {}), ...cardDef}).reduce((p, [k,v]) => {
+    if (k === 'cardType') return p;
+    if (eventKeys.includes(k)) {
+      p.eventProps[k] = v;
+    } else {
+      p.props[k] = v;
+    }
+    return p;
+  }, {props: {}, eventProps: {}});
+  cards2[cardName] = {cardType, props, eventProps, events, defaults};
+  //cards[cardName] = cardDef;
 }
 
 export function expandMetaCard(cardType, cardName, cardDef) {
@@ -97,7 +90,8 @@ export function registerCardComponent(compDefs) {
   if (actions) {
     registerActions(name, actions);
   }
-  cardComponents[name] = { cardComponent: component, events, defaults };
+  const eventKeys = events ? Object.keys(events) : [];
+  cardComponents[name] = { cardComponent: component, events, eventKeys, defaults };
 }
 
 export function card(name) {
@@ -109,21 +103,21 @@ export function card(name) {
 }
 
 export function ref(cardNameOrF, paramName) {
-  return (s) => {
-    const cardName = isFunction(cardNameOrF) ? cardNameOrF(s) : cardNameOrF;
-    const dynState = s.pihanga[cardName];
+  return (state, ctxtProps = {}) => {
+    const cardName = isFunction(cardNameOrF) ? cardNameOrF(state, ctxtProps) : cardNameOrF;
+    const dynState = state.pihanga[cardName];
     if (dynState) {
       const vd = dynState[paramName];
       if (vd !== undefined) {
         return vd;
       }
     }
-    const refDef = cards[cardName];
+    const refDef = cards2[cardName];
     if (!refDef) {
       logger.warn(`Requested reference to unknown card "${cardName}"`);
       return null;
     }
-    const v = getValue(paramName, refDef, s);
+    const v = getValue(paramName, refDef.props || {}, state, ctxtProps);
     return v;
   };
 }
@@ -157,7 +151,7 @@ export function pQuery(cardName, propName, match, resProps) {
     const cName = isFunction(cardName) ? cardName(s) : cardName;
     const pName = isFunction(propName) ? propName(s) : propName;
     const matchIsFunction = isFunction(match);
-    const cardNames = cName ? [cName] : Object.keys(cards);
+    const cardNames = cName ? [cName] : Object.keys(cards2);
     const result = [];
     const addResult = (cn, pn, v) => {
       const params = { cardName: cn };
@@ -197,13 +191,13 @@ export function pQuery(cardName, propName, match, resProps) {
   }
 }
 
-function getValue(paramName, cardDef, s) {
+function getValue(paramName, cardDef, state, ctxtProps = {}) {
   let v = cardDef[paramName];
   if (isFunction(v)) {
-    v = v(s, (cn, pn) => {
-      const rv = ref(cn, pn)(s);
+    v = v(state, (cn, pn) => {
+      const rv = ref(cn, pn)(state, ctxtProps);
       return rv;
-    });
+    }, ctxtProps);
   }
   return v;
 }
@@ -215,34 +209,80 @@ function getValue(paramName, cardDef, s) {
 const ConnectedCards = {};
 
 export const Card = (props) => {
-  const { cardName, ...dynProps } = props;
+  const { cardName, ...ctxtProps } = props;
   let cc = ConnectedCards[cardName];
   if (!cc) {
-    cc = ConnectedCards[cardName] = createConnectedCard(cardName, dynProps);
+    cc = createConnectedCard(cardName, ctxtProps);
+    if (!cc) {
+      return UnknownCard(cardName);
+    }
+    ConnectedCards[cardName] = cc;
   }
-  const el = React.createElement(cc, dynProps);
+  const el = React.createElement(cc, ctxtProps);
   return el;
 };
 
-const createConnectedCard = (cardName, props) => {
-  if (!cards[cardName]) {
-    return UnknownCard(cardName);
+const createConnectedCard = (cardName, ctxtProps) => {
+  const cardDef = cards2[cardName];
+  if (!cardDef) {
+    return null;
   }
 
   const state = getState();
-  const cardState = getCardState(cardName, state, props);
+  const cardState = getCardState(cardName, state, ctxtProps);
   if (!cardState) {
-    return UnknownCard(cardName);
+    return null;
   }
-  const { cardComponent } = cardComponents[cardState.cardType];
-  return connect((state, dynProps) => {
-    const cs = getCardState(cardName, state, dynProps);
-    return cs;
-  })(cardComponent);
+  const { cardComponent } = cardComponents[cardDef.cardType];
+  const { eventProps, events } = cardDef;
+
+  return connect(
+    (state, ctxtProps) => { // , ctxtProps
+      const cs = getCardState(cardName, state, ctxtProps);
+      return cs;
+    },
+    (dispatch, ctxtProps) => {
+      let dispProps =  { dispatch, }
+      if (events) {
+        
+        Object.entries(events).reduce((h, [name, evtType]) => {
+          let f;
+          const cf = eventProps[name];
+          if (cf) {
+            f = (opts = {}) => {
+              const state = getState();
+              const refF = (cn, pn) => {
+                const rv = ref(cn, pn)(state, ctxtProps);
+                return rv;
+              };
+              cf(opts, state, refF);
+            }
+          } else {
+            // set default event handler
+            f = (opts = {}) => {
+              dispatch({
+                type: evtType,
+                id: cardName, // DEPRECATE 
+                cardID: cardName, 
+                ...opts,
+              });
+            };
+          }
+          h[name] = f;
+          return h;
+        }, dispProps);
+      }
+      return dispProps;
+    },
+    (stateProps, dispatchProps) => { // , ownProps
+      // do not include 'ownProps' as that shoul dbe taken care of by pihanga binding
+      return { ...stateProps, ...dispatchProps };
+    }
+  )(cardComponent);
 };
 
 const UnknownCard = (cardName) => {
-  const s = `Unknown card "${cardName}" - (${Object.keys(cards).join(', ')})`;
+  const s = `Unknown card "${cardName}" - (${Object.keys(cards2).join(', ')})`;
   return React.createElement('div', null, s);
 };
 
@@ -254,22 +294,23 @@ function isEqualMap(a,b) {
   return !ae.find(([k,v]) => b[k] !== v);
 }
 
-function getCardState(cardName, state, dynProps = {}) {
+export function getCardState(cardName, state, ctxtProps = {}) {
   const cache = cardStates[cardName] || {};
-  if (cache.state === state && isEqualMap(cache.dynProps || {}, dynProps)) {
+  if (cache.state === state && isEqualMap(cache.ctxtProps || {}, ctxtProps)) {
     return cache.cardState;
   }
 
-  const cardDef = cards[cardName];
-  if (!cardDef.cardType) {
+  // const cardDef = cards[cardName];
+  const cardDef2 = cards2[cardName];
+  if (!cardDef2.cardType) {
     return undefined;
   }
   const dynState = state.pihanga[cardName] || {};
-  const cardState = { cardName, ...cardDef, ...dynState, ...dynProps };
+  const cardState = { ...cardDef2.props, ...dynState };
   const oldCardState = cache.cardState || {};
   let hasChanged = false;
   for (var k of Object.keys(cardState)) {
-    const v = getValue(k, cardState, state);
+    const v = getValue(k, cardState, state, ctxtProps);
     const ov = oldCardState[k];
     // As redux and related state is supposed to be close to immutable
     // a simple equivalence check should suffice. 
@@ -284,13 +325,14 @@ function getCardState(cardName, state, dynProps = {}) {
     cardState[k] = v;
   }
   if (hasChanged) {
-    cacheCardState(cardName, cardState, state, dynProps);
+    cardState.cardName = cardName;
+    cacheCardState(cardName, cardState, state, ctxtProps);
     return cardState;
   } else {
     return oldCardState;
   }
 }
 
-function cacheCardState(cardName, cardState, state, dynProps) {
-  cardStates[cardName] = { state, cardState, dynProps };
+function cacheCardState(cardName, cardState, state, ctxtProps) {
+  cardStates[cardName] = { state, cardState, ctxtProps };
 }
