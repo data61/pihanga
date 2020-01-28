@@ -4,14 +4,13 @@
   "homepage": ".",
   "dependencies": {
     "@material-ui/icons": "^4.2.0",
-    "@pihanga/core": "^0.3.0",
-    "@pihanga/material-ui": "^0.3.0",
+    "@pihanga/core": "^0.4.0",
+    "@pihanga/material-ui": "^0.4.0",
     "express": "^4.17.0",
     "immutability-helper": "^3.0.0",
     "prop-types": "^15.7.0",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0",
-    "start": "^5.1.0"
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
   },
   "devDependencies": {
     "eslint": "^6.2.0",
