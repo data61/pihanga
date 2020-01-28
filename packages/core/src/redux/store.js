@@ -84,7 +84,8 @@ export function createStore(rootReducer, initialState = DEF_STATE) {
   /* eslint-disable no-underscore-dangle */
   // For redux-devtools-extension on browser
   if (window.__REDUX_DEVTOOLS_EXTENSION__) {
-    middleware = compose(middleware, window.__REDUX_DEVTOOLS_EXTENSION__());
+    const extOpts = { trace: true, traceLimit: 25 };
+    middleware = compose(middleware, window.__REDUX_DEVTOOLS_EXTENSION__(extOpts));
   }
   /* eslint-enable no-underscore-dangle */
 
