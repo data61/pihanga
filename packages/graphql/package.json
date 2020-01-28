@@ -92,5 +92,5 @@
     "x-prepublishOnly": "npm run build",
     "x-prepublish": "yarn run lint && yarn run test && yarn run build"
   },
-  "gitHead": "961e3884febb584e5e7704facee4eed479d897eb"
+  "gitHead": "8bae347b8622721e0ca7f16e9ebd0fda83ff7a62"
 }
