@@ -45,10 +45,12 @@ export default withStyles((theme) => {
       display: 'flex',
       flexFlow: 'column',
     },
-    contentToppadding: {
+    contentTopPadding: {
       padding: theme.spacing(3),
     },
-
+    contentPageHeight: {
+      overflowY: 'auto',
+    },
     titleIcon: {
       paddingRight: theme.spacing(2),
     },

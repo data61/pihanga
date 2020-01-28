@@ -39,6 +39,7 @@ export const PageR1Component = styled(({
   footer,
   onClickNavLink,
   topMargin,
+  pageHeight,
   mui = {},
   classes,
 }) => {
@@ -198,6 +199,11 @@ export const PageR1Component = styled(({
     );
   }
 
+  const mainCln = classNames(
+    classes.content, 
+    topMargin && classes.contentTopMargin,
+    pageHeight && classes.contentPageHeight
+  );
   return (
     <div className={classes.outer}>
       <CssBaseline />
@@ -214,7 +220,7 @@ export const PageR1Component = styled(({
           </div>
         </Toolbar>
       </AppBar>
-      <main className={classNames(classes.content, topMargin && classes.contentTopMargin)}>
+      <main className={mainCln}>
         <Grid
           item
           container
