@@ -1,10 +1,13 @@
 {
   "name": "draftjs-p",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A nice greeter",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "keywords": ["Pihanga Framework", "draft-js"],
+  "keywords": [
+    "Pihanga Framework",
+    "draft-js"
+  ],
   "author": "Max Ott<max@winlab.rutgers.edu>",
   "scripts": {
     "build": "tsc",
@@ -13,7 +16,7 @@
     "test": "jest --config jestconfig.json",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint",
-    "preversion": "npm run lint" 
+    "preversion": "npm run lint"
   },
   "license": "MIT",
   "devDependencies": {
