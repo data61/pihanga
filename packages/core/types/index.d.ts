@@ -1,0 +1,79 @@
+
+export declare function registerActions(domain: string, names: string[]): {[key:string]:string};
+export function actions(name:string): {[key:string]: string};
+
+export declare function dispatch(action: ReduxAction): void;
+export declare function dispatch(actionType: string, props:  {[key:string]:any}): void;
+export declare function dispatch(domain: string, actionType: string, props:  {[key:string]:any}): void;
+
+export declare function dispatchFromReducer(action: ReduxAction): void;
+export declare function update(state: ReduxState, path: string[], partial: any): ReduxState;
+
+
+export declare function registerGET(props: PiRegisterGetProps): void;
+export declare function registerPUT(props: PiRegisterPutProps): void;
+export declare function registerPOST(props: PiRegisterPostProps): void;
+
+export declare function getCardState(cardName:string, state: ReduxState): PiCardState;
+export declare function createLogger(name:string):any;
+
+type ReactComponent = any; //({[key:string]:any}) => any
+type ReduxState = {[key:string]:any};
+type ReduxAction = {
+  type: string,
+};
+
+type PiCardState = {[key:string]: any}
+
+interface PiRegister {
+  cardComponent(declaration: PiRegisterComponent): void,
+
+  /**
+   * Register a meta card which expands a single card definition of type `name`
+   * into a new set of cards which can be registered in turn through `registerCards`.
+   * 
+   * The `transformF` function takes the `cardName` and `cardDef` as the two paramters
+   * and is expected to return a map where the keys are new card anmes and their respective
+   * values the respective card declaration.
+   * 
+   * @param {string} type 
+   * @param {function} transformF 
+   */
+  metaCard(type: string, transformF: PiMetaTransformerF): void;
+
+  // can't make the incoming types specific
+  reducer(eventType: string, mapper: (state: ReduxState, action: any) => ReduxState): void,
+}
+
+type PiRegisterComponent = {
+  name: string,
+  component: ReactComponent, 
+  events?: {[key:string]:string},
+  defaults?: {[key:string]:any},
+};
+
+type PiMetaTransformerF = (
+  name: string,
+  opts: {[name:string]:any},
+) => {[name:string]:{[prop:string]:any}};
+
+type PiUrlBindings = {[key:string]:string|number};
+type PiRestRequestBody = {[key:string]:any};
+
+type PiRegisterGetProps = {
+  name: string,
+  url: string,
+  trigger: string,
+  request: (action: ReduxAction) => PiUrlBindings,
+  reply: (state: ReduxState, reply: any, requestAction: ReduxAction) => ReduxState,
+};
+
+type PiRegisterPostProps = PiRegisterPostPutProps;
+type PiRegisterPutProps = PiRegisterPostPutProps;
+type PiRegisterPostPutProps = {
+  name: string,
+  url: string,
+  trigger: string,
+  request: (action: ReduxAction) => [PiRestRequestBody, PiUrlBindings],
+  reply: (state: ReduxState, reply: any, requestAction: ReduxAction) => ReduxState,
+};

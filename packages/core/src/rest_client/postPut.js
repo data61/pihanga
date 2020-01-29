@@ -14,15 +14,15 @@ export function init(register) {
 
 export const registerPUT = (opts) => {
   registerMethod('PUT', opts);
-}
+};
 
 export const registerPOST = (opts) => {
   registerMethod('POST', opts);
-}
+};
 
 const registerMethod = (method, opts) => {
   const {
-    name, 
+    name,
     url,
     trigger,
     request, reply, error,
@@ -56,57 +56,54 @@ const registerMethod = (method, opts) => {
       const url2 = buildURL(parts, vars, variables);
       runMethod(method, url2, name, body, vars, resultType, errorType, action);
       // eslint-disable-next-line object-curly-newline
-      dispatchFromReducer({ 
-        type: submitType, 
-        restName: name, 
+      dispatchFromReducer({
+        type: submitType,
+        restName: name,
         url: url2,
         body,
-        vars });
+        vars,
+      });
     }
     return state;
   });
 
-  registerReducer(resultType, (state, action) => {
-    return reply(state, action.reply, action.requestAction);
-  });
+  registerReducer(resultType, (state, action) => reply(state, action.reply, action.requestAction));
 
   if (error) {
-    registerReducer(errorType, (state, action) => {
-      return reply(state, action.error, action.requestAction);
-    });
+    registerReducer(errorType, (state, action) => reply(state, action.error, action.requestAction));
   }
 };
 
 export const runPOST = (
-  url, 
-  name, 
-  body, 
-  vars, 
-  resultType, errorType, 
-  requestAction
+  url,
+  name,
+  body,
+  vars,
+  resultType, errorType,
+  requestAction,
 ) => {
   runMethod('POST', url, name, body, vars, resultType, errorType, requestAction);
-}
+};
 
 export const runPUT = (
-  url, 
-  name, 
-  body, 
-  vars, 
-  resultType, errorType, 
-  requestAction
+  url,
+  name,
+  body,
+  vars,
+  resultType, errorType,
+  requestAction,
 ) => {
   runMethod('PUT', url, name, body, vars, resultType, errorType, requestAction);
-}
+};
 
 export const runMethod = (
   method,
-  url, 
-  name, 
-  body, 
-  vars, 
-  resultType, errorType, 
-  requestAction
+  url,
+  name,
+  body,
+  vars,
+  resultType, errorType,
+  requestAction,
 ) => {
   fetchApi(url, {
     method,

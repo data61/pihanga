@@ -1,4 +1,4 @@
-import isPlainObject from 'lodash/isPlainObject';
+import isPlainObject from 'lodash.isplainobject';
 import stackinfo from 'stackinfo';
 
 import { createLogger } from '../logger/logger';

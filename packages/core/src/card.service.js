@@ -6,7 +6,7 @@ import { createLogger } from './logger';
 
 const logger = createLogger('card.service');
 
-//const cards = {};
+// const cards = {};
 const cards2 = {};
 const metaCards = {};
 const cardComponents = {};
@@ -14,13 +14,13 @@ const cardComponents = {};
 /**
  * Register a meta card which expands a single card definition of type `name`
  * into a new set of cards which can be registered in turn through `registerCards`.
- * 
+ *
  * The `transformF` function takes the `cardName` and `cardDef` as the two paramters
  * and is expected to return a map where the keys are new card anmes and their respective
  * values the respective card declaration.
- * 
- * @param {string} type 
- * @param {function} transformF 
+ *
+ * @param {string} type
+ * @param {function} transformF
  */
 export function registerMetaCard(type, transformF) {
   if (metaCards[type]) {
@@ -56,7 +56,7 @@ function registerSingleCard(cardName, cardDef) {
     return;
   }
   const { events, eventKeys, defaults } = cardComponent;
-  const {props, eventProps} = Object.entries({...(defaults || {}), ...cardDef}).reduce((p, [k,v]) => {
+  const { props, eventProps } = Object.entries({ ...(defaults || {}), ...cardDef }).reduce((p, [k, v]) => {
     if (k === 'cardType') return p;
     if (eventKeys.includes(k)) {
       p.eventProps[k] = v;
@@ -64,9 +64,11 @@ function registerSingleCard(cardName, cardDef) {
       p.props[k] = v;
     }
     return p;
-  }, {props: {}, eventProps: {}});
-  cards2[cardName] = {cardType, props, eventProps, events, defaults};
-  //cards[cardName] = cardDef;
+  }, { props: {}, eventProps: {} });
+  cards2[cardName] = {
+    cardType, props, eventProps, events, defaults,
+  };
+  // cards[cardName] = cardDef;
 }
 
 export function expandMetaCard(cardType, cardName, cardDef) {
@@ -91,7 +93,9 @@ export function registerCardComponent(compDefs) {
     registerActions(name, actions);
   }
   const eventKeys = events ? Object.keys(events) : [];
-  cardComponents[name] = { cardComponent: component, events, eventKeys, defaults };
+  cardComponents[name] = {
+    cardComponent: component, events, eventKeys, defaults,
+  };
 }
 
 export function card(name) {
@@ -157,7 +161,7 @@ export function pQuery(cardName, propName, match, resProps) {
       const params = { cardName: cn };
       params[pn] = v; // matched property
       if (resProps) {
-        for (var opn of resProps) {
+        for (const opn of resProps) {
           if (opn !== pn) { // avoid duplication
             const ov = ref(cn, opn)(s);
             params[opn] = ov;
@@ -175,20 +179,20 @@ export function pQuery(cardName, propName, match, resProps) {
         }
       }
     }
-    for (var cn of cardNames) {
+    for (const cn of cardNames) {
       if (pName) {
         // single property
         addResultIf(cn, pName);
       } else {
         // parameter wild card
         const cs = getCardState(cn, s);
-        for (var pn of Object.keys(cs)) {
+        for (const pn of Object.keys(cs)) {
           addResultIf(cn, pn);
         }
       }
     }
     return result;
-  }
+  };
 }
 
 function getValue(paramName, cardDef, state, ctxtProps = {}) {
@@ -242,9 +246,8 @@ const createConnectedCard = (cardName, ctxtProps) => {
       return cs;
     },
     (dispatch, ctxtProps) => {
-      let dispProps =  { dispatch, }
+      const dispProps = { dispatch };
       if (events) {
-        
         Object.entries(events).reduce((h, [name, evtType]) => {
           let f;
           const cf = eventProps[name];
@@ -256,14 +259,14 @@ const createConnectedCard = (cardName, ctxtProps) => {
                 return rv;
               };
               cf(opts, state, refF);
-            }
+            };
           } else {
             // set default event handler
             f = (opts = {}) => {
               dispatch({
                 type: evtType,
-                id: cardName, // DEPRECATE 
-                cardID: cardName, 
+                id: cardName, // DEPRECATE
+                cardID: cardName,
                 ...opts,
               });
             };
@@ -274,10 +277,10 @@ const createConnectedCard = (cardName, ctxtProps) => {
       }
       return dispProps;
     },
-    (stateProps, dispatchProps) => { // , ownProps
+    (stateProps, dispatchProps) => // , ownProps
       // do not include 'ownProps' as that shoul dbe taken care of by pihanga binding
-      return { ...stateProps, ...dispatchProps };
-    }
+      ({ ...stateProps, ...dispatchProps }),
+
   )(cardComponent);
 };
 
@@ -288,10 +291,10 @@ const UnknownCard = (cardName) => {
 
 const cardStates = {};
 
-function isEqualMap(a,b) {
+function isEqualMap(a, b) {
   const ae = Object.entries(a);
   if (ae.length !== Object.keys(b).length) return false;
-  return !ae.find(([k,v]) => b[k] !== v);
+  return !ae.find(([k, v]) => b[k] !== v);
 }
 
 export function getCardState(cardName, state, ctxtProps = {}) {
@@ -309,11 +312,11 @@ export function getCardState(cardName, state, ctxtProps = {}) {
   const cardState = { ...cardDef2.props, ...dynState };
   const oldCardState = cache.cardState || {};
   let hasChanged = false;
-  for (var k of Object.keys(cardState)) {
+  for (const k of Object.keys(cardState)) {
     const v = getValue(k, cardState, state, ctxtProps);
     const ov = oldCardState[k];
     // As redux and related state is supposed to be close to immutable
-    // a simple equivalence check should suffice. 
+    // a simple equivalence check should suffice.
     if (!hasChanged && v !== ov) {
       // if 'v' is a function ignore difference,
       // but also check for deep differences when object
