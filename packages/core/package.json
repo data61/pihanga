@@ -39,7 +39,7 @@
     "pretest": "npm run lint",
     "test": "node ./test/run-tests.js",
     "coverage": "codecov",
-    "publish": "npm publish --tag latest --access=public",
+    "x-publish": "npm publish --tag latest --access=public",
     "x-prepublishOnly": "npm run build",
     "x-prepublish": "yarn run lint && yarn run test && yarn run build"
   },
@@ -104,13 +104,12 @@
     "rollup-plugin-commonjs": "^9.3.4",
     "rollup-plugin-node-resolve": "^4.2.4",
     "rollup-plugin-replace": "^2.2.0",
-    "rollup-plugin-terser": "^4.0.4",
+    "rollup-plugin-terser": "^5.2.4",
     "semver": "^5.7.1"
   },
   "browserify": {
     "transform": [
       "loose-envify"
     ]
-  },
-  "gitHead": "13467fb7c884ddc332aca59459d744d5f777a4ba"
+  }
 }

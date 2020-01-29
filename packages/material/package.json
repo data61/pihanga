@@ -41,7 +41,7 @@
     "pretest": "npm run lint",
     "test": "node ./test/run-tests.js",
     "coverage": "codecov",
-    "publish": "npm publish --tag latest --access=public",
+    "x-publish": "npm publish --tag latest --access=public",
     "x-prepublishOnly": "npm run build",
     "x-prepublish": "yarn run lint && yarn run test && yarn run build"
   },
@@ -106,6 +106,5 @@
     "transform": [
       "loose-envify"
     ]
-  },
-  "gitHead": "13467fb7c884ddc332aca59459d744d5f777a4ba"
+  }
 }
