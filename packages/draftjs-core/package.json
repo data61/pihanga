@@ -4,12 +4,15 @@
   "description": "Wrapping and extending draft-js in the Pihanga framework",
   "license": "MIT",
   "author": "Max Ott <max@winlab.rutgers.edu> (http://linkedin.com/in/max-ott)",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
   "keywords": [
     "Pihanga Framework",
     "draft-js"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "rm -r ./lib & tsc --jsx preserve --sourceMap",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
@@ -57,5 +60,6 @@
   },
   "files": [
     "lib/**/*"
-  ]
+  ],
+  "gitHead": "15f81fd7b7e3fdb632094f9c6d1dbae80aa96e8e"
 }
