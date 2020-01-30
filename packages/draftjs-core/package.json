@@ -1,6 +1,6 @@
 {
   "name": "@pihanga/draftjs-core",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Wrapping and extending draft-js in the Pihanga framework",
   "license": "MIT",
   "author": "Max Ott <max@winlab.rutgers.edu> (http://linkedin.com/in/max-ott)",
