@@ -111,7 +111,6 @@ export type HandleBeforeInputFn = (
 export type HandleKeyCommandFn = (
   command: string, 
   eState: EditorState,
-  eventTimeStamp: number,
   readOnly: boolean, // default read only
   extProps: any
 ) => [DraftHandleValue|undefined, EditorState]
@@ -125,10 +124,12 @@ export type BlockRendererFn = (
 ) => BlockRenderDef | null;
 
 export type BlockRenderDef = {
-  component: React.FC, //(props: {[key:string]:any}) => any,
+  component: React.FunctionComponent<any>, // BlockRenderOpts
   editable: boolean,
   props: {[key:string]:any},
 };
+
+export type BlockRenderOpts = {[key:string]:any}; // TODO: May want to flesh out 'any'
 
 export type BlockRendererFnMap = {[key:string]:BlockRendererFn};
 
@@ -344,15 +345,15 @@ export const registerBlockRenderer = (type: string, renderFn: BlockRendererFn) =
 
 export const registerExtensions = (name: string, extensions: EditorExtension) => {
   if (extensions.handleReturn) {
-    const re = HandleReturnExtensions as {name: string, f: HandleReturnFn}[];
+    const re = HandleReturnExtensions;
     re.unshift({name, f: extensions.handleReturn});
   }
   if (extensions.handleBeforeInput) {
-    const ha = HandleBeforeInputExtensions as {name: string, f: HandleBeforeInputFn}[];
+    const ha = HandleBeforeInputExtensions;
     ha.unshift({name, f: extensions.handleBeforeInput});
   }
   if (extensions.handleKeyCommand) {
-    const ha = HandleKeyCommandExtensions as {name: string, f: HandleKeyCommandFn}[];
+    const ha = HandleKeyCommandExtensions;
     ha.unshift({name, f: extensions.handleKeyCommand});
   }
 }

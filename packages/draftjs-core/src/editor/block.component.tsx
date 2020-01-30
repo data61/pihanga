@@ -1,11 +1,18 @@
-import React from 'react';
-import { EditorBlock } from 'draft-js';
+import React = require('react');
+import { EditorBlock, ContentBlock } from 'draft-js';
 import styled from './blockComponent.style';
+
+export type Props = {
+  block: ContentBlock,
+  blockProps: {
+    type: string,
+  }
+};
 
 /**
  * Render a block
  */
-export const BlockComponent = styled((props) => {
+export const BlockComponent: React.FunctionComponent<Props> = styled((props: ClassedProps<Props>) => {
   const { block, classes } = props;
   const { type } = props.blockProps;
 
@@ -40,6 +47,6 @@ export const BlockComponent = styled((props) => {
       <EditorBlock {...props} />
     </div>
   );
-});
+}) as React.FunctionComponent<Props>;
 
 export default BlockComponent;

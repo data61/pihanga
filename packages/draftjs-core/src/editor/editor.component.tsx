@@ -1,12 +1,15 @@
-import React from 'react';
+import React = require('react');
 import {
   Editor,
   EditorState, 
   DefaultDraftBlockRenderMap,
+  ContentBlock,
+  ContentState,
+  DraftHandleValue,
 } from 'draft-js';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Card } from '@pihanga/core';
-import Immutable from 'immutable';
+//import Immutable from 'immutable';
 // import { createLogger } from '@pihanga/core';
 
 import handleReturn from './handleReturn';
@@ -14,6 +17,7 @@ import { keyBindingFn, handleKeyCommand } from './handleKeyCommand';
 import handleBeforeInput from './handleBeforeInput';
 import BlockComponent from './block.component';
 import { getCatalog } from '../util';
+import { BlockRendererFnMap, BlockRendererFn, HandleReturnFn, HandleBeforeInputFn, HandleKeyCommandFn } from './index';
 
 import 'draft-js/dist/Draft.css';
 import './draft.css';
@@ -21,7 +25,26 @@ import styled from './editor.style';
 
 // const logger = createLogger('editor');
 
-const DEF_BLOCK_RENDER_FN = (_1, editorID, documentID, readOnly) => {
+export type Props = {
+  cardName: string,
+  documentID: string,
+  catalogKey: string,
+  // onOpen,
+  readOnly: boolean,
+  withSpellCheck: boolean, // true,
+  plugins: any[],
+  extensions: {[key:string]:any},
+  editorState: EditorState,
+  onUpdate: (ev : {
+    editorID: string,
+    documentID: string, 
+    editorState: EditorState, 
+    blocksChanged: string[], 
+    entitiesHaveChanged: boolean,
+  }) => void,
+};
+
+const DEF_BLOCK_RENDER_FN: BlockRendererFn = (_1, editorID, documentID, readOnly) => {
   return {
     component: BlockComponent,
     editable: !readOnly,
@@ -29,22 +52,22 @@ const DEF_BLOCK_RENDER_FN = (_1, editorID, documentID, readOnly) => {
   };
 };
 
-export const BlockType2Renderer = {
+export const BlockType2Renderer: BlockRendererFnMap = {
   'title': DEF_BLOCK_RENDER_FN,
   'paragraph': DEF_BLOCK_RENDER_FN,
 };
 
 export const HandleReturnExtensions = [
   { name: '__default__', f: handleReturn },
-];
+] as {name: string, f: HandleReturnFn}[];
 
 export const HandleBeforeInputExtensions = [
   { name: '__default__', f: handleBeforeInput },
-];
+] as {name: string, f: HandleBeforeInputFn}[];
 
 export const HandleKeyCommandExtensions = [
   { name: '__default__', f: handleKeyCommand },
-];
+] as {name: string, f: HandleKeyCommandFn}[];
 
 const DEF_OPTS = {
   documentID: 'default',
@@ -55,7 +78,7 @@ const DEF_OPTS = {
   extensions: {},
 };
 
-export const EditorComponent = styled((opts) => {
+export const EditorComponent: React.FunctionComponent<Props> = styled((opts: ClassedProps<Props>) => {
   const {
     documentID,
     catalogKey,
@@ -84,15 +107,16 @@ export const EditorComponent = styled((opts) => {
   // thing. However, we want some 'names' entity support. So we create a 'CATALOG'
   // entity in each EditorState, but aswe can't control it's 'key' we need to keep
   // a mapping. We set that mapping every time.
-  function setEState(es) {
+  function setEState(es: EditorState) {
     const cs = es.getCurrentContent();
     const bm = cs.getBlockMap();
     let changed = false;
-    const blocksChanged = [];
+    const blocksChanged = [] as string[];
     const origCS = eState.getCurrentContent();
     const origBM = origCS.getBlockMap();
-    const bm2 = bm.map(b => {
-      const bk = b.getKey();
+    const bm2 = bm.map(block => {
+      const b = block!;
+      const bk = b.getKey(); // b should never be undefined
       if (b !== origBM.get(bk)) {
         blocksChanged.push(bk);
       }
@@ -102,11 +126,11 @@ export const EditorComponent = styled((opts) => {
         return b;
       }
       changed = true;
-      return b.merge({ data: d2 });
+      return b.merge({ data: d2 }) as ContentBlock;
     });
     let es2 = es;
     if (changed) {
-      const cs2 = cs.merge({ blockMap: bm2 });
+      const cs2 = cs.merge({ blockMap: bm2 }) as ContentState;
       es2 = EditorState.push(es, cs2, 'change-block-data');
     }
 
@@ -122,21 +146,21 @@ export const EditorComponent = styled((opts) => {
     }
   }
 
-  function onChange(es) {
+  function onChange(es: EditorState) {
     setEState(es);
   }
 
-  function onBlur(e) {
+  function onBlur(e: React.SyntheticEvent) {
     // console.log("## BLURRED", e);
     isFocused.current = false;
   }
 
-  function onFocus(e) {
+  function onFocus(e: React.SyntheticEvent) {
     // console.log("## FOCUSSED", e);
     isFocused.current = true;
   }
 
-  function handleReturn(ev, editorState) {
+  function handleReturn(ev: SyntheticKeyboardEvent, editorState: EditorState) {
     const [handled2, es2] = HandleReturnExtensions.reduce(([handeled, es], def) => {
       if (handeled) {
         return [handeled, es];
@@ -148,10 +172,10 @@ export const EditorComponent = styled((opts) => {
     if (editorState !== es2) {
       setEState(es2);
     }
-    return handled2;
+    return (handled2 ? 'handled' : 'not-handled') as DraftHandleValue;
   }
 
-  function _handleKeyCommand(command, editorState) {
+  function _handleKeyCommand(command: string, editorState: EditorState) {
     const [handled2, es2] = HandleKeyCommandExtensions.reduce(([handeled, es], def) => {
       if (handeled) {
         return [handeled, es];
@@ -159,21 +183,14 @@ export const EditorComponent = styled((opts) => {
         const { name, f } = def;
         return f(command, es, readOnly, extensions[name]);
       }
-    }, [undefined, editorState]);
+    }, [undefined, editorState] as [string|undefined, EditorState]);
     if (editorState !== es2) {
       setEState(es2);
     }
-    return handled2 ? handled2 : 'not-handled';
-
-    // const es = handleKeyCommand(command, editorState);
-    // if (es) {
-    //   setEState(es);
-    //   return 'handled';
-    // }
-    // return 'not-handled';
+    return (handled2 ? handled2 : 'not-handled') as DraftHandleValue;
   }
 
-  function _handleBeforeInput(chars, editorState) {
+  function _handleBeforeInput(chars: string , editorState: EditorState) {
     const [handled2, es2] = HandleBeforeInputExtensions.reduce(([handeled, es], def) => {
       if (handeled) {
         return [handeled, es];
@@ -181,18 +198,18 @@ export const EditorComponent = styled((opts) => {
         const { name, f } = def;
         return f(chars, es, readOnly, extensions[name]);
       }
-    }, [undefined, editorState]);
+    }, [undefined, editorState] as [string|undefined, EditorState]);
     if (editorState !== es2) {
       setEState(es2);
     }
-    return handled2 ? handled2 : 'not-handled';
+    return (handled2 ? handled2 : 'not-handled') as DraftHandleValue;;
   }
 
-  function _keyBindingFn(e)  {
+  function _keyBindingFn(e: SyntheticKeyboardEvent): string|null  {
     return keyBindingFn(e, eState, onChange);
   }
 
-  function blockRendererFn(contentBlock) {
+  function blockRendererFn(contentBlock: ContentBlock) {
     const type = contentBlock.getType();
     console.log('RENDER BLOCK', type);
     const renderer = BlockType2Renderer[type];
@@ -201,39 +218,39 @@ export const EditorComponent = styled((opts) => {
     }
   }
 
-  function renderBubble() {
-    const style = {
-      top: 89,
-      right: -20,
-      opacity: 1,
-      zIndex: 101,
-      transition: 'opacity 0.25s ease-in-out 0s',
-      boxShadow: 'rgba(0, 0, 0, 0.05) 0px 3px 3px',
-      position: 'absolute',
-      width: '40px',
-      height: '40px',
-      textAlign: 'center',
-      borderWidth: 1,
-      borderStyle: 'solid',
-      borderColor: 'rgb(238, 238, 238)',
-      borderImage: 'initial',
-      background: 'rgba(255, 255, 255, 0.85)',
-      borderRadius: '100%',
-      overflow: 'hidden',
-    };
-    return (
-      <div 
-        role="button" 
-        tabIndex="-1" 
-        aria-hidden="true" 
-        aria-label="Add a comment" 
-        data-tooltip="Add a comment" 
-        style={style}
-      />
-    );
-  }
+  // function renderBubble() {
+  //   const style = {
+  //     top: 89,
+  //     right: -20,
+  //     opacity: 1,
+  //     zIndex: 101,
+  //     transition: 'opacity 0.25s ease-in-out 0s',
+  //     boxShadow: 'rgba(0, 0, 0, 0.05) 0px 3px 3px',
+  //     position: 'absolute',
+  //     width: '40px',
+  //     height: '40px',
+  //     textAlign: 'center',
+  //     borderWidth: 1,
+  //     borderStyle: 'solid',
+  //     borderColor: 'rgb(238, 238, 238)',
+  //     borderImage: 'initial',
+  //     background: 'rgba(255, 255, 255, 0.85)',
+  //     borderRadius: '100%',
+  //     overflow: 'hidden',
+  //   };
+  //   return (
+  //     <div 
+  //       role="button" 
+  //       tabIndex={-1}
+  //       aria-hidden="true" 
+  //       aria-label="Add a comment" 
+  //       data-tooltip="Add a comment" 
+  //       style={style}
+  //     />
+  //   );
+  // }
 
-  const MyUL = (props) => {
+  const MyUL = (props: {[key:string]:any}) => {
     console.log('MyUL:', props);
     return (
       <ul data-offset-key={props['data-offset-key']} className='public-DraftStyleDefault-ul'>
@@ -242,7 +259,7 @@ export const EditorComponent = styled((opts) => {
     );
   }
 
-  const MyLi = (props) => {
+  const MyLi = (props: {[key:string]:any}) => {
     console.log('MYWRAPPER:', props.children[0], props);
     return (
       <li 
@@ -275,31 +292,31 @@ export const EditorComponent = styled((opts) => {
     }
   }));
 
-  //console.log("ANCHOR BLOCK", es.getSelection().getAnchorKey());
+  const editorOpts = {
+    key: 1,
+    editorState: eState,
+    readOnly: readOnly, // handle ourselve,
+    onChange,
+    handleKeyCommand: _handleKeyCommand,
+    handleReturn: handleReturn,
+    handleBeforeInput: _handleBeforeInput,
+    // preserveSelectionOnBlur
+    blockRenderMap: blockRenderMap,
+    blockRendererFn: blockRendererFn,
+    keyBindingFn: _keyBindingFn,
+    spellCheck: withSpellCheck,
+    className: classes.inner,
+    styles: { width: '100%', overflowY: 'unset' },
+  };
+
   return (
     <div className={classes.outer} onFocus={onFocus} onBlur={onBlur}>
-      {/* <EditorStateContext.Provider value={es}> */}
-      <Editor
-        key={1}
-        editorState={eState}
-        // readOnly={readOnly} // handle ourselves
-        onChange={onChange}
-        handleKeyCommand={_handleKeyCommand}
-        handleReturn={handleReturn}
-        handleBeforeInput={_handleBeforeInput}
-        preserveSelectionOnBlur
-        blockRenderMap={blockRenderMap}
-        blockRendererFn={blockRendererFn}
-        keyBindingFn={_keyBindingFn}
-        spellCheck={withSpellCheck}
-        className={classes.inner}
-        styles={{ width: '100%', overflowY: 'unset' }}
-        // ref={editorRef}
-      />
+      <Editor {...editorOpts} />
       { plugins.map((p,i) => (<Card cardName={p.cardName} key={i} editorID={editorID} isFocused={isFocused.current}/>))}
+
       {/* <Card cardName='styleMenu' editorID={editorID} isFocused={isFocused.current}/>
       <Card cardName='linkDialog' editorID={editorID} isFocused={isFocused.current}/> */}
-      { renderBubble() }
+      {/* { renderBubble() } */}
     </div>
   );
-});
+}) as React.FunctionComponent<Props>;

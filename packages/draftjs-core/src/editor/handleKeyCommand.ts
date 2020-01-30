@@ -13,7 +13,11 @@ import { SyntheticKeyboardEvent } from '../editor';
 
 const MAX_LIST_DEPTH = 4;
 
-export function keyBindingFn(e: SyntheticKeyboardEvent, eState: EditorState, onChange: (es: EditorState) => void) {
+export function keyBindingFn(
+  e: SyntheticKeyboardEvent, 
+  eState: EditorState, 
+  onChange: (es: EditorState) => void
+): string | null {
   // const {hasCommandModifier} = KeyBindingUtil;
 
   // if (e.keyCode === 9) {
@@ -24,9 +28,9 @@ export function keyBindingFn(e: SyntheticKeyboardEvent, eState: EditorState, onC
     case 9: // TAB
       const es = RichUtils.onTab(e, eState, MAX_LIST_DEPTH);
       onChange(es);
-      return;
+      return null;
     default:
-      return getDefaultKeyBinding(e);
+      return getDefaultKeyBinding(e) as string|null;
   }
 
   // if (e.keyCode === 83 /* `S` key */ && hasCommandModifier(e)) {

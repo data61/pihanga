@@ -29,6 +29,11 @@ type ReduxAction = {
 
 type PiCardState = {[key:string]: any}
 
+type CardOpts = {
+  cardName: string,
+}
+export declare function Card(opts: CardOpts & {[key:string]:any}): any;
+
 interface PiRegister {
   cardComponent(declaration: PiRegisterComponent): void,
 

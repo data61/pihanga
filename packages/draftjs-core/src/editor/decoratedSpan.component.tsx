@@ -3,10 +3,10 @@ import React = require('react');
 import {ContentState, DraftEntityType, DraftEntityMutability} from 'draft-js';
 import {DecorationMapper, ParentProps, ElementProps, DropProps, DragProps, EditorOpts} from './decorator';
 
-type ClassedProps<P> = P & { 
-  classes: {[name:string]:string}, 
-  children?: React.ReactNode 
-};
+// type ClassedProps<P> = P & { 
+//   classes: {[name:string]:string}, 
+//   children?: React.ReactNode 
+// };
 
 // this is identical to 'DraftEntityInstance' which is unfortunately not exported
 interface Entity {
