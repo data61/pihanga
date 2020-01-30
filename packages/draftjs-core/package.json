@@ -1,5 +1,5 @@
 {
-  "name": "draftjs-core",
+  "name": "@pihanga/draftjs-core",
   "version": "0.0.3",
   "description": "Wrapping and extending draft-js in the Pihanga framework",
   "license": "MIT",
