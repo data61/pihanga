@@ -24,7 +24,8 @@
     "dist",
     "lib",
     "src",
-    "es"
+    "es",
+    "types"
   ],
   "scripts": {
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib && touch lib/DO_NOT_EDIT",

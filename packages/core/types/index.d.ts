@@ -2,11 +2,15 @@
 export declare function registerActions(domain: string, names: string[]): {[key:string]:string};
 export function actions(name:string): {[key:string]: string};
 
-export declare function dispatch(action: ReduxAction): void;
-export declare function dispatch(actionType: string, props:  {[key:string]:any}): void;
+export declare function dispatch<T extends ReduxAction>(action: T): void;
+export declare function dispatch<T>(actionType: string, props:  T): void;
 export declare function dispatch(domain: string, actionType: string, props:  {[key:string]:any}): void;
 
-export declare function dispatchFromReducer(action: ReduxAction): void;
+export declare function dispatchFromReducer<T extends ReduxAction>(action: T): void;
+// export declare function dispatchFromReducer(actionType: string, props:  {[key:string]:any}): void;
+export declare function dispatchFromReducer<T extends {[key:string]:any}>(actionType: string, props: T): void;
+export declare function dispatchFromReducer<T extends {[key:string]:any}>(domain: string, actionType: string, props:  {[key:string]:any}): void;
+
 export declare function update(state: ReduxState, path: string[], partial: any): ReduxState;
 
 
