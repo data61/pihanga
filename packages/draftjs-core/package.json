@@ -16,8 +16,8 @@
     "lint": "tslint -p tsconfig.json",
     "test": "jest --config jestconfig.json",
     "prepare": "npm run build",
-    "prepublishOnly": "npm test && npm run lint",
-    "preversion": "npm run lint"
+    "x-prepublishOnly": "npm test && npm run lint",
+    "x-preversion": "npm run lint"
   },
   "dependencies": {
     "draft-js": "^0.11.0",
