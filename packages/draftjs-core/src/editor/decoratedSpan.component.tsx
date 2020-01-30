@@ -1,4 +1,3 @@
-//import {* as React} from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import React = require('react');
 import {ContentState, DraftEntityType, DraftEntityMutability} from 'draft-js';
@@ -15,12 +14,6 @@ interface Entity {
   getMutability(): DraftEntityMutability,
   getData(): Object,
 }
-
-type Props = ParentProps & {
-  decorators: {[key: string]: DecorationMapper},
-  entities?: [string, Entity][],
-  decoratorID?: string,
-};
 
 type DragElProps = {
   dragOpts: DragProps, 
