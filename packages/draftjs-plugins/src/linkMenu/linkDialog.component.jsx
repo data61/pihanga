@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import LinkDialogDisplay from './linkDialog.display.component';
 import LinkDialogEdit from './linkDialog.edit.component';
 import LinkDialogEdit2 from './linkDialog.edit2.component';

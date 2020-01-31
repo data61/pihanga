@@ -1,4 +1,5 @@
-import React = require('react');
+// import React = require('react');
+import * as React from 'react';
 // import React from 'react';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
@@ -9,7 +10,7 @@ import Typography from '@material-ui/core/Typography';
 // import { makeStyles } from '@material-ui/core/styles';
 // import parse from 'autosuggest-highlight/parse';
 // import throttle from 'lodash/throttle';
-import {isUri} from 'valid-url';
+import { isUri } from 'valid-url';
 
 import styled from './linkDialog.edit2.style';
 
@@ -59,7 +60,7 @@ export const LinkDialogEdit = styled((props: LinkDialogType) => {
   }
 
   const dispatch = (url: string, f:any) => {
-    f({editorID, url});
+    f({ editorID, url });
   }
 
   function onChange(e: React.ChangeEvent<{}>, value: any) {
@@ -85,7 +86,7 @@ export const LinkDialogEdit = styled((props: LinkDialogType) => {
     // console.log("LINK BLUR");
     closeTimeout.current = setTimeout(() => {
       closeTimeout.current = null;
-      onClose({editorID});
+      onClose({ editorID });
     }, 100) as any;
   }
 
@@ -102,7 +103,7 @@ export const LinkDialogEdit = styled((props: LinkDialogType) => {
       console.log(">>>>>END", url);
       if (isURL(url)) {
         dispatch(url, onSelected);
-        onClose({editorID});
+        onClose({ editorID });
       } else {
         isNotUrl.current = true;
         dispatch(url, onValue); // force repaint of text field
@@ -118,7 +119,7 @@ export const LinkDialogEdit = styled((props: LinkDialogType) => {
       <TextField
         {...params}
         label={label}
-        inputProps={{...params.inputProps, onKeyUp: checkSubmit}}
+        inputProps={{ ...params.inputProps, onKeyUp: checkSubmit }}
         variant="outlined"
         autoFocus
         fullWidth
@@ -132,12 +133,12 @@ export const LinkDialogEdit = styled((props: LinkDialogType) => {
     if (text.length <= length) return text;
 
     // Note: Seem to require funky type gymnastic
-    const {line} = text.split(' ').reduce((p, w) => {
+    const { line } = text.split(' ').reduce((p, w) => {
       if (p.cnt > length) return p;
 
       const wl = w.length;
-      return {line: p.line.concat(w), cnt: p.cnt + wl};
-    }, {line: [] as string[], cnt: 0} as any) as {line: string[], cnt: number};
+      return { line: p.line.concat(w), cnt: p.cnt + wl };
+    }, { line: [] as string[], cnt: 0 } as any) as {line: string[], cnt: number};
     return `${line.join(' ')}...`;
   }
 

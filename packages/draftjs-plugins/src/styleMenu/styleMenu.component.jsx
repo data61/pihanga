@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { getSelectedBlocksType } from 'draftjs-utils';
 import { Card } from '@pihanga/core';
 import Paper from '@material-ui/core/Paper';
