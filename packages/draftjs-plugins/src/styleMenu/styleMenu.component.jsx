@@ -16,9 +16,9 @@ export const StyleMenu = styled(({
   onClose,
   classes,
 }) => {
-  const oldSelection = React.useRef(null); 
-  const styles = React.useRef(null); 
-  const blockType = React.useRef(null); 
+  const oldSelection = React.useRef(null);
+  const styles = React.useRef(null);
+  const blockType = React.useRef(null);
 
   if (activePopper && activePopper !== 'style') {
     return null;
@@ -44,7 +44,7 @@ export const StyleMenu = styled(({
       return { type: e.getType(), data: e.getData() };
     });
     blockType.current = getSelectedBlocksType(editorState);
-  
+
     onOpen({
       editorID,
       styles: styles.current,
@@ -65,7 +65,7 @@ export const StyleMenu = styled(({
   );
 
   return (
-    <SelectionPopper selection={selection} forceShow placement= 'bottom-start'> 
+    <SelectionPopper selection={selection} forceShow placement= 'bottom-start'>
       <Paper square className={classes.paper} >
         { items.map(MenuIcon) }
       </Paper>
