@@ -1,0 +1,21 @@
+{
+  "extends": [
+    "airbnb", 
+    "plugin:react/recommended"
+  ],
+  "rules": {
+    "react/jsx-props-no-spreading": "off",
+    "import/prefer-default-export": "off",
+    "react/prop-types": "off",
+    "no-use-before-define": "off",
+    "no-else-return": "off",
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true // Allows for the parsing of JSX
+    }
+  }
+}
