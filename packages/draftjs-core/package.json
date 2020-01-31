@@ -14,7 +14,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "rm -r ./lib && tsc && cp src/editor/draft.css lib/editor",
+    "build": "rm -rf ./lib && tsc && cp src/editor/draft.css lib/editor",
     "lint": "eslint \"src/**\"",
     "test": "jest --config jestconfig.json",
     "prepare": "npm run build",
@@ -44,6 +44,8 @@
     "@types/react": "^16.9.0",
     "@typescript-eslint/eslint-plugin": "^2.18.0",
     "@typescript-eslint/parser": "^2.18.0",
+    "@types/immutable": "^3.8.7",
+
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-plugin-import": "^2.20.0",

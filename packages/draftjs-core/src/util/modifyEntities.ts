@@ -7,7 +7,7 @@ import {
   CharacterMetadata,
   BlockMap,
 } from 'draft-js';
-import { OrderedSet } from 'immutable';
+import Immutable = require('immutable');
 
 
 // entity key for catalog
@@ -415,7 +415,7 @@ export const entitiesForSelection = (
 ): Entity[] => {
   const startKey = selection.getStartKey();
   const endKey = selection.getEndKey();
-  let entSet = null as OrderedSet<string> | null;
+  let entSet = null as Immutable.OrderedSet<string> | null;
   getBlocksForSelection(selection, contentState).forEach(b => {
     const k = b!.getKey();
     const sOff = k === startKey ? selection.getStartOffset() : 0;
@@ -427,8 +427,8 @@ export const entitiesForSelection = (
       entSet = entSet ? entSet.intersect(sy) : sy;
     });
   });
-  return entSet ? entSet.toArray().map(k => contentState.getEntity(k)) : [];
-}
+  return entSet ? entSet.toArray().map((k) => contentState.getEntity(k)) : [];
+};
 
 // const entitiesForRefEntity = (
 //   refKey: string,
