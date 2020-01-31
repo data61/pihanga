@@ -9,7 +9,7 @@ import {
 } from 'draft-js';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Card } from '@pihanga/core';
-//import Immutable from 'immutable';
+import Immutable = require('immutable');
 // import { createLogger } from '@pihanga/core';
 
 import handleReturn from './handleReturn';

@@ -14,7 +14,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "rm -r ./lib & tsc --jsx preserve --sourceMap",
+    "build": "rm -r ./lib && tsc && cp src/editor/draft.css lib/editor",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json",
     "test": "jest --config jestconfig.json",
@@ -60,6 +60,5 @@
   },
   "files": [
     "lib/**/*"
-  ],
-  "gitHead": "15f81fd7b7e3fdb632094f9c6d1dbae80aa96e8e"
+  ]
 }
