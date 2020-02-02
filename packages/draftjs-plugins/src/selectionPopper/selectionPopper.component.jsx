@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import {getVisibleSelectionRect} from 'draft-js';
 import Popper from '@material-ui/core/Popper';
 import Fade from '@material-ui/core/Fade';

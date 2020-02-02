@@ -1,8 +1,9 @@
 import React = require('react');
 import { EditorBlock, ContentBlock } from 'draft-js';
 import styled from './blockComponent.style';
+import { PiComponentProps } from './api';
 
-export type Props = {
+export type Props = PiComponentProps & {
   block: ContentBlock,
   blockProps: {
     type: string,

@@ -22,7 +22,9 @@ export declare function getCardState(cardName:string, state: ReduxState): PiCard
 export declare function createLogger(name:string):any;
 
 type ReactComponent = any; //({[key:string]:any}) => any
-type ReduxState = {[key:string]:any};
+type ReduxState = {
+  pihanga?: {[key:string]:any},
+};
 type ReduxAction = {
   type: string,
 };
@@ -50,8 +52,7 @@ interface PiRegister {
    */
   metaCard(type: string, transformF: PiMetaTransformerF): void;
 
-  // can't make the incoming types specific
-  reducer(eventType: string, mapper: (state: ReduxState, action: any) => ReduxState): void,
+  reducer<S extends ReduxState, A extends ReduxAction>(eventType: string, mapper: (state: S, action: A) => S): void,
 }
 
 type PiRegisterComponent = {

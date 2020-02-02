@@ -1,14 +1,26 @@
 {
   "extends": [
     "airbnb", 
-    "plugin:react/recommended"
+    "plugin:react/recommended",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
     "react/jsx-props-no-spreading": "off",
+    "react/jsx-filename-extension": [2, { "extensions": [".jsx", ".tsx"] }],
     "import/prefer-default-export": "off",
     "react/prop-types": "off",
     "no-use-before-define": "off",
     "no-else-return": "off",
+    "import/extensions": [ "error", "ignorePackages", {
+      "js": "never",
+      "jsx": "never",
+      "ts": "never",
+      "tsx": "never"
+    }],
+    "@typescript-eslint/no-use-before-define": "off",
+    "no-underscore-dangle": "off"
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
