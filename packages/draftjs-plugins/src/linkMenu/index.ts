@@ -1,8 +1,10 @@
-import { registerActions, dispatch, ReduxAction, PiRegister } from '@pihanga/core';
+import {
+  registerActions, dispatch, ReduxAction, PiRegister,
+} from '@pihanga/core';
 // import { genKey, } from 'draft-js';
-import { 
-  registerDecorator, 
-  DecorationMapper, 
+import {
+  registerDecorator,
+  DecorationMapper,
 } from '@pihanga/draftjs-core';
 import { ACTION_TYPES as STYLE_ACTION_TYPES } from '../styleMenu';
 import LinkDialog from './linkDialog.component';
@@ -12,7 +14,7 @@ import style from './decorator.style';
 import { ReducerOpts, LinkState, initReducers } from './reducers';
 
 export const Domain = 'EDITOR:LINK';
-const ACTION_TYPES = registerActions(Domain, ['SELECTED', 'VALUE', 'CLICKED', 'EDIT',  'UPDATE', 'CLOSE']);
+const ACTION_TYPES = registerActions(Domain, ['SELECTED', 'VALUE', 'CLICKED', 'EDIT', 'UPDATE', 'CLOSE']);
 
 export const StyleName = 'LINK';
 
@@ -44,14 +46,14 @@ export const init = (register: PiRegister) => {
   registerDecorator(StyleName, [decorator, style]);
 
   register.cardComponent({
-    name: PLUGIN_TYPE, 
+    name: PLUGIN_TYPE,
     component: LinkDialog,
     events: {
       onSelected: ACTION_TYPES.SELECTED,
       onEdit: ACTION_TYPES.EDIT,
       onValue: ACTION_TYPES.VALUE,
       onClose: ACTION_TYPES.CLOSE,
-    },  
+    },
   });
   BackendInit(register);
 
@@ -66,13 +68,13 @@ export const init = (register: PiRegister) => {
       CLOSE: ACTION_TYPES.CLOSE,
       CLICKED: ACTION_TYPES.CLICKED,
       EDIT: ACTION_TYPES.EDIT,
-      STYLE_UPDATE: STYLE_ACTION_TYPES.UPDATE, 
+      STYLE_UPDATE: STYLE_ACTION_TYPES.UPDATE,
     },
 
     getLinkState: (a) => {
-      const url = a.url;
+      const { url } = a;
       if (url && a.url !== '') {
-        return {url};
+        return { url };
       } else {
         return undefined;
       }
@@ -83,56 +85,54 @@ export const init = (register: PiRegister) => {
       if (a.url) {
         url = a.url;
       } else if (linkEntity) {
-        url = (linkEntity.getData() as LinkEntityState).url
+        url = (linkEntity.getData() as LinkEntityState).url;
       }
-      return {url};
+      return { url };
     },
     stateFromEntity: (a, cs) => {
       const url = a.entityKey ? cs.getEntity(a.entityKey).getData().url : null;
       return {
         url,
         originalUrl: url,
-      }
+      };
     },
 
     showPopperName: 'link',
     editPopperName: 'link.edit',
-  }
+  };
 
-  initReducers(register, opts); 
-}
+  initReducers(register, opts);
+};
 
-const decorator:DecorationMapper = (_1, attr, classes, _2, ek, editorOpts, {blockKey, start, end})  => {
+const decorator:DecorationMapper = (_1, attr, classes, _2, ek, editorOpts, { blockKey, start, end }) => {
   const id = `link-${blockKey}-${start}-${end}`;
   attr.element = 'a';
   attr.onClick = (e:any) => {
     e.preventDefault();
-    //e.stopPropagation();
+    // e.stopPropagation();
     dispatch({
       id: editorOpts.editorID,
       type: ACTION_TYPES.CLICKED,
       entityKey: ek,
-      blockKey, // needed to remove link 
+      blockKey, // needed to remove link
       elementID: id,
       editorID: editorOpts.editorID,
     });
-  }
+  };
   attr.props['data-link-id'] = id;
   attr.props['data-entity-key'] = ek;
   attr.props['data-block-key'] = blockKey;
   // while we would know the url at this point, when we change it in
   // the respective entity, we not necessarily refresh the decorated element.
-  attr.props['href'] = '#';
-  attr.props['target'] = '_none';
-  attr.props['rel'] = 'noreferrer';
+  attr.props.href = '#';
+  attr.props.target = '_none';
+  attr.props.rel = 'noreferrer';
 
   attr.className.push(classes['LINK.link']);
   // make link draggable
   attr.className.push(classes['LINK.link.draggable']);
   attr.useDrag = {
     item: { type: DragItemTypes.LINK },
-    collect: monitor => {
-      return monitor.isDragging() ? 'LINK.link.dragging' : undefined;
-		},
+    collect: (monitor) => (monitor.isDragging() ? 'LINK.link.dragging' : undefined),
   };
-}
+};
