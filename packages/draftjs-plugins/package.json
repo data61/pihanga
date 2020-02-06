@@ -22,7 +22,7 @@
     "x-preversion": "npm run lint"
   },
   "dependencies": {
-    "@pihanga/draftjs-core": "^0.0.8",
+    "@pihanga/draftjs-core": "^0.1.0",
     "immutable": "^4.0.0-rc.12",
     "valid-url": "^1.0.0"
   },
