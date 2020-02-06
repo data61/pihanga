@@ -1,6 +1,6 @@
 {
   "name": "@pihanga/draftjs-plugins",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A set of plugins for the Pihanga draft-js editor",
   "license": "MIT",
   "author": "Max Ott <max@winlab.rutgers.edu> (http://linkedin.com/in/max-ott)",
