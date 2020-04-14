@@ -13,14 +13,21 @@
     "react/prop-types": "off",
     "no-use-before-define": "off",
     "no-else-return": "off",
-    "import/extensions": [ "error", "ignorePackages", {
-      "js": "never",
-      "jsx": "never",
-      "ts": "never",
-      "tsx": "never"
-    }],
+    // "import/extensions": [ "error", "ignorePackages", {
+    //   "js": "never",
+    //   "jsx": "never",
+    //   "ts": "never",
+    //   "tsx": "never"
+    // }],
     "@typescript-eslint/no-use-before-define": "off",
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    "import/extensions": ["error", "never", {
+      "component": "always",
+      "style": "always",
+      "svg": "always", 
+      "json": "always" 
+    }],
+    "import/no-unresolved": "off"
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -29,5 +36,13 @@
     "ecmaFeatures": {
       "jsx": true // Allows for the parsing of JSX
     }
+  },
+  "settings": {
+    "import/extensions": [
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx"
+    ]
   }
 }

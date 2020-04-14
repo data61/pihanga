@@ -1,7 +1,8 @@
+
 import { update, dispatchFromReducer } from '../redux';
 import { createLogger } from '../logger';
 
-import {  ACTION_TYPES as ROUTER_ACTION_TYPES, navigateToPage } from './router.actions';
+import { ACTION_TYPES as ROUTER_ACTION_TYPES, navigateToPage } from './router.actions';
 
 const logger = createLogger('pihanga:router:reducer');
 
@@ -68,8 +69,9 @@ export default (registerReducer, browserHistory, opts) => {
     return state;
   });
 
-  registerReducer('@@INIT', (state) =>  {
+  registerReducer('REDUX', 'INIT', (state) => {
     const cp = toUrl(state.route.path);
+    logger.info(`Request navigation to '${cp}'`);
     setTimeout(() => navigateToPage(cp, true));
     return state;
   });

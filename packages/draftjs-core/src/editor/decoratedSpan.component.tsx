@@ -1,49 +1,52 @@
 import { useDrag, useDrop } from 'react-dnd';
-import React = require('react');
-import {ContentState, DraftEntityType, DraftEntityMutability} from 'draft-js';
-import {DecorationMapper, ParentProps, ElementProps, DropProps, DragProps, EditorOpts} from './decorator';
+// import React = require('react');
+import * as React from 'react';
+import { ContentState, DraftEntityType, DraftEntityMutability } from 'draft-js';
+import {
+  DecorationMapper, ParentProps, ElementProps, DropProps, DragProps, EditorOpts,
+} from './decorator';
 
-// type ClassedProps<P> = P & { 
-//   classes: {[name:string]:string}, 
-//   children?: React.ReactNode 
+// type ClassedProps<P> = P & {
+//   classes: {[name:string]:string},
+//   children?: React.ReactNode
 // };
 
 // this is identical to 'DraftEntityInstance' which is unfortunately not exported
 interface Entity {
-  getType(): DraftEntityType,
-  getMutability(): DraftEntityMutability,
-  getData(): Object,
+  getType(): DraftEntityType;
+  getMutability(): DraftEntityMutability;
+  getData(): Record<string, any>;
 }
 
 type DragElProps = {
-  dragOpts: DragProps, 
-  el: string, 
-  elProps: {className?: string} & {[key:string]:any},
+  dragOpts: DragProps;
+  el: string;
+  elProps: {className?: string} & {[key: string]: any};
 };
 
 type DropElProps = {
-  dropOpts: DropProps, 
-  el: string, 
-  elProps: {className?: string} & {[key:string]:any},
+  dropOpts: DropProps;
+  el: string;
+  elProps: {className?: string} & {[key: string]: any};
 };
 
 export type StylesSpanProps = ClassedProps<ParentProps & {
-  contentState: ContentState,
-  decoratedText: string
-  start: number,
-  end: number,
-  blockKey: string,
-  entityKey: string | undefined,
+  contentState: ContentState;
+  decoratedText: string;
+  start: number;
+  end: number;
+  blockKey: string;
+  entityKey: string | undefined;
   // classes: {[key:string]:string},
 
-  editorOpts: EditorOpts,
-  decorators: {[key:string]:DecorationMapper},
-  entities?: [string, Entity][],
-  decoratorID?: string,
+  editorOpts: EditorOpts;
+  decorators: {[key: string]: DecorationMapper};
+  entities?: [string, Entity][];
+  decoratorID?: string;
 }>;
 
 const StyledSpan = (
-  props: ClassedProps<StylesSpanProps>
+  props: ClassedProps<StylesSpanProps>,
 ) => {
   const {
     entities,
@@ -62,10 +65,11 @@ const StyledSpan = (
   } as ElementProps;
   if (entities) {
     attrs = entities.reduce((p, [ek, e]) => {
-      const t = e.getType();
+      // 'e' is null for 'basic' decorators such as BOLD
+      const t = e == null ? ek : e.getType();
       const dec = decorators[t];
       if (dec) {
-        dec(e, p, classes, contentState, ek, editorOpts, props)
+        dec(e, p, classes, contentState, ek, editorOpts, props);
       }
       return p;
     }, attrs);
@@ -75,11 +79,11 @@ const StyledSpan = (
     elProps.className = attrs.className.join(' ');
   }
   if (attrs.refF.length > 0) {
-    elProps.ref = (el:any) => {
+    elProps.ref = (el: any) => {
       if (el) {
-        attrs.refF.forEach(f => f(el));
+        attrs.refF.forEach((f) => f(el));
       }
-    }
+    };
   }
   if (attrs.onClick) {
     elProps.onClick = attrs.onClick;
@@ -101,7 +105,7 @@ const StyledSpan = (
     return (
       <DropableStyledSpan
         dropOpts={attrs.useDrop}
-        el={el} 
+        el={el}
         elProps={elProps}
         classes={classes}
         // eslint-disable-next-line react/no-children-prop
@@ -131,9 +135,9 @@ const DropableStyledSpan = (props: ClassedProps<DropElProps>) => {
   const {
     dropOpts, el, elProps, classes, children,
   } = props;
-//    = ({
-//   dropOpts, el, elProps, classes, children,
-// }) => {
+  //    = ({
+  //   dropOpts, el, elProps, classes, children,
+  // }) => {
   const [dropClass, drop] = useDrop({
     // accept: ItemTypes.KNIGHT,  // REQUIRED
     drop: (item, monitor) => console.log('ITEM dropped', item, monitor),

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   SelectionState,
   ContentState,
@@ -7,9 +8,11 @@ import {
   CharacterMetadata,
   BlockMap,
 } from 'draft-js';
+import { createLogger } from '@pihanga/core';
 
 import Immutable = require('immutable');
 
+const logger = createLogger('@pihanga/draftjs-core/modifyEntities');
 
 // entity key for catalog
 // const CATALOG_KEY = '1';
@@ -187,7 +190,7 @@ export const createNamedEntity = (
     const ck = getCatalogKey(contentState);
     const ce = cs.getEntity(ck);
     if (ce.getData()[name]) {
-      console.warn(`Overwriting entity '${name}' in catalog`);
+      logger.warn(`Overwriting entity '${name}' in catalog`);
     }
     const h: {[key: string]: string} = {};
     h[name] = eKey;
@@ -441,7 +444,22 @@ export const entitiesForSelection = (
       entSet = entSet ? entSet.intersect(sy) : sy;
     });
   });
-  return entSet ? entSet.toArray().map((k) => contentState.getEntity(k)) : [];
+  if (entSet) {
+    return entSet.toArray()
+      .map((k) => {
+        try {
+          return contentState.getEntity(k);
+        } catch {
+          if (k.match(/^[0-9]/)) {
+            logger.warn(`Can't find entity '${k}'`);
+          }
+          return null;
+        }
+      })
+      .filter((e) => e !== null) as Entity[];
+  } else {
+    return [];
+  }
 };
 
 // const entitiesForRefEntity = (

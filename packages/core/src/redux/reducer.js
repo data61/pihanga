@@ -3,8 +3,9 @@ import stackinfo from 'stackinfo';
 
 import { createLogger } from '../logger/logger';
 import { ACTION_TYPES, emitError } from './redux.actions';
+import { action as toAction } from './actions';
 
-const logger = createLogger('reducer');
+const logger = createLogger('@pihanga:core:reducer');
 
 function dispatchError(msg, e) {
   const si = stackinfo(e).map(s => s.traceline);
@@ -26,9 +27,13 @@ export class Reducer {
     this.reducerByAction = reducerByAction;
   }
 
-  registerReducer(type, reducer) {
+  registerReducer(...args) {
+    const [type, reducer] = Reducer.parseReducerArgs(args);
     if (!type) {
       throw new Error('Missing type');
+    }
+    if (typeof reducer !== 'function') {
+      throw new Error('Expected the reducer to be a function.');
     }
     let d = this.reducerByAction[type];
     if (d === undefined) {
@@ -38,6 +43,19 @@ export class Reducer {
     d.push(reducer);
 
     logger.infoSilently(`Register reducer for type: ${type}`);
+  }
+
+  static parseReducerArgs(args) {
+    switch (args.length) {
+      case 2: {
+        return args;
+      }
+      case 3: {
+        return [toAction(args[0], args[1]), args[2]];
+      }
+      default:
+        throw new Error('Illegal number of arguments, expected 2 or 3');
+    }
   }
 
   rootReducer(state, action) {

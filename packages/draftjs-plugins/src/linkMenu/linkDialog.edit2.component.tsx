@@ -32,7 +32,7 @@ type LinkDialogType = {
   classes: any,
 };
 
-function isURL(url: string) {
+function isURL(url: string): boolean {
   return isUri(url);
 }
 
@@ -42,7 +42,7 @@ export const LinkDialogEdit = styled((props: LinkDialogType) => {
     editorID,
 
     search = {},
-    //options,
+    // options,
     optionSnippetLength = 60,
 
     onSelected,
@@ -59,9 +59,10 @@ export const LinkDialogEdit = styled((props: LinkDialogType) => {
     options = search.result;
   }
 
+  // eslint-disable-next-line no-shadow
   const dispatch = (url: string, f:any) => {
     f({ editorID, url });
-  }
+  };
 
   function onChange(e: React.ChangeEvent<{}>, value: any) {
     isNotUrl.current = false; // changed entry
@@ -99,8 +100,8 @@ export const LinkDialogEdit = styled((props: LinkDialogType) => {
   }
 
   function checkSubmit(e:any) {
-    if(e && e.keyCode == 13) {
-      console.log(">>>>>END", url);
+    if (e && e.keyCode === 13) {
+      console.log('>>>>>END', url);
       if (isURL(url)) {
         dispatch(url, onSelected);
         onClose({ editorID });
@@ -146,7 +147,7 @@ export const LinkDialogEdit = styled((props: LinkDialogType) => {
     if (option.source) {
       const icon = Source2Icon[option.source];
       if (icon) {
-        return <img className={classes.icon} src={icon} />
+        return <img className={classes.icon} src={icon} />;
       }
     }
     return null;
@@ -192,7 +193,7 @@ export const LinkDialogEdit = styled((props: LinkDialogType) => {
         autoComplete
         includeInputInList
         freeSolo
-        disableOpenOnFocus
+        // disableOpenOnFocus
         renderInput={renderInput}
         renderOption={renderOption}
         size="small"

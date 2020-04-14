@@ -1,4 +1,5 @@
-import {EditorState, 
+import {
+  EditorState,
   Modifier,
   SelectionState,
   ContentBlock,
@@ -16,22 +17,22 @@ const HEADERS = [
 ];
 
 type OnLineF = (
-  prefix: string, 
-  block: ContentBlock, 
+  prefix: string,
+  block: ContentBlock,
   blockKey: string,
   eState?: EditorState,
 ) => EditorState | null;
 
 export default function handleBeforeInput(
-  chars: string, 
-  eState: EditorState, 
-  readOnly: boolean
-) : [string|undefined, EditorState] {
+  chars: string,
+  eState: EditorState,
+  readOnly: boolean,
+): [string|undefined, EditorState] {
   if (readOnly) {
     return ['handled', eState]; // swallow
   }
   const es2 = _handleBeforeInput(chars, eState);
-  return [es2 ? 'handled' : undefined, es2 ? es2 : eState];
+  return [es2 ? 'handled' : undefined, es2 || eState];
 }
 
 function _handleBeforeInput(char: string, eState: EditorState) {
@@ -47,9 +48,7 @@ function _handleBeforeInput(char: string, eState: EditorState) {
 }
 
 function checkUnorderedListBegin(eState: EditorState) {
-  return onLineStart(eState, (_, _2, blockKey) => {
-    return setBlockStyle(UNORDERED_LIST_STYLE, blockKey, true, eState)
-  });
+  return onLineStart(eState, (_, _2, blockKey) => setBlockStyle(UNORDERED_LIST_STYLE, blockKey, true, eState));
 }
 
 function checkOrderedListBegin(eState: EditorState) {
@@ -69,7 +68,6 @@ function checkOrderedListBegin(eState: EditorState) {
 
 function checkHeader(eState: EditorState) {
   return onLineStart(eState, (prefix, block, blockKey) => {
-    console.log("HEADER: ", prefix);
     if (prefix[0] === '#' && /^#+$/.test(prefix)) {
       const level = Math.min(prefix.length, HEADERS.length);
       const es = setBlockStyle(HEADERS[level - 1], blockKey, true, eState);
@@ -110,5 +108,5 @@ function clearBlock(block: ContentBlock, eState: EditorState) {
   );
   const es = EditorState.push(eState, cs, 'remove-range');
   // keep selection on line
-  return EditorState.forceSelection(es, sel);;
+  return EditorState.forceSelection(es, sel);
 }

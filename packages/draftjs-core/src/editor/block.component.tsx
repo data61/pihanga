@@ -1,19 +1,21 @@
-import React = require('react');
+import * as React from 'react';
 import { EditorBlock, ContentBlock } from 'draft-js';
 import styled from './blockComponent.style';
 import { PiComponentProps } from './api';
 
+// import React = require('react');
+
 export type Props = PiComponentProps & {
-  block: ContentBlock,
+  block: ContentBlock;
   blockProps: {
-    type: string,
-  }
+    type: string;
+  };
 };
 
 /**
  * Render a block
  */
-export const BlockComponent: React.FunctionComponent<Props> = styled((props: ClassedProps<Props>) => {
+export const BlockComponent = styled((props: ClassedProps<Props>) => {
   const { block, classes } = props;
   const { type } = props.blockProps;
 

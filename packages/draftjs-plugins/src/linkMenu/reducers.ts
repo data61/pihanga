@@ -1,69 +1,78 @@
-import { update, PiRegister } from  '@pihanga/core';
+/* eslint-disable max-len */
+/* eslint-disable import/extensions */
+import { update, PiRegister } from '@pihanga/core';
 import { Map } from 'immutable';
-import { 
-  EditorState, 
-  SelectionState, 
-  CharacterMetadata, 
-  genKey, 
+import {
+  EditorState,
+  SelectionState,
+  CharacterMetadata,
+  genKey,
   ContentBlock,
-  ContentState, 
+  ContentState,
   DraftEntityMutability ,
   EntityInstance,
 } from 'draft-js';
-import { addNamedEntity, entitiesForSelection, removeNamedEntity, } from '@pihanga/draftjs-core';
-import { 
-  removeSelection, 
-  setActivePopper, 
+import {
+  addNamedEntity,
+  entitiesForSelection,
+  removeNamedEntity,
+  removeSelection,
+  setActivePopper,
   getEditorStateFromRedux,
   updateEditorStateInRedux,
+  PiEditorAction,
 } from '@pihanga/draftjs-core';
+
 import { updatePluginState } from '../index';
+import {
+  LinkValueAction,
+  LinkSelectedAction,
+  LinkCloseAction,
+  LinkClickedAction,
+  LinkStyleUpdateAction,
+} from './index';
 
 type ActionTypes = {
-  VALUE: string,
-  SELECTED: string,
-  CLOSE: string,
-  CLICKED: string,
-  EDIT: string,
-  STYLE_UPDATE: string,
+  VALUE: string;
+  SELECTED: string;
+  CLOSE: string;
+  CLICKED: string;
+  EDIT: string;
+  STYLE_UPDATE: string;
 }
 
 export type ReducerOpts<S extends LinkState> = {
-  pluginType: string,
-  styleName: string,
-  styleType: string,
+  pluginType: string;
+  styleName: string;
+  styleType: string;
 
-  actionTypes: ActionTypes,
+  actionTypes: ActionTypes;
 
-  getLinkState: (action: any, state?: S) => {[key:string]:any} | undefined,
-  selectGuard: (action: any, state: S) => boolean, // return true if 'SELECT" action sshould be ignored
-  extendState: (action: any, linkEntity?: EntityInstance) => {[key:string]:any},
-  stateFromEntity: (action: any, cs: ContentState) => {[key:string]:any},
+  getLinkState: (action: any, state?: S) => {[key:string]:any} | undefined;
+  selectGuard: (action: any, state: S) => boolean; // return true if 'SELECT" action should be ignored
+  extendState: (action: any, linkEntity?: EntityInstance) => {[key:string]:any};
+  stateFromEntity: (action: any, cs: ContentState) => {[key:string]:any};
 
-  showPopperName: string,
-  editPopperName: string,
+  showPopperName: string;
+  editPopperName: string;
 };
 
-
 export type LinkState = {
-  entityKey: string,
-  blockKey: string,
+  entityKey: string;
+  blockKey: string;
   selection: SelectionState;
-
 };
 
 export function initReducers<S extends LinkState>(register: PiRegister, opts: ReducerOpts<S>) {
-  register.reducer(opts.actionTypes.VALUE, (state, a) => {
+  register.reducer(opts.actionTypes.VALUE, (state, a: LinkValueAction) => {
     // editorID: 'editor',
     // url: 'ssssasasasa'
     const data = opts.extendState(a);
-    return updatePluginState(a.editorID, opts.pluginType, state, path => {
-      //return update(state, path, {url: a.url});
-      return update(state, path, data);
-    });
+    return updatePluginState(a.editorID, opts.pluginType, state,
+      (path) => update(state, path, data));
   });
 
-  register.reducer(opts.actionTypes.SELECTED, (state, a) => {
+  register.reducer(opts.actionTypes.SELECTED, (state, a: LinkSelectedAction) => {
     // editorID: 'editor',
     return updatePluginState<S>(a.editorID, opts.pluginType, state, (_, lds) => {
       if (opts.selectGuard(a, lds)) {
@@ -73,7 +82,7 @@ export function initReducers<S extends LinkState>(register: PiRegister, opts: Re
       let editorState = eState;
       const data = opts.getLinkState(a, lds);
       if (lds.entityKey) {
-        editorState = updateLinkState(data, lds, eState)
+        editorState = updateLinkState(data, lds, eState);
       } else {
         // new link for selection
         const name = `${opts.styleName}:${genKey()}`;
@@ -86,18 +95,18 @@ export function initReducers<S extends LinkState>(register: PiRegister, opts: Re
     });
   });
 
-  register.reducer(opts.actionTypes.CLOSE, (state, a) => {
+  register.reducer(opts.actionTypes.CLOSE, (state, a: LinkCloseAction) => {
     // editorID: 'editor',
     return updatePluginState<S>(a.editorID, opts.pluginType, state, (path, lds) => {
       let s2 = state;
       if (lds.selection) {
-        const selection = lds.selection;
-        //console.log("REMOVE SELECTION", selection);
+        const { selection } = lds;
+        // console.log("REMOVE SELECTION", selection);
         let eState = getEditorStateFromRedux(a.editorID, state);
         let cs = eState.getCurrentContent();
         cs = removeNamedEntity(cs, selection, 'SELECT');
         eState = EditorState.push(eState, cs, 'change-inline-style');
-        //eState = EditorState.forceSelection(eState, selection); // need that for firefox, chrome still not working
+        // eState = EditorState.forceSelection(eState, selection); // need that for firefox, chrome still not working
         s2 = updateEditorStateInRedux(eState, a.editorID, state);
       }
       const s3 = setActivePopper(s2, a.editorID, undefined);
@@ -106,12 +115,12 @@ export function initReducers<S extends LinkState>(register: PiRegister, opts: Re
   });
 
   // link is clicked directly
-  register.reducer(opts.actionTypes.CLICKED, (state, a) => {
+  register.reducer(opts.actionTypes.CLICKED, (state, a: LinkClickedAction) => {
     // url: 'http://foox',
     // elementID: 'link-81096',
     // editorID: 'editor'
     // entityKey: '2',
-    return updatePluginState(a.editorID, opts.pluginType, state, path => {
+    return updatePluginState(a.editorID, opts.pluginType, state, (path) => {
       const cs = getEditorStateFromRedux(a.editorID, state).getCurrentContent();
       const s2 = setActivePopper(state, a.editorID, opts.showPopperName);
       const eh = opts.stateFromEntity(a, cs);
@@ -123,17 +132,16 @@ export function initReducers<S extends LinkState>(register: PiRegister, opts: Re
         domElementID: a.elementID,
         entityKey: a.entityKey,
         blockKey: a.blockKey,
-      }); 
-    })
+      });
+    });
   });
 
   // <a> is clicked directly
-  register.reducer(opts.actionTypes.EDIT, (state, a) => {
-    return setActivePopper(state, a.editorID, opts.editPopperName);
-  });
+  register.reducer(opts.actionTypes.EDIT,
+    (state, a: PiEditorAction) => setActivePopper(state, a.editorID, opts.editPopperName));
 
   // watch for the icon clicked in style menu
-  register.reducer(opts.actionTypes.STYLE_UPDATE, (state, a) => {
+  register.reducer(opts.actionTypes.STYLE_UPDATE, (state, a: LinkStyleUpdateAction) => {
     // editorID: 'editor'
     // action: 'LINK'
     // actionType: 'link'
@@ -141,17 +149,17 @@ export function initReducers<S extends LinkState>(register: PiRegister, opts: Re
     if (a.actionType !== opts.styleType) {
       return state;
     }
-    return updatePluginState<S>(a.editorID, opts.pluginType, state, path => {
+    return updatePluginState<S>(a.editorID, opts.pluginType, state, (path) => {
       let eState = getEditorStateFromRedux(a.editorID, state);
       let cs = eState.getCurrentContent();
       const selection = SelectionState.createEmpty(a.selection.anchorKey).merge(a.selection) as SelectionState;
-      
+
       cs = addNamedEntity(cs, selection, 'SELECT', () => ['SELECT', 'MUTABLE' as DraftEntityMutability]);
       eState = EditorState.push(eState, cs, 'change-inline-style');
       eState = EditorState.forceSelection(eState, selection); // need that for firefox, chrome still not working
       const s2 = updateEditorStateInRedux(eState, a.editorID, state);
 
-      const linkEntity = entitiesForSelection(cs, selection).filter(e => {
+      const linkEntity = entitiesForSelection(cs, selection).filter((e) => {
         return e.getType() === opts.styleName;
       })[0];
       // {url: ...}
@@ -162,9 +170,9 @@ export function initReducers<S extends LinkState>(register: PiRegister, opts: Re
         // url: url,
         // originalUrl: url,
         ...eh,
-        selection: selection, //a.selection,
-        //entityKey: linkKey,
-      }); 
+        selection, // a.selection,
+        // entityKey: linkKey,
+      });
     });
   });
 
@@ -178,12 +186,12 @@ export function initReducers<S extends LinkState>(register: PiRegister, opts: Re
       // remove link ... don't have selection but entire blockKey
       const blockMap = cs.getBlockMap();
       const bk = lds.blockKey;
-  
+
       const bm = Map([[bk, blockMap.get(bk)]]) as Map<string, ContentBlock>;
       const mBlocks = bm.map((block) => {
         if (!block) return null; // should never happen, but the type checker forces me
-        let chars = block.getCharacterList();
-        const c2 = chars.map(e => CharacterMetadata.removeStyle(e as CharacterMetadata, lds.entityKey));
+        const chars = block.getCharacterList();
+        const c2 = chars.map((e) => CharacterMetadata.removeStyle(e as CharacterMetadata, lds.entityKey));
         return block.set('characterList', c2);
       }) as Map<string, ContentBlock>;
       const cs2 = cs.merge({
@@ -191,8 +199,5 @@ export function initReducers<S extends LinkState>(register: PiRegister, opts: Re
       }) as ContentState;
       return EditorState.push(eState, cs2, 'change-inline-style');
     }
-  }
-
+  };
 }
-
-

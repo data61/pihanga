@@ -14,7 +14,7 @@ import style from './decorator.style';
 import { ReducerOpts, LinkState, initReducers } from './reducers';
 
 export const Domain = 'EDITOR:LINK';
-const ACTION_TYPES = registerActions(Domain, ['SELECTED', 'VALUE', 'CLICKED', 'EDIT', 'UPDATE', 'CLOSE']);
+const ACTION_TYPES = registerActions(Domain, ['SELECTED', 'VALUE', 'CLICKED', 'EDIT', 'UPDATE', 'CLOSE', 'STYLE_UPDATE']);
 
 export const StyleName = 'LINK';
 
@@ -27,17 +27,41 @@ export const StyleName = 'LINK';
 // };
 
 type UrlLinkState = LinkState & {
-  url: string,
-  originalUrl: string,
+  url: string;
+  originalUrl: string;
 };
 
 type LinkEntityState = {
-  url: string,
+  url: string;
 };
 
 export type LinkValueAction = ReduxAction & {
-  editorID: string,
-  url: string,
+  editorID: string;
+  url: string;
+};
+
+export type LinkSelectedAction = ReduxAction & {
+  editorID: string;
+};
+
+export type LinkCloseAction = ReduxAction & {
+  editorID: string;
+};
+
+export type LinkClickedAction = ReduxAction & {
+  editorID: string;
+  elementID: string;
+  entityKey: string;
+  blockKey: string;
+};
+
+export type LinkStyleUpdateAction = ReduxAction & {
+  editorID: string;
+  actionType: string;
+  selection: {
+    anchorKey: string;
+    anchorOffset: number;
+  };
 };
 
 export const PLUGIN_TYPE = 'LinkDialog';
@@ -53,6 +77,10 @@ export const init = (register: PiRegister) => {
       onEdit: ACTION_TYPES.EDIT,
       onValue: ACTION_TYPES.VALUE,
       onClose: ACTION_TYPES.CLOSE,
+    },
+    defaults: {
+      editorID: (_1:any, _2:any, d:any) => d.editorID,
+      isFocused: (_1:any, _2:any, d:any) => d.isFocused,
     },
   });
   BackendInit(register);

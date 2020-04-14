@@ -21,6 +21,8 @@ import {
   PiEditorActionOpen,
   PiEditorActionLoad,
   PiEditorActionUpdate,
+  getEditorRedux,
+  PiEditorActionSave,
 } from './api';
 
 export * from './api';
@@ -43,7 +45,7 @@ export function init(register: PiRegister): void {
 
   register.reducer(ACTION_TYPES.OPEN, (state: ReduxState, a: PiEditorActionOpen) => {
     const editorID = a.id || a.editorID;
-    const es = state[editorID];
+    const es = getEditorRedux(editorID, state);
     if (es.documentID === a.documentID) {
       return state; // already showing
     }
@@ -83,20 +85,21 @@ export function init(register: PiRegister): void {
     //   documentID: 'page2',
     //   editorState: ...
     const props = { editorState: a.editorState, stateSaved: false };
-    const ers = (state[a.id!] || state[a.editorID]) as PiEditorRxState;
+    const editorID = a.id || a.editorID;
+    const ers = getEditorRedux(editorID, state);
     if (!ers.stateSaved && !!ers.autoSave) {
       // first time saved content is changing
       const wait = ers.saveIntervalMS || DEF_SAVE_INTERVAL_MS;
-      const editorID = a.id;
       const { documentID } = a;
       setTimeout(() => {
         dispatch({ type: ACTION_TYPES.REQUEST_SAVE, editorID, documentID });
       }, wait);
     }
-    return update(state, [a.id!], props);
+    return update(state, [editorID], props);
   });
 
-  register.reducer(ACTION_TYPES.REQUEST_SAVE, (state: ReduxState, { documentID, editorID }) => {
+  register.reducer(ACTION_TYPES.REQUEST_SAVE, (state: ReduxState, a: PiEditorActionSave) => {
+    const { documentID, editorID } = a;
     const ers = state[editorID] as PiEditorRxState;
     if (documentID !== ers.documentID || !ers.editorState) {
       return state; // no longer valid

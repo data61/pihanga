@@ -41,6 +41,37 @@ export function registerActions(namespace, actionsAL) {
  * 
  * @param {string} namespace 
  */
-export function actions(namespace) {
-  return ns2Actions[namespace] || {};
+export function actions(...args) {
+  const [namespace, name] = args;
+  if (namespace && name) {
+    return action(namespace, name);
+  }
+
+  if (!namespace) {
+    throw Error('Missing namespace argument');
+  }
+  const as = ns2Actions[namespace];
+  if (as) {
+    logger.warn(`Upgrade 'action(${namespace})' to 'action(${namespace}, name)'`);
+    return as;
+  } else {
+    logger.warn(`Requesting actions from unknown namespace '${namespace}'`);
+    return {};
+  }
+}
+
+export function action(namespace, name) {
+  if (!namespace || !name) {
+    throw Error('Missing namespace or name argument');
+  }
+  const as = ns2Actions[namespace];
+  if (as) {
+    const fullName = as[name];
+    if (!name) {
+      throw Error(`Requesting unknown action '${name}' from namespace '${namespace}'`);
+    }
+    return fullName;
+  } else {
+    throw Error(`Requesting action '${name}' from unknown namespace '${namespace}'`);
+  }
 }

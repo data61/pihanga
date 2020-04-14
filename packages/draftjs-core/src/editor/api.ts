@@ -1,11 +1,8 @@
 import {
-  registerActions,
   update,
   dispatch,
-  dispatchFromReducer,
   getCardState,
   ReduxState,
-  PiRegister,
   createLogger,
   ReduxAction,
 } from '@pihanga/core';
@@ -19,18 +16,22 @@ import {
 } from 'draft-js';
 
 import {
-  EditorComponent,
   BlockType2Renderer,
   HandleReturnExtensions,
   HandleBeforeInputExtensions,
   HandleKeyCommandExtensions,
 } from './editor.component';
-import Decorator, { DECORATORS } from './decorator';
-import { createContentState, persistState } from './persist';
-import { initializeCatalog, getCatalog } from '../util';
-// the following is weird but required by Create React App forcing "isolatedModules": true in tsconfig to true
+
+import { getCatalog } from '../util';
+// the following is weird but required by Create React App forcing "isolatedModules": true
+// in tsconfig to true
 // See https://github.com/facebook/create-react-app/issues/6054
-import { DecoratorDeclaration as DD, DecorationMapper as DM, DecoratorClassDef as DC } from './decorator';
+import {
+  DECORATORS,
+  DecoratorDeclaration as DD, 
+  DecorationMapper as DM, 
+  DecoratorClassDef as DC 
+} from './decorator';
 import { ACTION_TYPES } from '.';
 
 const logger = createLogger('PiEditor');
@@ -123,6 +124,24 @@ export type BlockRendererFn<P, T extends PiComponentProps> = (
   extProps: P,
 ) => BlockRenderDef<T> | null;
 
+/**
+ * API to implement for a custom block render component defined above
+ */
+export type BlockRenderComponentProps<P> = {
+  contentState: ContentState;
+  block: ContentBlock;
+  blockProps: P;
+  selection: SelectionState;
+  // blockStyleFn: ƒ blockStyleFn()
+  // customStyleMap: {BOLD: {…}, CODE: {…}, ITALIC: {…}, STRIKETHROUGH: {…}, UNDERLINE: {…}}
+  // customStyleFn: undefined
+  // decorator: {getDecorations: ƒ, getComponentForKey: ƒ, getPropsForKey: ƒ}
+  // direction: "LTR"
+  // forceSelection: false
+  // offsetKey: "4f9lk-0-0"
+};
+export type BlockRenderComponent<P> = React.FC<BlockRenderComponentProps<P>>;
+
 export type BlockRenderDef<T extends PiComponentProps> = {
   component: React.FunctionComponent<T>; // BlockRenderOpts
   editable: boolean;
@@ -141,8 +160,9 @@ export type PiComponentProps = {[key: string]: unknown};
  * FUNCTIONS
  */
 
-export function getEditorRedux<S extends ReduxState>(editorID: string, state: S): PiEditorRxState {
-  const rs = state[editorID] as PiEditorRxState;
+export function getEditorRedux<S extends ReduxState>(editorID: string, state:  ): PiEditorRxState {
+  const as = (state as unknown) as {[key: string]: unknown}; // SOrry for the type gymnastics
+  const rs = as[editorID] as PiEditorRxState;
   return rs;
 }
 
@@ -173,9 +193,9 @@ export function updateEditorStateInRedux<S extends ReduxState>(
   if (editorState === rs.editorState) {
     return state;
   } else {
-    setTimeout(() => {
-      reportEditorStateUpdate(editorState, rs.editorState, editorID, rs.documentID);
-    }, 0);
+    // setTimeout(() => {
+    //   reportEditorStateUpdate(editorState, rs.editorState, editorID, rs.documentID);
+    // }, 0);
     return update(state, [editorID], { editorState }) as S;
   }
 }

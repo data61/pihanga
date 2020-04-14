@@ -14,15 +14,17 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
+    "compile": "yarn build",
     "build": "rm -rf ./lib && tsc",
     "lint": "eslint \"src/**\"",
     "test": "jest --config jestconfig.json",
-    "prepare": "npm run build",
-    "x-prepublishOnly": "npm test && npm run lint",
-    "x-preversion": "npm run lint"
+    "prepare": "yarn build",
+    "x-prepublishOnly": "yarn test && yarn lint",
+    "x-preversion": "yarn lint"
   },
   "dependencies": {
     "@pihanga/draftjs-core": "^0.1.0",
+    "draft-js-utils": "^1.4.0",
     "immutable": "^4.0.0-rc.12",
     "valid-url": "^1.0.0"
   },
@@ -35,6 +37,7 @@
     "react-dom": "^16.12.0-0"
   },
   "devDependencies": {
+    "draft-js": "^0.11.0",
     "@material-ui/core": "^4.6.0",
     "@material-ui/lab": "^4.0.0-alpha.36",
     "@pihanga/core": "^0.4.8",

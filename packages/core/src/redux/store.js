@@ -3,8 +3,9 @@ import thunk from 'redux-thunk';
 
 import { actions } from './actions';
 import { createLogger } from '../logger/logger';
+import { update } from './update';
 
-const logger = createLogger('store');
+const logger = createLogger('@pihanga:core:store');
 
 const DEF_STATE = {
   activity: {
@@ -123,9 +124,18 @@ export function createStore(rootReducer, initialState = DEF_STATE) {
 
   // Create final store and subscribe router in debug env ie. for devtools
   store = middleware(createReduxStore)(rootReducer, initialState);
+  dispatch('REDUX', 'INIT', {});
   return store;
 }
 
 export function getState() {
-  return store.getState();
+  return store.getState() || {};
+}
+
+export function getPihangaState(name, state) {
+  return ((state || getState()).pihanga || {})[name] || {};
+}
+
+export function updatePihangaState(source, name, path, leaf) {
+  return update(source, ['pihanga', name].concat(path), leaf);
 }
