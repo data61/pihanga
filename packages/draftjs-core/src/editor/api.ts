@@ -28,8 +28,8 @@ import { getCatalog } from '../util';
 // See https://github.com/facebook/create-react-app/issues/6054
 import {
   DECORATORS,
-  DecoratorDeclaration as DD, 
-  DecorationMapper as DM, 
+  DecoratorDeclaration as DD,
+  DecorationMapper as DM,
   DecoratorClassDef as DC 
 } from './decorator';
 import { ACTION_TYPES } from '.';
@@ -160,7 +160,10 @@ export type PiComponentProps = {[key: string]: unknown};
  * FUNCTIONS
  */
 
-export function getEditorRedux<S extends ReduxState>(editorID: string, state:  ): PiEditorRxState {
+export function getEditorRedux<S extends ReduxState>(
+  editorID: string,
+  state: S,
+): PiEditorRxState {
   const as = (state as unknown) as {[key: string]: unknown}; // SOrry for the type gymnastics
   const rs = as[editorID] as PiEditorRxState;
   return rs;

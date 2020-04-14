@@ -91,5 +91,6 @@
     "x-publish": "npm publish --tag latest --access=public",
     "x-prepublishOnly": "npm run build",
     "x-prepublish": "yarn run lint && yarn run test && yarn run build"
-  }
+  },
+  "gitHead": "b6072b484fb23e64930847c2cad18f53126f3f39"
 }
