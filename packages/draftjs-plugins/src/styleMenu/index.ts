@@ -38,14 +38,16 @@ export type StyleOpenAction = StyleAction & {
 export type StyleCloseAction = StyleAction & {
 };
 
+export type Selection = {
+  anchorKey: string;
+  anchorOffset: number;
+}
+
 export type StyleUpdateAction = StyleAction & {
   actionType: string;
   action: string;
   isActive: boolean;
-  selection: {
-    anchorKey: string;
-    anchorOffset: number;
-  };
+  selection: Selection;
 };
 
 export const init = (register: PiRegister): void => {

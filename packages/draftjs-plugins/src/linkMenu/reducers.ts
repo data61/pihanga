@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable max-len */
 /* eslint-disable import/extensions */
 import { update, PiRegister } from '@pihanga/core';
@@ -20,6 +21,7 @@ import {
   setActivePopper,
   getEditorStateFromRedux,
   updateEditorStateInRedux,
+  setEntityData,
   PiEditorAction,
 } from '@pihanga/draftjs-core';
 
@@ -83,6 +85,7 @@ export function initReducers<S extends LinkState>(register: PiRegister, opts: Re
       const data = opts.getLinkState(a, lds);
       if (lds.entityKey) {
         editorState = updateLinkState(data, lds, eState);
+        const isDiff = editorState === eState;
       } else {
         // new link for selection
         const name = `${opts.styleName}:${genKey()}`;
@@ -176,11 +179,11 @@ export function initReducers<S extends LinkState>(register: PiRegister, opts: Re
     });
   });
 
-  const updateLinkState = (data: {[key:string]:any} | undefined, lds: S, eState: EditorState): EditorState => {
+  const updateLinkState = (data: {[key: string]: any} | undefined, lds: S, eState: EditorState): EditorState => {
     const cs = eState.getCurrentContent();
     if (data) {
       // update existing link
-      const cs2 = cs.replaceEntityData(lds.entityKey, data);
+      const cs2 = setEntityData(lds.entityKey, data, cs);
       return EditorState.push(eState, cs2, 'apply-entity');
     } else {
       // remove link ... don't have selection but entire blockKey

@@ -7,6 +7,8 @@ import { action as toAction } from './actions';
 
 const logger = createLogger('@pihanga:core:reducer');
 
+const DEF_PRIORITY = 500;
+
 function dispatchError(msg, e) {
   const si = stackinfo(e).map(s => s.traceline);
   const si2 = e ? si : si.slice(1); // remove this function when no exception stacktrace
@@ -28,7 +30,7 @@ export class Reducer {
   }
 
   registerReducer(...args) {
-    const [type, reducer] = Reducer.parseReducerArgs(args);
+    const [type, reducer, priority] = Reducer.parseReducerArgs(args);
     if (!type) {
       throw new Error('Missing type');
     }
@@ -40,21 +42,33 @@ export class Reducer {
       this.reducerByAction[type] = [];
       d = this.reducerByAction[type];
     }
-    d.push(reducer);
+    d.push({ reducer, priority });
+    d.sort((a, b) => b.priority - a.priority);
 
-    logger.infoSilently(`Register reducer for type: ${type}`);
+    logger.infoSilently(`Register reducer for type: ${type} with priority ${priority}`);
   }
 
   static parseReducerArgs(args) {
     switch (args.length) {
       case 2: {
-        return args;
+        return [...args, DEF_PRIORITY];
       }
       case 3: {
-        return [toAction(args[0], args[1]), args[2]];
+        if (typeof args[1] === 'function') {
+          return args;
+        } else {
+          return [toAction(args[0], args[1]), args[2], DEF_PRIORITY];
+        }
+      }
+      case 4: {
+        if (typeof args[2] === 'function') {
+          return args;
+        } else {
+          throw new Error('Illegal type of argument, expected function as 3rd argument');
+        }
       }
       default:
-        throw new Error('Illegal number of arguments, expected 2 or 3');
+        throw new Error('Illegal number of arguments, expected 2, 3 or 4');
     }
   }
 
@@ -62,7 +76,7 @@ export class Reducer {
     const type = getType(action);
     const tr = this.reducerByAction[type];
     if (tr) {
-      return tr.reduce((s, reducer) => {
+      return tr.reduce((s, { reducer }) => {
         try {
           const s2 = reducer(s, action);
           if (!isPlainObject(s2)) {

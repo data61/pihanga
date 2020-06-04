@@ -1,3 +1,4 @@
+/* eslint-disable arrow-body-style */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   SelectionState,
@@ -122,7 +123,7 @@ export const getBlocksForSelection = (
 
 export const addEntity = (
   contentState: ContentState,
-  selection: SelectionState,
+  selection: SelectionState | null,
   name: string | null,
   type: DraftEntityType,
   mutability: DraftEntityMutability,
@@ -141,7 +142,28 @@ export const addEntity = (
     h[name] = eKey;
     cs = cs.mergeEntityData(ck, h);
   }
-  return [eKey, addKeyedEntity(cs, selection, eKey)];
+  if (selection) {
+    return [eKey, addKeyedEntity(cloneCS(cs), selection, eKey)];
+  } else {
+    return [eKey, cs];
+  }
+};
+
+/**
+ * All calls to a ContentState which will modify an entity will
+ * return the same ContentState object making detection of state
+ * changes impossible. This method simple creates a new ContentState
+ * instance with identical content.
+ */
+const cloneCS = (
+  cs: ContentState,
+): ContentState => {
+  return new ContentState({
+    blockMap: cs.getBlockMap(),
+    entityMap: cs.getEntityMap(),
+    selectionBefore: cs.getSelectionBefore(),
+    selectionAfter: cs.getSelectionAfter(),
+  });
 };
 
 export const getCatalog = (
@@ -171,9 +193,28 @@ const getCatalogKey = (
 export const initializeCatalog = (
   contentState: ContentState,
 ): [EntityKey, ContentState] => {
-  const cs = contentState.createEntity('CATALOG', 'MUTABLE', {});
-  const eKey = cs.getLastCreatedEntityKey();
-  return [eKey, cs];
+  const cs = cloneCS(contentState.createEntity('CATALOG', 'MUTABLE', {}));
+  const catalogKey = cs.getLastCreatedEntityKey();
+
+  // Add the catalog key to every block
+  let changed = false;
+  const bm = cs.getBlockMap().map((block) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const b = block!;
+    const d = b.getData();
+    const d2 = d.set('CATALOG_KEY', catalogKey);
+    if (d === d2) {
+      return b;
+    }
+    changed = true;
+    return b.merge({ data: d2 }) as ContentBlock;
+  });
+  if (changed) {
+    const cs2 = cs.merge({ blockMap: bm }) as ContentState;
+    return [catalogKey, cs2];
+  } else {
+    return [catalogKey, cs];
+  }
 };
 
 export const createNamedEntity = (
@@ -196,7 +237,27 @@ export const createNamedEntity = (
     h[name] = eKey;
     cs = cs.mergeEntityData(ck, h);
   }
-  return [eKey, cs];
+  return [eKey, cloneCS(cs)];
+};
+
+export const addNamedEntityWithKey = (
+  contentState: ContentState,
+  selection: SelectionState,
+  name: string,
+  ifMissingF: () => [DraftEntityType, DraftEntityMutability, Record<string, any>?],
+): [string, ContentState] => {
+  // look up in catalog
+  const ce = contentState.getEntity(getCatalogKey(contentState));
+  const eKey = ce.getData()[name] as string;
+  if (!eKey) {
+    if (ifMissingF) {
+      const [type, mutability, data] = ifMissingF();
+      const [newKey, cs] = addEntity(contentState, selection, name, type, mutability, data);
+      return [newKey, cs];
+    }
+    throw Error(`Missing entity '${name}' in catalog`);
+  }
+  return [eKey, addKeyedEntity(contentState, selection, eKey)];
 };
 
 export const addNamedEntity = (
@@ -205,18 +266,29 @@ export const addNamedEntity = (
   name: string,
   ifMissingF: () => [DraftEntityType, DraftEntityMutability, Record<string, any>?],
 ): ContentState => {
-  // look up in catalog
+  return addNamedEntityWithKey(contentState, selection, name, ifMissingF)[1];
+};
+
+export const setEntityData = (
+  entityKey: string,
+  data: {[key: string]: any},
+  contentState: ContentState,
+): ContentState => {
+  const cs = contentState.replaceEntityData(entityKey, data);
+  return cloneCS(cs);
+};
+
+export const setNamedEntityData = (
+  name: string,
+  data: {[key: string]: any},
+  contentState: ContentState,
+): ContentState => {
   const ce = contentState.getEntity(getCatalogKey(contentState));
   const eKey = ce.getData()[name] as string;
   if (!eKey) {
-    if (ifMissingF) {
-      const [type, mutability, data] = ifMissingF();
-      const cs = addEntity(contentState, selection, name, type, mutability, data)[1];
-      return cs;
-    }
     throw Error(`Missing entity '${name}' in catalog`);
   }
-  return addKeyedEntity(contentState, selection, eKey);
+  return setEntityData(eKey, data, contentState);
 };
 
 interface State {
@@ -238,7 +310,10 @@ export const addKeyedEntity = (
   contentState: ContentState,
   selection: SelectionState,
   entityKey: string,
-): ContentState => mapSelection(contentState, selection, (b, s, e, state) => addEntityToBlock(b!, entityKey, s, e, state));
+): ContentState => {
+  return mapSelection(contentState, selection,
+    (b, s, e, state) => addEntityToBlock(b!, entityKey, s, e, state));
+};
 
 const addEntityToBlock = (
   b: ContentBlock,
@@ -339,7 +414,8 @@ export const removeKeyedEntity = (
   if (!selection) {
     return cs;
   }
-  return mapSelection(cs, selection, (b, s, e, state) => removeEntityFromBlock(b!, entityKey, s, e, state));
+  return mapSelection(cs, selection,
+    (b, s, e, state) => removeEntityFromBlock(b!, entityKey, s, e, state));
 };
 
 const removeEntityFromBlock = (
@@ -421,6 +497,26 @@ export const getNamedEntity = (
   return catalog[name];
 };
 
+/**
+ * Return entity key for named entity. If entity doesn't exist yet, create it first.
+ *
+ * @param contentState
+ * @param name
+ * @param ifMissingF
+ */
+export const getOrCreateNamedEntity = (
+  contentState: ContentState,
+  name: string,
+  ifMissingF: () => [DraftEntityType, DraftEntityMutability, Record<string, any>?],
+): [string, ContentState] => {
+  const key = getNamedEntity(contentState, name);
+  if (key) {
+    return [key, contentState];
+  } else {
+    const [type, mutability, data] = ifMissingF();
+    return addEntity(contentState, null, name, type, mutability, data);
+  }
+};
 
 /**
  * Return a list of entities which are assigned to entire
@@ -438,7 +534,7 @@ export const entitiesForSelection = (
     const sOff = k === startKey ? selection.getStartOffset() : 0;
     const eOff = k === endKey ? selection.getEndOffset() : b!.getLength();
     b!.getCharacterList().forEach((cm, i) => {
-      if (i! < sOff || i! > eOff) return;
+      if (i! < sOff || i! >= eOff) return;
 
       const sy = cm!.getStyle();
       entSet = entSet ? entSet.intersect(sy) : sy;

@@ -1,4 +1,5 @@
 
+export declare function addCard(cardName: string, cardDef: {cardType: string} & {[key:string]:string}): void;
 export declare function registerActions(domain: string, names: string[]): {[key:string]:string};
 export function actions(name: string): {[key:string]: string};
 export function actions(namespace: string, name:string): string;
@@ -17,7 +18,6 @@ export declare function update(state: ReduxState, path: string[], partial: any):
 
 export declare function getPihangaState<T>(name: string, state: ReduxState): T;
 export declare function updatePihangaState(state: ReduxState, name: string, path: string[], partial: any): ReduxState;
-
 
 export declare function registerGET(props: PiRegisterGetProps): void;
 export declare function registerPUT(props: PiRegisterPutProps): void;
@@ -57,7 +57,7 @@ interface PiRegister {
    */
   metaCard(type: string, transformF: PiMetaTransformerF): void;
 
-  reducer<S extends ReduxState, A extends ReduxAction>(eventType: string, mapper: (state: S, action: A) => S): void,
+  reducer<S extends ReduxState, A extends ReduxAction>(eventType: string, mapper: (state: S, action: A) => S, priority?: number): void,
 }
 
 type PiRegisterComponent = {

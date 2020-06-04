@@ -1,8 +1,9 @@
+/* eslint-disable arrow-body-style */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as React from 'react';
 import { EditorState, SelectionState, Entity } from 'draft-js';
-import { getSelectedBlocksType } from 'draft-js-utils';
+import { getSelectedBlocksType } from 'draftjs-utils';
 import { Card } from '@pihanga/core';
 import Paper from '@material-ui/core/Paper';
 import { entitiesForSelection } from '@pihanga/draftjs-core';
@@ -53,7 +54,7 @@ export const StyleMenu = styled((props: StyleMenuType) => {
   if (!oldS || hasSelectionChanged(selection, oldS)) {
     oldSelection.current = selection;
     const cs = editorState.getCurrentContent();
-    styles.current = entitiesForSelection(cs, selection).map(e => {
+    styles.current = entitiesForSelection(cs, selection).map((e) => {
       return { type: e.getType(), data: e.getData() };
     });
     blockType.current = getSelectedBlocksType(editorState);

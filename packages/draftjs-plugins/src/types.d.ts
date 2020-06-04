@@ -11,7 +11,7 @@ declare module 'valid-url' {
   export function isUri(s: string): boolean;
 }
 
-declare module 'draft-js-utils' {
+declare module 'draftjs-utils' {
   import { EditorState } from "draft-js";
 
   export function getSelectedBlocksType(editorState: EditorState): string;

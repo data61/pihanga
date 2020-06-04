@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import {
   registerActions, dispatch, ReduxAction, PiRegister,
 } from '@pihanga/core';
@@ -27,17 +29,20 @@ export const StyleName = 'LINK';
 // };
 
 type UrlLinkState = LinkState & {
-  url: string;
-  originalUrl: string;
+  value: string;
+  originalValue: string;
 };
 
-type LinkEntityState = {
+export type LinkEntityState = {
   url: string;
+  title?: string;
+  snippet?: string;
+  source?: string;
 };
 
 export type LinkValueAction = ReduxAction & {
   editorID: string;
-  url: string;
+  value: string;
 };
 
 export type LinkSelectedAction = ReduxAction & {
@@ -66,7 +71,7 @@ export type LinkStyleUpdateAction = ReduxAction & {
 
 export const PLUGIN_TYPE = 'LinkDialog';
 
-export const init = (register: PiRegister) => {
+export const init = (register: PiRegister): void => {
   registerDecorator(StyleName, [decorator, style]);
 
   register.cardComponent({
@@ -85,7 +90,7 @@ export const init = (register: PiRegister) => {
   });
   BackendInit(register);
 
-  const opts:ReducerOpts<UrlLinkState> = {
+  const opts: ReducerOpts<UrlLinkState> = {
     pluginType: PLUGIN_TYPE,
     styleName: StyleName,
     styleType: 'link',
@@ -100,28 +105,25 @@ export const init = (register: PiRegister) => {
     },
 
     getLinkState: (a) => {
-      const { url } = a;
-      if (url && a.url !== '') {
-        return { url };
+      const { link } = a;
+      if (link && link.url !== '') {
+        return { ...link };
       } else {
         return undefined;
       }
     },
-    selectGuard: (a, lds) => lds.originalUrl === a.url,
+    selectGuard: (a, lds) => lds.originalValue === a.value,
     extendState: (a, linkEntity) => {
-      let url = '';
-      if (a.url) {
-        url = a.url;
-      } else if (linkEntity) {
-        url = (linkEntity.getData() as LinkEntityState).url;
-      }
-      return { url };
+      const link = a.link || (linkEntity ? linkEntity.getData() : {}) as LinkEntityState;
+      const value = a.value || link.url || '';
+      return { value, link };
     },
     stateFromEntity: (a, cs) => {
-      const url = a.entityKey ? cs.getEntity(a.entityKey).getData().url : null;
+      const link = a.entityKey ? cs.getEntity(a.entityKey).getData() : {};
       return {
-        url,
-        originalUrl: url,
+        link,
+        value: link.url,
+        originalValue: link.url,
       };
     },
 
@@ -132,10 +134,10 @@ export const init = (register: PiRegister) => {
   initReducers(register, opts);
 };
 
-const decorator:DecorationMapper = (_1, attr, classes, _2, ek, editorOpts, { blockKey, start, end }) => {
+const decorator: DecorationMapper = (_1, attr, classes, _2, ek, editorOpts, { blockKey, start, end }) => {
   const id = `link-${blockKey}-${start}-${end}`;
   attr.element = 'a';
-  attr.onClick = (e:any) => {
+  attr.onClick = (e: any) => {
     e.preventDefault();
     // e.stopPropagation();
     dispatch({

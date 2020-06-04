@@ -6,14 +6,16 @@ import {
   ContentBlock,
   ContentState,
   DraftHandleValue,
+  RichUtils,
+  getDefaultKeyBinding,
 } from 'draft-js';
 import { Card } from '@pihanga/core';
 import * as Immutable from 'immutable';
 // import { createLogger } from '@pihanga/core';
 
-import handleReturn from './handleReturn';
-import { keyBindingFn, handleKeyCommand } from './handleKeyCommand';
-import handleBeforeInput from './handleBeforeInput';
+// import handleReturn from './handleReturn';
+// import { keyBindingFn, handleKeyCommand } from './handleKeyCommand';
+// import handleBeforeInput from './handleBeforeInput';
 import BlockComponent, { Props as BCProps } from './block.component';
 import { getCatalog } from '../util';
 import {
@@ -22,7 +24,10 @@ import {
   HandleReturnFn,
   HandleBeforeInputFn,
   HandleKeyCommandFn,
+  HandleKeyBindingFn,
   PiComponentProps,
+  BlockRenderDef,
+  PiEditorActionUpdate,
 } from './api';
 
 import 'draft-js/dist/Draft.css';
@@ -31,42 +36,49 @@ import styled from './editor.style';
 
 // const logger = createLogger('editor');
 
+export const DEF_SAVE_INTERVAL_MS = 30000;
+
 export type Props = PiComponentProps & {
   cardName: string;
   documentID: string;
   catalogKey: string;
   // onOpen,
+  captureTab: boolean; // when true prevent tab to blur
   readOnly: boolean;
+  autoSave: boolean;
+  saveIntervalMS?: number;
+  stateSavedAt?: number; // comes from pihanga state
   withSpellCheck: boolean; // true,
   plugins: any[];
   extensions: {[key: string]: any};
   editorState: EditorState;
-  onUpdate: (ev: UpdateEvent) => void;
+  onUpdate: (ev: PiEditorActionUpdate) => void;
 };
 
-export type UpdateEvent = {
-  editorID: string;
-  documentID: string;
-  editorState: EditorState;
-  blocksChanged: string[];
-  entitiesHaveChanged: boolean;
-  selHasChanged: boolean;
-  selection?: {
-    anchor: {
-      key: string;
-      offset: number;
-    };
-    focus: {
-      key: string;
-      offset: number;
-    };
-    hasFocus: boolean;
-  };
-};
+// export type UpdateEvent = {
+//   editorID: string;
+//   documentID: string;
+//   editorState: EditorState;
+//   blocksChanged: string[];
+//   entitiesHaveChanged: boolean;
+//   selHasChanged: boolean;
+//   selection?: {
+//     anchor: {
+//       key: string;
+//       offset: number;
+//     };
+//     focus: {
+//       key: string;
+//       offset: number;
+//     };
+//     hasFocus: boolean;
+//   };
+//   autoSave: boolean;
+// };
 
 type BlockRenderFnProvider = (type: string) => BlockRendererFn<unknown, BCProps>;
 const DEF_BLOCK_RENDER_FN: BlockRenderFnProvider = (type) => (
-  _, editorID, documentID, readOnly,
+  _1, editorID, _2, { documentID, readOnly },
 ) => ({
   component: BlockComponent,
   editable: !readOnly,
@@ -78,22 +90,54 @@ export const BlockType2Renderer: BlockRendererFnMap = {
   paragraph: DEF_BLOCK_RENDER_FN('paragraph'),
 };
 
+type Ext = {
+  name: string;
+  priority: number;
+};
+
 export const HandleReturnExtensions = [
-  { name: '__default__', f: handleReturn },
-] as {name: string; f: HandleReturnFn}[];
+] as (Ext & {f: HandleReturnFn<never>})[];
 
 export const HandleBeforeInputExtensions = [
-  { name: '__default__', f: handleBeforeInput },
-] as {name: string; f: HandleBeforeInputFn<unknown>}[];
+] as (Ext & {f: HandleBeforeInputFn<never>})[];
 
 export const HandleKeyCommandExtensions = [
-  { name: '__default__', f: handleKeyCommand },
-] as {name: string; f: HandleKeyCommandFn}[];
+] as (Ext & {f: HandleKeyCommandFn<never>})[];
+
+export const KeyBindingFnExtensions = [
+  { name: '__default__', priority: 100, f: defKeyBindingFn },
+] as (Ext & {f: HandleKeyBindingFn<never>})[];
+
+const MAX_LIST_DEPTH = 4;
+const TAB_KEY_CODE = 9; // TAB key
+
+function defKeyBindingFn(
+  e: SyntheticKeyboardEvent,
+  eState: EditorState,
+): [boolean, string | null, EditorState] {
+  switch (e.keyCode) {
+    case TAB_KEY_CODE: {
+      // Unfortunately, 'onTab' doesn't cleanly separate key binding and
+      // key command handling, so we need to deal with eState here.
+      const es = RichUtils.onTab(e, eState, MAX_LIST_DEPTH);
+      // onChange(es);
+      // return null;
+      return [true, null, es];
+    }
+    default: {
+      const b = getDefaultKeyBinding(e) as string|null;
+      return [true, b, eState];
+    }
+  }
+}
 
 const DEF_OPTS = {
   documentID: 'default',
   document: {},
+  captureTab: false,
   readOnly: false,
+  autoSave: true,
+  saveIntervalMS: DEF_SAVE_INTERVAL_MS,
   withSpellCheck: false, // true,
   plugins: [], // ['styleMenu', 'linkDialog'],
   extensions: {},
@@ -104,7 +148,10 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
     documentID,
     catalogKey,
     // onOpen,
+    captureTab,
     readOnly,
+    autoSave,
+    saveIntervalMS,
     withSpellCheck, // true,
     plugins,
     extensions,
@@ -124,6 +171,8 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
     return null;
   }
 
+  let isPasted = false;
+
   // HACK ALERT: The content state's entity map is this weird global non-queryable
   // thing. However, we want some 'names' entity support. So we create a 'CATALOG'
   // entity in each EditorState, but aswe can't control it's 'key' we need to keep
@@ -136,6 +185,7 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
     const origCS = eState.getCurrentContent();
     const origBM = origCS.getBlockMap();
     const bm2 = bm.map((block) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const b = block!;
       const bk = b.getKey(); // b should never be undefined
       if (b !== origBM.get(bk)) {
@@ -165,7 +215,10 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
         blocksChanged,
         entitiesHaveChanged,
         selHasChanged,
-      } as UpdateEvent;
+        isPasted,
+        autoSave,
+        saveIntervalMS,
+      } as PiEditorActionUpdate;
       if (selHasChanged) {
         const s = es2.getSelection();
         evt.selection = {
@@ -184,21 +237,19 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
     }
   }
 
-  function onChange(es: EditorState) {
+  function onChange(es: EditorState): void {
     setEState(es);
   }
 
-  function onBlur(e: React.SyntheticEvent) {
-    // console.log("## BLURRED", e);
+  function onBlur(): void {
     isFocused.current = false;
   }
 
-  function onFocus(e: React.SyntheticEvent) {
-    // console.log("## FOCUSSED", e);
+  function onFocus(): void {
     isFocused.current = true;
   }
 
-  function handleReturn(ev: SyntheticKeyboardEvent, editorState: EditorState) {
+  function handleReturn(ev: SyntheticKeyboardEvent, editorState: EditorState): DraftHandleValue {
     const [handled2, es2] = HandleReturnExtensions.reduce(([handeled, es], def) => {
       if (handeled) {
         return [handeled, es];
@@ -207,13 +258,10 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
         return f(ev, es, readOnly, extensions[name]);
       }
     }, [false, editorState]);
-    if (editorState !== es2) {
-      setEState(es2);
-    }
-    return (handled2 ? 'handled' : 'not-handled') as DraftHandleValue;
+    return updateEState('handleReturn', editorState, es2, handled2 ? 'handled' : 'not-handled');
   }
 
-  function _handleKeyCommand(command: string, editorState: EditorState) {
+  function handleKeyCommand(command: string, editorState: EditorState): DraftHandleValue {
     const [handled2, es2] = HandleKeyCommandExtensions.reduce(([handeled, es], def) => {
       if (handeled) {
         return [handeled, es];
@@ -222,13 +270,10 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
         return f(command, es, readOnly, extensions[name]);
       }
     }, [undefined, editorState] as [string|undefined, EditorState]);
-    if (editorState !== es2) {
-      setEState(es2);
-    }
-    return (handled2 || 'not-handled') as DraftHandleValue;
+    return updateEState('handleKeyCommand', editorState, es2, handled2);
   }
 
-  function _handleBeforeInput(chars: string, editorState: EditorState) {
+  function handleBeforeInput(chars: string, editorState: EditorState): DraftHandleValue {
     const [handled2, es2] = HandleBeforeInputExtensions.reduce(([handeled, es], def) => {
       if (handeled) {
         return [handeled, es];
@@ -237,23 +282,57 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
         return f(chars, es, readOnly, extensions[name]);
       }
     }, [undefined, editorState] as [string|undefined, EditorState]);
-    if (editorState !== es2) {
+    return updateEState('handleBeforeInput', editorState, es2, handled2);
+  }
+
+  function handlePastedText(): DraftHandleValue {
+    isPasted = true;
+    return 'not-handled';
+  }
+
+  function updateEState(
+    name: string,
+    oldEs: EditorState,
+    newEs: EditorState,
+    handled: string | undefined,
+  ): DraftHandleValue {
+    const hdl = (handled || 'not-handled') as DraftHandleValue;
+    if (oldEs !== newEs) {
+      setEState(newEs);
+      if (hdl === 'not-handled') {
+        console.warn(`editor.component: ${name} changed editorState but didn't fully handle comand`);
+      }
+    }
+    return hdl;
+  }
+
+  function keyBindingFn(ev: SyntheticKeyboardEvent): string | null {
+    const [_, command, es2] = KeyBindingFnExtensions.reduce((p, def) => {
+      const [handled, _2, es] = p;
+      if (handled) {
+        return p;
+      } else {
+        const { name, f } = def;
+        return f(ev, es, extensions[name]);
+      }
+    }, [false, null as string | null, eState]);
+    if (eState !== es2) {
       setEState(es2);
     }
-    return (handled2 || 'not-handled') as DraftHandleValue;
+    if (captureTab && ev.keyCode === TAB_KEY_CODE) {
+      ev.preventDefault();
+    }
+    return command;
   }
 
-  function _keyBindingFn(e: SyntheticKeyboardEvent): string|null {
-    return keyBindingFn(e, eState, onChange);
-  }
-
-  function blockRendererFn(contentBlock: ContentBlock) {
+  function blockRendererFn(contentBlock: ContentBlock): BlockRenderDef<any> | null {
     const type = contentBlock.getType();
     // console.log('RENDER BLOCK', type);
     const renderer = BlockType2Renderer[type];
     if (renderer) {
-      return renderer(contentBlock, editorID, documentID, readOnly, extensions[type]);
+      return renderer(contentBlock, editorID, extensions[type], opts);
     }
+    return null;
   }
 
   // function renderBubble() {
@@ -288,27 +367,27 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
   //   );
   // }
 
-  const MyUL = (props: {[key: string]: any}) => {
-    console.log('MyUL:', props);
-    return (
-      <ul data-offset-key={props['data-offset-key']} className="public-DraftStyleDefault-ul">
-        {props.children}
-      </ul>
-    );
-  };
+  // const MyUL = (props: {[key: string]: any}) => {
+  //   console.log('MyUL:', props);
+  //   return (
+  //     <ul data-offset-key={props['data-offset-key']} className="public-DraftStyleDefault-ul">
+  //       {props.children}
+  //     </ul>
+  //   );
+  // };
 
-  const MyLi = (props: {[key: string]: any}) => {
-    console.log('MYWRAPPER:', props.children[0], props);
-    return (
-      <li
-        data-block={props['data-block']}
-        data-editor={props['data-editor']}
-        data-offset-key={props['data-offset-key']}
-      >
-        {props.children}
-      </li>
-    );
-  };
+  // const MyLi = (props: {[key: string]: any}) => {
+  //   console.log('MYWRAPPER:', props.children[0], props);
+  //   return (
+  //     <li
+  //       data-block={props['data-block']}
+  //       data-editor={props['data-editor']}
+  //       data-offset-key={props['data-offset-key']}
+  //     >
+  //       {props.children}
+  //     </li>
+  //   );
+  // };
 
   // const blockRenderMap = Immutable.Map({
   //   'unordered-list-item': {
@@ -321,13 +400,13 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
 
   // keep support for other draft default block types and add our myCustomBlock type
   const blockRenderMap = DefaultDraftBlockRenderMap.merge(Immutable.Map({
-    'xunordered-list-item': {
-      // element is used during paste or html conversion to auto match your component;
-      // it is also retained as part of this.props.children and not stripped out
-      element: 'li', // 'MyLi',
-      wrapper: <MyUL />,
-      // wrapper: <ul/>
-    },
+    // 'xunordered-list-item': {
+    //   // element is used during paste or html conversion to auto match your component;
+    //   // it is also retained as part of this.props.children and not stripped out
+    //   element: 'li', // 'MyLi',
+    //   wrapper: <MyUL />,
+    //   // wrapper: <ul/>
+    // },
   }));
 
   const editorOpts = {
@@ -335,13 +414,14 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
     editorState: eState,
     readOnly, // handle ourselve,
     onChange,
-    handleKeyCommand: _handleKeyCommand,
+    handleKeyCommand,
     handleReturn,
-    handleBeforeInput: _handleBeforeInput,
+    handleBeforeInput,
+    handlePastedText,
     // preserveSelectionOnBlur
     blockRenderMap,
     blockRendererFn,
-    keyBindingFn: _keyBindingFn,
+    keyBindingFn,
     spellCheck: withSpellCheck,
     className: classes.inner,
     styles: { width: '100%', overflowY: 'unset' },
@@ -362,10 +442,6 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
     <div className={classes.outer} onFocus={onFocus} onBlur={onBlur}>
       <Editor {...editorOpts} />
       { plugins.map(createPluginCard)}
-
-      {/* <Card cardName='styleMenu' editorID={editorID} isFocused={isFocused.current}/>
-      <Card cardName='linkDialog' editorID={editorID} isFocused={isFocused.current}/> */}
-      {/* { renderBubble() } */}
     </div>
   );
 }) as React.FunctionComponent<Props>;

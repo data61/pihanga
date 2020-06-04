@@ -31,6 +31,7 @@ type E = {
 type PersistedState = {
   blocks: B[];
   entities: {[key: string]: E};
+  lastSaved?: number;
 }
 
 const FORMATTING_ENTITIES = ['BOLD', 'ITALIC'];
@@ -99,6 +100,11 @@ export const createContentState = (
     entityMap: {},
   });
   const [catKey, cs2] = initializeCatalog(cs);
+  if (!ctnt.entities) {
+    // no entities to process. All done.
+    const keys = cs2.getBlockMap().keySeq().toArray();
+    return [cs2, catKey, keys];
+  }
   const old2new = {} as {[key: string]: string};
   const catData = {} as {[key: string]: string};
   const cs3 = Object.entries(ctnt.entities).reduce((csi, el) => {

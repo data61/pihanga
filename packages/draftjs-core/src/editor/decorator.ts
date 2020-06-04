@@ -3,9 +3,12 @@ import {
   Entity, ContentState, ContentBlock, EntityInstance,
 } from 'draft-js';
 import { DropTargetMonitor, DragSourceMonitor, DragObjectWithType } from 'react-dnd';
+import { createLogger } from '@pihanga/core';
 
 import DecoratedSpan, { StylesSpanProps } from './decoratedSpan.component';
-import { getCatalog } from '../util';
+// import { getCatalog } from '../util';
+
+const logger = createLogger('editor:decorator');
 
 // Alert: Can't figure out on how to import 'DraftDecoratorType'
 // import type { DraftDecoratorType } from 'draft-js';
@@ -240,6 +243,16 @@ export const DECORATORS: DecoratorsT = {
     }),
   ],
 };
+
+export function addDecorator(
+  name: string,
+  declaration: DecoratorDeclaration,
+): void {
+  if (DECORATORS[name]) {
+    logger.warn(`Overriding previously declared decorator '${name}'.`);
+  }
+  DECORATORS[name] = declaration;
+}
 
 export default (
   editorOpts: EditorOpts,

@@ -1,13 +1,15 @@
-import { registerGET, actions, update, PiRegister } from  '@pihanga/core';
+import {
+  registerGET, actions, update, PiRegister,
+} from '@pihanga/core';
 
 import { Domain, LinkValueAction, PLUGIN_TYPE } from './index';
 import { updatePluginState } from '../index';
 
 export type SpacyAnalysis = {
-  i: number, // index into word array
-  s: number, // span .. number of consecutive words covered by type
-  t: string, // type
-  f: string, // sentence fragment (computable by word array, index, and span)
+  i: number; // index into word array
+  s: number; // span .. number of consecutive words covered by type
+  t: string; // type
+  f: string; // sentence fragment (computable by word array, index, and span)
 };
 
 export const init = (register: PiRegister) => {
@@ -17,16 +19,16 @@ export const init = (register: PiRegister) => {
     trigger: actions(Domain).VALUE,
     request: (action) => {
       const a = action as LinkValueAction;
-      return {q: a.url || ''};
+      return { q: a.value || '' };
     },
     reply: (state, reply, requestAction) => {
       const a = requestAction as LinkValueAction;
-      return updatePluginState(a.editorID, PLUGIN_TYPE, state, path => {
-        return update(state, path, {search: {
-          query: a.url,
+      return updatePluginState(a.editorID, PLUGIN_TYPE, state, (path) => update(state, path, {
+        search: {
+          query: a.value,
           result: reply,
-        }});
-      });
+        },
+      }));
     },
   });
 
@@ -47,7 +49,7 @@ export const init = (register: PiRegister) => {
   //       }, 2000);
   //     }
   //   });
-    
+
   //   return state;
   // });
 };
