@@ -16,7 +16,8 @@ export declare function dispatchFromReducer<T extends {[key:string]:any}>(domain
 
 export declare function update(state: ReduxState, path: string[], partial: any): ReduxState;
 
-export declare function getPihangaState<T>(name: string, state: ReduxState): T;
+export declare function getState():ReduxState;
+export declare function getPihangaState<T>(name: string, state?: ReduxState): T;
 export declare function updatePihangaState(state: ReduxState, name: string, path: string[], partial: any): ReduxState;
 
 export declare function registerGET(props: PiRegisterGetProps): void;
@@ -79,8 +80,8 @@ type PiRegisterGetProps = {
   name: string,
   url: string,
   trigger: string,
-  guard?: (state: ReduxState, action: ReduxAction) => boolean,
-  request: (action: ReduxAction) => PiUrlBindings,
+  guard?: (action: ReduxAction, state: ReduxState) => boolean,
+  request: (action: ReduxAction, state: ReduxState, variables: string[]) => PiUrlBindings,
   reply: (state: ReduxState, reply: any, requestAction: ReduxAction) => ReduxState,
 };
 

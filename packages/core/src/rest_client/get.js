@@ -40,7 +40,7 @@ export function registerGET({
 
   registerReducer(trigger, (state, action) => {
     if (guard) {
-      if (!guard(state, action)) {
+      if (!guard(action, state)) {
         return state;
       }
     }
