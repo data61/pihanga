@@ -8,6 +8,9 @@ import Grid from '@material-ui/core/Grid';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Radio from '@material-ui/core/Radio';
 import Select from '@material-ui/core/Select';
 import isObject from 'lodash.isobject';
 
@@ -142,11 +145,51 @@ export const PiForm = styled(({
     );
   }
 
-  function getOption(o, i) {
+  function addRadioGroup(r) {
+    const {
+      id,
+      label,
+      defValue = '',
+      required = false,
+      options = [],
+      rowLayout = false,
+      help,
+      grid = { xs: 12, sm: 12 },
+    } = r;
+    const v = values[id] ? values[id] : defValue;
+    return (
+      <Grid key={id} required={required} item {...grid}>
+        <FormControl component="fieldset" className={classes.selectControl} required={required}>
+          <FormLabel component="legend">{label}</FormLabel>
+          <RadioGroup
+            aria-label={label}
+            name={id}
+            value={v}
+            row={rowLayout}
+            onChange={(ev) => onChange(id, ev.target.value)}
+          >
+            { options.map(getRadio) }
+          </RadioGroup>
+          { help ? <FormHelperText>{help}</FormHelperText> : null }
+        </FormControl>
+      </Grid>
+    );
+  }
+
+  function getRadio(o, i) {
     const ish = isObject(o);
     const label = ish ? o.label : o;
     const id = ish ? o.id : i;
-    return (<option key={i} value={id}>{label}</option>);
+    const disabled = ish ? o.disabled : false;
+    return (
+      <FormControlLabel
+        key={i}
+        value={id}
+        disabled={disabled}
+        control={<Radio />}
+        label={label}
+      />
+    );
   }
 
   function addSelectField(r) {
@@ -172,13 +215,20 @@ export const PiForm = styled(({
             }}
             onChange={(ev) => onChange(id, ev.target.value)}
           >
-            <option value="" />
+            <option key="_def_" value="" />
             { options.map(getOption) }
           </Select>
           { help ? <FormHelperText>{help}</FormHelperText> : null }
         </FormControl>
       </Grid>
     );
+  }
+
+  function getOption(o, i) {
+    const ish = isObject(o);
+    const label = ish ? o.label : o;
+    const id = ish ? o.id : i;
+    return (<option key={i} value={id}>{label}</option>);
   }
 
   function addFields() {
@@ -191,6 +241,8 @@ export const PiForm = styled(({
           return addCheckboxField(r);
         case 'selectField':
           return addSelectField(r);
+        case 'radioGroup':
+          return addRadioGroup(r);
         default:
           throw new Error(`Unsupported type '${type}`);
       }
