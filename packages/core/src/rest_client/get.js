@@ -13,7 +13,7 @@ export function init(register) {
 
 export function registerGET({
   name, url,
-  trigger,
+  trigger, guard,
   request, reply, error,
 }) {
   if (!name) {
@@ -39,6 +39,11 @@ export function registerGET({
   const errorType = `${ACTION_TYPES.GET_ERROR}:${name}`;
 
   registerReducer(trigger, (state, action) => {
+    if (guard) {
+      if (!guard(state, action)) {
+        return state;
+      }
+    }
     const vars = request(action, state, variables);
     if (vars) {
       const url2 = buildURL(parts, vars, variables);

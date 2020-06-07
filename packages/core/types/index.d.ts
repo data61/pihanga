@@ -79,6 +79,7 @@ type PiRegisterGetProps = {
   name: string,
   url: string,
   trigger: string,
+  guard?: (state: ReduxState, action: ReduxAction) => boolean,
   request: (action: ReduxAction) => PiUrlBindings,
   reply: (state: ReduxState, reply: any, requestAction: ReduxAction) => ReduxState,
 };
@@ -89,6 +90,7 @@ type PiRegisterPostPutProps = {
   name: string,
   url: string,
   trigger: string,
+  guard?: (state: ReduxState, action: ReduxAction) => boolean,
   request: (action: ReduxAction) => [PiRestRequestBody, PiUrlBindings],
   reply: (state: ReduxState, reply: any, requestAction: ReduxAction) => ReduxState,
 };
