@@ -13,6 +13,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
 import Select from '@material-ui/core/Select';
 import isObject from 'lodash.isobject';
+import { Card } from '@pihanga/core';
 
 import styled from './form.style';
 
@@ -224,6 +225,25 @@ export const PiForm = styled(({
     );
   }
 
+  function addCardField(r) {
+    const {
+      id, label,
+      cardName,
+      required = false,
+      help,
+      grid = { xs: 12, sm: 12 },
+    } = r;
+    const v = values[id];
+    return (
+      <Grid key={id} required={required} item {...grid}>
+        <FormControl className={classes.selectControl} required={required}>
+          <InputLabel htmlFor={id}>{label}</InputLabel>
+          <Card cardName={cardName} value={v} onChange={(v) => onChange(id, v)} />
+          { help ? <FormHelperText>{help}</FormHelperText> : null }
+        </FormControl>
+      </Grid>
+    );
+  }
   function getOption(o, i) {
     const ish = isObject(o);
     const label = ish ? o.label : o;
@@ -243,6 +263,8 @@ export const PiForm = styled(({
           return addSelectField(r);
         case 'radioGroup':
           return addRadioGroup(r);
+        case 'card':
+          return addCard(r);
         default:
           throw new Error(`Unsupported type '${type}`);
       }
