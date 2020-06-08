@@ -62,7 +62,8 @@
     "redux": "^4.0.0",
     "redux-thunk": "^2.3.0",
     "stackinfo": "^1.1.5",
-    "whatwg-fetch": "~3.0.0"
+    "whatwg-fetch": "~3.0.0",
+    "form-data": "^3.0.0"
   },
   "peerDependencies": {
     "react": "^16.9.0-0",

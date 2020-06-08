@@ -1,4 +1,6 @@
 import { fetch } from 'whatwg-fetch';
+import { FormData } from 'form-data';
+
 // import { backendLogger } from './backend.logger';
 import {
   throwUnauthorisedError,
@@ -99,11 +101,20 @@ async function checkStatusOrThrowError(url, response, silent) {
  */
 export function fetchApi(apiUrl, request, silent) {
   const fullApiUrl = `${Config.API_BASE}${apiUrl}`;
+  const method = (request || {}).method || 'GET';
 
-  // Need to stringtify JSON object
+  // Need to stringtify JSON object or create form data for 
   const tmpRequest = request;
   if (tmpRequest && tmpRequest.body && typeof (tmpRequest.body) !== 'string') {
-    tmpRequest.body = JSON.stringify(tmpRequest.body);
+    if (method === 'GET') {
+      tmpRequest.body = JSON.stringify(tmpRequest.body);
+    } else {
+      const form = new FormData();
+      Object.entries(tmpRequest.body).forEach(([k, v]) => {
+        form.append(k, v);
+      });
+      tmpRequest.body = form;
+    }
   }
 
   const requestProperties = {
