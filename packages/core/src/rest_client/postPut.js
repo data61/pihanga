@@ -24,7 +24,7 @@ const registerMethod = (method, opts) => {
   const {
     name,
     url,
-    trigger,
+    trigger, guard,
     request, reply, error,
   } = opts;
 
@@ -51,6 +51,11 @@ const registerMethod = (method, opts) => {
   const errorType = `${ACTION_TYPES[`${method}_ERROR`]}:${name}`;
 
   registerReducer(trigger, (state, action) => {
+    if (guard) {
+      if (!guard(action, state)) {
+        return state;
+      }
+    }
     const [body, vars] = request(action, state, variables);
     if (body) {
       const url2 = buildURL(parts, vars, variables);

@@ -94,7 +94,7 @@ export function buildURL(parts, vars, variables) {
     if (!vv) {
       // dispatch error
     }
-    return `${u}${p}${vv}`;
+    return `${u}${p}${encodeURIComponent(vv)}`;
   }, '');
   return url;
 }
