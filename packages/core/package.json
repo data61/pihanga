@@ -1,6 +1,6 @@
 {
   "name": "@pihanga/core",
-  "version": "0.4.14",
+  "version": "0.4.15",
   "description": "Core module of the Pihanga framework",
   "homepage": "https://github.com/n1analytics/pihanga#readme",
   "main": "lib/index.js",
@@ -47,6 +47,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
+    "form-data": "^3.0.0",
     "history": "^4.9.0",
     "humanize-duration": "^3.20.1",
     "lodash.every": "^4.6.0",
@@ -63,8 +64,7 @@
     "redux": "^4.0.0",
     "redux-thunk": "^2.3.0",
     "stackinfo": "^1.1.5",
-    "whatwg-fetch": "~3.0.0",
-    "form-data": "^3.0.0"
+    "whatwg-fetch": "~3.0.0"
   },
   "peerDependencies": {
     "react": "^16.9.0-0",
