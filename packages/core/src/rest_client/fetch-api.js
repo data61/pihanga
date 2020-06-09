@@ -1,5 +1,5 @@
 import { fetch } from 'whatwg-fetch';
-import { FormData } from 'form-data';
+import FormData from 'form-data';
 
 // import { backendLogger } from './backend.logger';
 import {
@@ -24,10 +24,6 @@ const Config = {
  * @type {{headers: {Content-Type: string}, credentials: string}}
  */
 export const API_REQUEST_PROPERTIES = {
-  headers: {
-    'Content-Type': 'application/json',
-  },
-
   credentials: 'include',
 };
 
@@ -105,20 +101,27 @@ export function fetchApi(apiUrl, request, silent) {
 
   // Need to stringtify JSON object or create form data for 
   const tmpRequest = request;
+  let contentType = null;
   if (tmpRequest && tmpRequest.body && typeof (tmpRequest.body) !== 'string') {
     if (method === 'GET') {
       tmpRequest.body = JSON.stringify(tmpRequest.body);
+      contentType = 'application/json';
     } else {
-      const form = new FormData();
+      const form = new URLSearchParams(); // new FormData();
       Object.entries(tmpRequest.body).forEach(([k, v]) => {
         form.append(k, v);
       });
       tmpRequest.body = form;
+      contentType = 'application/x-www-form-urlencoded; charset=UTF-8';
     }
   }
-
+  const headers = { ...API_REQUEST_PROPERTIES.headers || {} };
+  if (contentType) {
+    headers['Content-Type'] = contentType;
+  }
   const requestProperties = {
     ...API_REQUEST_PROPERTIES,
+    headers,
     ...tmpRequest,
   };
 
