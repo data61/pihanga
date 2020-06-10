@@ -75,7 +75,7 @@ const registerMethod = (method, opts) => {
   registerReducer(resultType, (state, action) => reply(state, action.reply, action.requestAction));
 
   if (error) {
-    registerReducer(errorType, (state, action) => reply(state, action.error, action.requestAction));
+    registerReducer(errorType, (state, action) => error(state, action.error, action.requestAction));
   }
 };
 

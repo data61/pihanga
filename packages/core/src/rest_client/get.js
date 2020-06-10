@@ -60,7 +60,7 @@ export function registerGET({
 
   if (error) {
     registerReducer(errorType, (state, action) => {
-      return reply(state, action.error, action.requestAction);
+      return error(state, action.error, action.requestAction);
     });
   }
 }
