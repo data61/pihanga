@@ -79,7 +79,7 @@ export type Props = PiComponentProps & {
 type BlockRenderFnProvider = (type: string) => BlockRendererFn<unknown, BCProps>;
 const DEF_BLOCK_RENDER_FN: BlockRenderFnProvider = (type) => (
   _1, editorID, _2, { documentID, readOnly },
-) => ({
+): BlockRenderDef<BCProps> => ({
   component: BlockComponent,
   editable: !readOnly,
   props: { editorID, documentID, type },
@@ -157,20 +157,18 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
     extensions,
     classes,
   } = { ...DEF_OPTS, ...opts };
-  const isFocused = React.useRef(false);
 
   if (!documentID) {
     return null;
   }
-  // console.log('>>> EDITOR UPDATE', opts);
 
-  const editorID = opts.cardName;
   const eState = opts.editorState;
-
   if (!eState) {
     return null;
   }
 
+  const editorID = opts.cardName;
+  const isFocused = eState.getSelection().getHasFocus();
   let isPasted = false;
 
   // HACK ALERT: The content state's entity map is this weird global non-queryable
@@ -206,7 +204,8 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
     }
 
     const entitiesHaveChanged = getCatalog(cs) !== getCatalog(origCS);
-    const selHasChanged = es2 !== eState && es2.getSelection() !== eState.getSelection();
+    const sel2 = es2.getSelection();
+    const selHasChanged = es2 !== eState && sel2 !== eState.getSelection();
     if (es2 !== eState || entitiesHaveChanged) {
       const evt = {
         editorID,
@@ -216,9 +215,11 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
         entitiesHaveChanged,
         selHasChanged,
         isPasted,
+        isFocused: sel2.getHasFocus(),
         autoSave,
         saveIntervalMS,
       } as PiEditorActionUpdate;
+
       if (selHasChanged) {
         const s = es2.getSelection();
         evt.selection = {
@@ -241,13 +242,13 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
     setEState(es);
   }
 
-  function onBlur(): void {
-    isFocused.current = false;
-  }
+  // function onBlur(): void {
+  //   isFocused.current = false;
+  // }
 
-  function onFocus(): void {
-    isFocused.current = true;
-  }
+  // function onFocus(): void {
+  //   isFocused.current = true;
+  // }
 
   function handleReturn(ev: SyntheticKeyboardEvent, editorState: EditorState): DraftHandleValue {
     const [handled2, es2] = HandleReturnExtensions.reduce(([handeled, es], def) => {
@@ -330,7 +331,7 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
     // console.log('RENDER BLOCK', type);
     const renderer = BlockType2Renderer[type];
     if (renderer) {
-      return renderer(contentBlock, editorID, extensions[type], opts);
+      return renderer(contentBlock, editorID, extensions[type], opts, isFocused);
     }
     return null;
   }
@@ -433,13 +434,13 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
         cardName={p.cardName}
         key={i}
         editorID={editorID}
-        isFocused={isFocused.current}
+        isFocused={isFocused}
       />
     );
   }
 
   return (
-    <div className={classes.outer} onFocus={onFocus} onBlur={onBlur}>
+    <div className={classes.outer}>
       <Editor {...editorOpts} />
       { plugins.map(createPluginCard)}
     </div>

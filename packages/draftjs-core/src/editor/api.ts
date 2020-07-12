@@ -92,6 +92,7 @@ export type PiEditorActionUpdate = PiEditorAction & {
   blocksChanged: string[];
   entitiesHaveChanged: boolean;
   isPasted: boolean;
+  isFocused: boolean;
   autoSave?: boolean;
   saveIntervalMS?: number;
   selHasChanged: boolean;
@@ -158,8 +159,9 @@ export type BlockRendererFn<P, T extends PiComponentProps> = (
     stateSavedAt?: number;
     withSpellCheck: boolean; // true,
     plugins: any[];
-    extensions: {[key: string]: any};
+    extensions: {[key: string]: unknown};
   },
+  isFocused: boolean,
 ) => BlockRenderDef<T> | null;
 
 /**
