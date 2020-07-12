@@ -313,7 +313,10 @@ export default (
         const e = contentState.getEntity(k);
         return [k, e];
       } catch (ex) {
-        console.error(`Missing entity reference '${k}'`, ex);
+        if (!k.endsWith('_T')) {
+          // any entity name ending in '_T' should be ignored
+          console.warn(`Missing entity reference '${k}'`, ex);
+        }
         return null;
       }
     }).filter((e) => e !== null) as any; // keep type checker happy. Not sure why I need to do this

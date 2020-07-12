@@ -132,15 +132,16 @@ export function init(register: PiRegister): void {
     if (documentID !== ers.documentID || !ers.editorState) {
       return state; // no longer valid
     }
-    const ps = persistState(ers.editorState);
+    const content = persistState(ers.editorState);
     const props = { stateSaveRequestedAt: -1, stateSavedAt: Date.now() };
     const s1 = update(state, ['pihanga', editorID], props);
     dispatchFromReducer({
       type: ACTION_TYPES.SAVED,
       documentID,
       editorID,
+      content,
     });
-    return update(s1, ['documents', documentID], { content: ps });
+    return update(s1, ['documents', documentID], { content });
   });
 }
 

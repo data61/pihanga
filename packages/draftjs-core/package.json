@@ -28,7 +28,9 @@
     "immutable": "^4.0.0-rc.12",
     "react-dnd": "^10.0.0",
     "react-dnd-html5-backend": "^10.0.0",
-    "uuid": "^8.1.0"
+    "uuid": "^8.1.0",
+    "json-canonicalize": "^1.0.3",
+    "sha1-es": "^1.8.2"
   },
   "peerDependencies": {
     "@material-ui/core": "^4.6.0-0",

@@ -9,6 +9,8 @@ import {
   DraftEntityMutability,
 } from 'draft-js';
 import { OrderedSet } from 'immutable';
+import { canonicalize } from 'json-canonicalize';
+import SHA1 from 'sha1-es';
 
 import { getCatalog, initializeCatalog } from '../util';
 
@@ -28,9 +30,15 @@ type E = {
   data?: {[key: string]: any};
 };
 
+type H = {
+  blocks: {[blockKey: string]: string};
+  entities: {[entityKey: string]: string};
+};
+
 type PersistedState = {
   blocks: B[];
   entities: {[key: string]: E};
+  hashes: H;
   lastSaved?: number;
 }
 
@@ -60,12 +68,13 @@ export const persistState = (editorState: EditorState): PersistedState => {
     return n;
   });
 
-  const blocks = raw.blocks.map((b) => {
+  const b2h = {} as {[key: string]: string};
+  const blocks = raw.blocks.map((b, i) => {
     if (b.data) {
       const d = b.data as {CATALOG_KEY: string};
       delete d.CATALOG_KEY;
     }
-    return {
+    const bs = {
       key: b.key,
       inlineStyleRanges: b.inlineStyleRanges.filter((s) => active.has(s.style)),
       data: b.data as {[key: string]: any},
@@ -73,21 +82,28 @@ export const persistState = (editorState: EditorState): PersistedState => {
       text: b.text,
       type: b.type,
     } as B;
+    const id = (b.data ? (b.data as {sortID?: string}).sortID : null) || `b_${i}`;
+    b2h[id] = SHA1.hash(canonicalize(bs));
+    return bs;
   });
   const entities = {} as {[key: string]: E};
-  active.sort().forEach((ek) => {
+  const e2h = {} as {[key: string]: string};
+  active.sort().forEach((_ek) => {
+    const ek = _ek!;
     // if (FORMATTING_ENTITIES.includes(ek!)) {
     //   return;
     // }
-    const e = contentState.getEntity(ek!);
-    entities[ek!] = {
-      name: key2name[ek!],
+    const e = contentState.getEntity(ek);
+    const es = {
+      name: key2name[ek],
       type: e.getType(),
       mutability: e.getMutability() as string,
       data: e.getData() as {[key: string]: any},
     } as E;
+    entities[ek] = es;
+    e2h[ek] = SHA1.hash(canonicalize(es));
   });
-  return { blocks, entities };
+  return { blocks, entities, hashes: { blocks: b2h, entities: e2h } };
 };
 
 export const createContentState = (
@@ -121,7 +137,11 @@ export const createContentState = (
     const ccm = cache.get(cm!);
     if (ccm) return ccm;
 
-    const style = cm!.getStyle().map((k) => old2new[k!]) as OrderedSet<string>;
+    const style = cm!.getStyle().flatMap((k) => {
+      const e = ctnt.entities[k!];
+      const n = old2new[k!];
+      return [n, `${e.type}_T`];
+    }) as OrderedSet<string>;
     const cm2 = CharacterMetadata.create({ style });
     cache.set(cm!, cm2);
     return cm2;
