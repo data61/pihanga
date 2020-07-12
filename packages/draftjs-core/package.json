@@ -1,6 +1,6 @@
 {
   "name": "@pihanga/draftjs-core",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "Wrapping and extending draft-js in the Pihanga framework",
   "license": "MIT",
   "author": "Max Ott <max@winlab.rutgers.edu> (http://linkedin.com/in/max-ott)",
@@ -26,11 +26,11 @@
     "draft-js": "^0.11.0",
     "draftjs-utils": "^0.10.0",
     "immutable": "^4.0.0-rc.12",
+    "json-canonicalize": "^1.0.3",
     "react-dnd": "^10.0.0",
     "react-dnd-html5-backend": "^10.0.0",
-    "uuid": "^8.1.0",
-    "json-canonicalize": "^1.0.3",
-    "sha1-es": "^1.8.2"
+    "sha1-es": "^1.8.2",
+    "uuid": "^8.1.0"
   },
   "peerDependencies": {
     "@material-ui/core": "^4.6.0-0",
