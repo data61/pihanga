@@ -132,6 +132,8 @@ export function init(register: PiRegister): void {
     if (documentID !== ers.documentID || !ers.editorState) {
       return state; // no longer valid
     }
+    const docs = (state as {documents?: {[id: string]: {content: unknown}}}).documents;
+    const prevContent = docs ? docs[documentID]?.content : null;
     const content = persistState(ers.editorState);
     const props = { stateSaveRequestedAt: -1, stateSavedAt: Date.now() };
     const s1 = update(state, ['pihanga', editorID], props);
@@ -140,6 +142,7 @@ export function init(register: PiRegister): void {
       documentID,
       editorID,
       content,
+      prevContent,
     });
     return update(s1, ['documents', documentID], { content });
   });

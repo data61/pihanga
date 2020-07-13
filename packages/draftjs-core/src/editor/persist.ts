@@ -10,7 +10,7 @@ import {
 } from 'draft-js';
 import { OrderedSet } from 'immutable';
 import { canonicalize } from 'json-canonicalize';
-import SHA1 from 'sha1-es';
+import { hash as sha1hash } from 'sha1-es';
 
 import { getCatalog, initializeCatalog } from '../util';
 
@@ -83,7 +83,7 @@ export const persistState = (editorState: EditorState): PersistedState => {
       type: b.type,
     } as B;
     const id = (b.data ? (b.data as {sortID?: string}).sortID : null) || `b_${i}`;
-    b2h[id] = SHA1.hash(canonicalize(bs));
+    b2h[id] = sha1hash(canonicalize(bs));
     return bs;
   });
   const entities = {} as {[key: string]: E};
@@ -101,7 +101,7 @@ export const persistState = (editorState: EditorState): PersistedState => {
       data: e.getData() as {[key: string]: any},
     } as E;
     entities[ek] = es;
-    e2h[ek] = SHA1.hash(canonicalize(es));
+    e2h[ek] = sha1hash(canonicalize(es));
   });
   return { blocks, entities, hashes: { blocks: b2h, entities: e2h } };
 };
