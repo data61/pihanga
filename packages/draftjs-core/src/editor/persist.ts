@@ -10,9 +10,9 @@ import {
 } from 'draft-js';
 import { OrderedSet } from 'immutable';
 import { canonicalize } from 'json-canonicalize';
-import { hash as sha1hash } from 'sha1-es';
 
 import { getCatalog, initializeCatalog } from '../util';
+import sha1 from './sha1';
 
 type B = {
   key: string;
@@ -82,8 +82,7 @@ export const persistState = (editorState: EditorState): PersistedState => {
       text: b.text,
       type: b.type,
     } as B;
-    const id = (b.data ? (b.data as {sortID?: string}).sortID : null) || `b_${i}`;
-    b2h[id] = sha1hash(canonicalize(bs));
+    b2h[b.key] = sha1(canonicalize(bs));
     return bs;
   });
   const entities = {} as {[key: string]: E};
@@ -101,7 +100,7 @@ export const persistState = (editorState: EditorState): PersistedState => {
       data: e.getData() as {[key: string]: any},
     } as E;
     entities[ek] = es;
-    e2h[ek] = sha1hash(canonicalize(es));
+    e2h[ek] = sha1(canonicalize(es));
   });
   return { blocks, entities, hashes: { blocks: b2h, entities: e2h } };
 };
@@ -121,12 +120,12 @@ export const createContentState = (
     const keys = cs2.getBlockMap().keySeq().toArray();
     return [cs2, catKey, keys];
   }
-  const old2new = {} as {[key: string]: string};
+  // const old2new = {} as {[key: string]: string};
   const catData = {} as {[key: string]: string};
   const cs3 = Object.entries(ctnt.entities).reduce((csi, el) => {
     const [key, ed] = el;
     const cso = csi.createEntity(ed.type, ed.mutability as DraftEntityMutability, ed.data);
-    old2new[key] = catData[ed.name] = cs.getLastCreatedEntityKey();
+    catData[key] = cs.getLastCreatedEntityKey();
     return cso;
   }, cs2);
   const cs4 = cs3.replaceEntityData(catKey, catData);
@@ -139,7 +138,7 @@ export const createContentState = (
 
     const style = cm!.getStyle().flatMap((k) => {
       const e = ctnt.entities[k!];
-      const n = old2new[k!];
+      const n = catData[k!];
       return [n, `${e.type}_T`];
     }) as OrderedSet<string>;
     const cm2 = CharacterMetadata.create({ style });

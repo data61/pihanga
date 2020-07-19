@@ -5,9 +5,12 @@ declare module 'draftjs-utils' {
   export function changeDepth(editorState: EditorState, adjustment: number, maxDepth: number): EditorState;
 }
 
-declare module 'sha1-es' {
-  export function hash(str: string): string;
-}
+// declare module 'sha1-es' {
+//   type X = {
+//     hash: (str: string) => string;
+//   };
+//   export const default: X;
+// }
 
 // declare module 'draft_js'  {
 //   import {DraftEntityType, DraftEntityMutability} from 'draft-js';

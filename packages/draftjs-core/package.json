@@ -15,7 +15,8 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "compile": "tsc",
-    "build": "rm -rf ./lib && tsc && cp src/editor/draft.css lib/editor",
+    "build2": "rm -rf ./lib && tsc && cp src/editor/draft.css lib/editor",
+    "build": "rm -rf ./lib && copyup 'src/**/*.js' ./lib && copyup 'src/**/*.css' ./lib && tsc",
     "lint": "eslint \"src/**\"",
     "test": "jest --config jestconfig.json",
     "prepare": "yarn build",
@@ -63,7 +64,8 @@
     "ts-jest": "^25.0.0",
     "tslint": "^6.0.0",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.7.5"
+    "typescript": "^3.7.5",
+    "copyfiles": "^2.3.0"
   },
   "files": [
     "lib/**/*"
