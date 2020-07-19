@@ -1,6 +1,6 @@
 {
   "name": "@pihanga/draftjs-core",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "Wrapping and extending draft-js in the Pihanga framework",
   "license": "MIT",
   "author": "Max Ott <max@winlab.rutgers.edu> (http://linkedin.com/in/max-ott)",
@@ -51,6 +51,7 @@
     "@types/uuid": "^8.0.0",
     "@typescript-eslint/eslint-plugin": "^2.18.0",
     "@typescript-eslint/parser": "^2.18.0",
+    "copyfiles": "^2.3.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-plugin-import": "^2.20.0",
@@ -64,8 +65,7 @@
     "ts-jest": "^25.0.0",
     "tslint": "^6.0.0",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.7.5",
-    "copyfiles": "^2.3.0"
+    "typescript": "^3.7.5"
   },
   "files": [
     "lib/**/*"
