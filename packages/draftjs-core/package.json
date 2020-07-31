@@ -15,7 +15,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "compile": "tsc",
-    "build2": "rm -rf ./lib && tsc && cp src/editor/draft.css lib/editor",
+    "build2": "rm -rf ./lib && tsc",
     "build": "rm -rf ./lib && copyup 'src/**/*.js' ./lib && copyup 'src/**/*.css' ./lib && tsc",
     "lint": "eslint \"src/**\"",
     "test": "jest --config jestconfig.json",

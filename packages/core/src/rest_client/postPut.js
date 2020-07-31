@@ -127,7 +127,8 @@ export const runMethod = (
       type: errorType,
       restName: name,
       error: {
-        error,
+        error: error.toString(),
+        stack: error.stack,
         url,
         vars,
       },

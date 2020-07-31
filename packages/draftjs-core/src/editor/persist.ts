@@ -74,9 +74,14 @@ export const persistState = (editorState: EditorState): PersistedState => {
       const d = b.data as {CATALOG_KEY: string};
       delete d.CATALOG_KEY;
     }
+    const inlineStyleRanges = b.inlineStyleRanges
+      .filter((s) => active.has(s.style))
+      .map((s) => {
+        return { ...s, style: key2name[s.style] || s.style };
+      });
     const bs = {
       key: b.key,
-      inlineStyleRanges: b.inlineStyleRanges.filter((s) => active.has(s.style)),
+      inlineStyleRanges,
       data: b.data as {[key: string]: any},
       depth: b.depth,
       text: b.text,
@@ -93,14 +98,14 @@ export const persistState = (editorState: EditorState): PersistedState => {
     //   return;
     // }
     const e = contentState.getEntity(ek);
+    const eid = key2name[ek];
     const es = {
-      name: key2name[ek],
       type: e.getType(),
       mutability: e.getMutability() as string,
       data: e.getData() as {[key: string]: any},
     } as E;
-    entities[ek] = es;
-    e2h[ek] = sha1(canonicalize(es));
+    entities[eid] = es;
+    e2h[eid] = sha1(canonicalize(es));
   });
   return { blocks, entities, hashes: { blocks: b2h, entities: e2h } };
 };
@@ -155,5 +160,7 @@ export const createContentState = (
       data,
     });
   });
-  return [cs4.set('blockMap', bm2) as ContentState, catKey, newBlocks];
+  const cs5 = cs4.set('blockMap', bm2) as ContentState;
+  const raw = convertToRaw(cs5);
+  return [cs5, catKey, newBlocks];
 };
