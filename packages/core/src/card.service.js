@@ -209,7 +209,8 @@ export function pQuery(cardName, propName, match, resProps) {
 }
 
 function getValue(paramName, cardDef, state, ctxtProps = {}) {
-  let v = cardDef[paramName];
+  let v = ctxtProps[paramName];
+  if (typeof v === 'undefined') v = cardDef[paramName]; // need to avoid boolean
   if (isFunction(v)) {
     v = v(state, (cn, pn) => {
       const rv = ref(cn, pn)(state, ctxtProps);
@@ -276,12 +277,21 @@ const createConnectedCard = (cardName, ctxtProps) => {
           } else {
             // set default event handler
             f = (opts = {}) => {
+              let o = opts;
+              if ('type' in o) {
+                logger.error(`event options for "${evtType}" from "${cardName}" cannot not include "type". Will change to "_type"`);
+                o = {
+                  _type: opts.type,
+                  ...opts,
+                };
+                delete o.type;
+              }
               setTimeout(() => {
                 dispatch({
                   type: evtType,
-                  id: cardName, // DEPRECATE
+                  // id: cardName, // DEPRECATE
                   cardID: cardName,
-                  ...opts,
+                  ...o,
                 });
               }, 0);
             };

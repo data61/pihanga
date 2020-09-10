@@ -59,9 +59,9 @@ function initStore(reducer, opts) {
   if (!state.route) {
     state.route = {};
   }
-  if (!state.route.path) {
-    state.route.path = getPath(opts);
-  }
+  // if (!state.route.path) {
+  //   [state.route.path, state.route.query, state.route.url] = getPath(opts);
+  // }
   initPathEvent(opts);
   return createStore(reducer.rootReducer.bind(reducer), opts.initialReduxState);
 }

@@ -16,18 +16,32 @@ export default (registerReducer, browserHistory, opts) => {
       // ignoring search
       // const search = sa[1];
     }
-
     const pa = sa[0].substring(pathPrefixLength).split('/').filter(s => s !== '');
-    return pa;
-  }
+    const q = {};
+    const s = sa[1];
+    if (s && s.length > 0) {
+      s.split('&').forEach((el) => {
+        const [k, v] = el.split('=');
+        q[decodeURI(k)] = v ? decodeURI(v) : true;
+      });
+    }
+    return [pa, q];
+  };
 
-  const toUrl = (path) => {
+  const toUrl = (path, query = {}) => {
     const url = `${pathPrefix}/${path.join('/')}`;
+    const qa = Object.entries(query);
+    if (qa.length > 0) {
+      const s = qa.map(([k, v]) => `${encodeURI(k)}=${encodeURI(v)}`).join('&');
+      return `${url}?${s}`;
+    }
     return url;
-  }
+  };
 
   opts.currentPath = () => {
-    var pa = toPath(browserHistory.location.pathname);
+    const loc = browserHistory.location;
+    const url = loc.pathname + (loc.search || '');
+    let [pa, q] = toPath(url);
     if (pa.length === 0 && opts.defPath) {
       const dp = pa = opts.defPath;
       if (Array.isArray(dp)) {
@@ -36,8 +50,8 @@ export default (registerReducer, browserHistory, opts) => {
         pa = dp.split('/').filter(s => s !== '');
       }
     }
-    return pa;
-  }
+    return [pa, q, url];
+  };
 
   registerReducer(ROUTER_ACTION_TYPES.NAVIGATE_TO_PAGE, (state, action) =>  {
     var url = action.url;
@@ -48,38 +62,53 @@ export default (registerReducer, browserHistory, opts) => {
       return state;
     }
 
-    const pa = toPath(url);
+    const [path, query] = toPath(url);
     dispatchFromReducer({
       type: ROUTER_ACTION_TYPES.SHOW_PAGE,
-      path: pa,
+      path,
+      query,
     });
     return update(state, ['route'], {
       fromBrowser: action.fromBrowser,
-      path: pa,
-      url
-    })
+      path,
+      query,
+      url,
+    });
   });
 
-  registerReducer(ROUTER_ACTION_TYPES.SHOW_PAGE, (state, action) =>  {
-    const cp = toUrl(action.path);
-    const hp = browserHistory.location.pathname;
-    if (cp !== hp) {
-      browserHistory.push(cp);
+  registerReducer(ROUTER_ACTION_TYPES.SHOW_PAGE, (state, { path = [], query = {} }) => {
+    const url = toUrl(path, query);
+    const loc = browserHistory.location;
+    const hp = `${loc.pathname}${loc.search}`;
+    if (url !== hp) {
+      browserHistory.push(url);
     }
-    return state;
+    return update(state, ['route'], {
+      fromBrowser: false,
+      path,
+      query,
+      url,
+    });
   });
 
   registerReducer('REDUX', 'INIT', (state) => {
-    const cp = toUrl(state.route.path);
-    logger.info(`Request navigation to '${cp}'`);
-    setTimeout(() => navigateToPage(cp, true));
+    let url;
+    if (state.route.path) {
+      url = toUrl(state.route.path, state.route.query);
+    } else {
+      const loc = browserHistory.location;
+      const hp = `${loc.pathname}${loc.search}`;
+      url = toUrl(...toPath(hp));
+    }
+    logger.info(`Request navigation to '${url}'`);
+    setTimeout(() => navigateToPage(url, true));
     return state;
   });
 
-  browserHistory.listen((location, action) => {
+  browserHistory.listen((location, histAction) => {
     // location is an object like window.location
-    logger.info("Back in history to", location.pathname);
-    setTimeout(() => navigateToPage(location.pathname, true));
+    const url = `${location.pathname}${location.search}`;
+    logger.info('Back in history to: ', url);
+    setTimeout(() => navigateToPage(url, histAction === 'POP'));
   });
-
-}
+};

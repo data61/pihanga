@@ -65,47 +65,78 @@ export function registerGET({
   }
 }
 
-const pat = /([^:]*)(:[a-z][a-z0-9_]*)(.*)/i;
-
 export function parseURL(url) {
-  let r;
-  let s = url;
-  const parts = [];
   const variables = [];
-  // eslint-disable-next-line no-cond-assign
-  while ((r = pat.exec(s)) !== null) {
-    parts.push(r[1]);
-    variables.push(r[2].slice(1));
-    // eslint-disable-next-line prefer-destructuring
-    s = r[3];
+
+  function isPlaceHolder(el, i, v2id) {
+    if (el.startsWith(':')) {
+      const vn = el.slice(1);
+      variables.push(vn);
+      // eslint-disable-next-line no-param-reassign
+      v2id[vn] = (v2id[vn] || []).concat(i);
+    }
   }
-  parts.push(s);
-  return { url, parts, variables };
+
+  const uq = url.split('?');
+  if (uq.length > 2) {
+    throw new Error(`URL '${url}' has multiple '?'.`);
+  }
+  const ua = uq[0].split('/');
+  const v2uid = {};
+  ua.forEach((el, i) => {
+    isPlaceHolder(el, i, v2uid);
+  });
+
+  const qa = uq[1] ? uq[1].split('&').flatMap((el) => el.split('=')) : [];
+  const v2qid = {};
+  qa.forEach((el, i) => {
+    isPlaceHolder(el, i, v2qid);
+  });
+
+  return { url, parts: [ua, v2uid, qa, v2qid], variables };
 }
 
-export function buildURL(parts, vars, variables) {
-  const url = parts.reduce((u, p, i) => {
-    if (i >= variables.length) {
-      // usually last part
-      return `${u}${p}`;
-    }
-    const vn = variables[i];
-    const vv = vars[vn];
-    if (!vv) {
-      // dispatch error
-    }
-    return `${u}${p}${encodeURIComponent(vv)}`;
-  }, '');
-  return url;
+export function buildURL(parts, vars) {
+  const [ua, v2uid, qa, v2qid] = parts;
+
+
+  function mapA(a, v2id) {
+    const a2 = [...a];
+    Object.entries(v2id).forEach(([k, id]) => {
+      const v = vars[k];
+      if (!v) {
+        throw Error(`Missing assignment to url parameter '${k}'`);
+      }
+      id.forEach((i) => { a2[i] = encodeURI(v); });
+    });
+    return a2;
+  }
+
+  const ua2 = mapA(ua, v2uid);
+  const path = ua2.join('/');
+
+  const qa2 = mapA(qa, v2qid);
+  const qph = vars['?'] ? { ...vars['?'] } : {};
+  for (let i = 0; i < qa2.length; i += 2) {
+    qph[qa2[i]] = qa2[i + 1];
+  }
+  const qe = Object.entries(qph);
+  if (qe.length > 0) {
+    const query = qe.map(([k, v]) => `${encodeURI(k)}=${encodeURI(v)}`).join('&');
+    return `${path}?${query}`;
+  } else {
+    return path;
+  }
 }
 
 export function runGET(url, name, vars, resultType, errorType, requestAction) {
   fetchApi(url, {
     method: 'GET',
-  }).then((reply) => {
+  }).then(([reply, contentType]) => {
     const p = {
       type: resultType,
       queryID: name,
+      contentType,
       reply,
       vars,
       requestAction,

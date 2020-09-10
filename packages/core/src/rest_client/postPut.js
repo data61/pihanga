@@ -113,10 +113,11 @@ export const runMethod = (
   fetchApi(url, {
     method,
     body,
-  }).then((reply) => {
+  }).then(([reply, contentType]) => {
     const p = {
       type: resultType,
       restName: name,
+      contentType,
       reply,
       vars,
       requestAction,

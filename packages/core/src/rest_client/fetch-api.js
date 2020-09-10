@@ -1,5 +1,4 @@
 import { fetch } from 'whatwg-fetch';
-import FormData from 'form-data';
 
 // import { backendLogger } from './backend.logger';
 import {
@@ -40,13 +39,20 @@ export function config(cfg) {
  * @param response
  * @returns {Object}
  */
-function unwrapData(response) {
+function decodeReply(response) {
   // Handle no content because response.json() doesn't handle it
   if (response.status === 204) {
     return {};
   }
-
-  return response.json();
+  const contentType = response.headers.get('content-type');
+  if (!contentType || !contentType.includes('application/json')) {
+    return Promise.resolve([{
+      contentType,
+      response,
+    }, contentType]);
+  } else {
+    return response.json().then((j) => [j, contentType]);
+  }
 }
 
 /**
@@ -136,7 +142,7 @@ export function fetchApi(apiUrl, request, silent) {
   // is an HTTP 404 or 500
   return fetch(fullApiUrl, requestProperties)
     .then((response) => checkStatusOrThrowError(fullApiUrl, response, silent))
-    .then(unwrapData);
+    .then(decodeReply);
 }
 
 /**
