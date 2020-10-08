@@ -3,6 +3,7 @@ import isFunction from 'lodash.isfunction';
 import { connect } from 'react-redux';
 import { getState, registerActions } from './redux';
 import { createLogger } from './logger';
+import { errorMonitor } from 'form-data';
 
 const logger = createLogger('card.service');
 
@@ -134,7 +135,7 @@ export function ref(cardNameOrF, paramName) {
       logger.warn(`Requested reference to unknown card "${cardName}"`);
       return null;
     }
-    const v = getValue(paramName, refDef.props || {}, state, ctxtProps);
+    const v = getValue(paramName, refDef.props || {}, state, ctxtProps, cardName);
     return v;
   };
 }
@@ -208,14 +209,53 @@ export function pQuery(cardName, propName, match, resProps) {
   };
 }
 
-function getValue(paramName, cardDef, state, ctxtProps = {}) {
+export function getParamValue(paramName, cardName, state, ctxtProps = {}, includeDefaults = true) {
+  const cache = cardStates[cardName] || {};
+  if (cache.state === state) {
+    return cache.cardState[paramName];
+  }
+ 
+  const cardDef = cards[cardName];
+  if (!cardDef) {
+    throw new Error(`Unknonw card '${cardName}'`);
+  }
+
+  // Step 1: Dynamic value in state.pihanga
+  const dynState = state.pihanga[cardName];
+  if (dynState) {
+    const vd = dynState[paramName];
+    if (vd !== undefined) {
+      return vd;
+    }
+  }
+
+  // Step 2: Static definition
+  let v = ctxtProps[paramName];
+  if (typeof v === 'undefined') {
+    v = cardDef.props[paramName]; // need to avoid boolean
+  }
+  // Step 3: Use defaults
+  if (typeof v === 'undefined' && includeDefaults && cardDef.defaults) {
+    v = cardDef.defaults[paramName];
+  }
+  if (isFunction(v)) {
+    v = v(state, (cn, pn) => {
+      const cn2 = cn || cardName;
+      const rv = getParamValue(pn, cn2, state, ctxtProps, cn2 !== cardName);
+      return rv;
+    }, {}, cardName);
+  }
+  return v;
+}
+
+function getValue(paramName, cardDef, state, ctxtProps, cardName) {
   let v = ctxtProps[paramName];
   if (typeof v === 'undefined') v = cardDef[paramName]; // need to avoid boolean
   if (isFunction(v)) {
     v = v(state, (cn, pn) => {
-      const rv = ref(cn, pn)(state, ctxtProps);
+      const rv = ref(cn || cardName, pn)(state, ctxtProps);
       return rv;
-    }, ctxtProps);
+    }, ctxtProps, cardName);
   }
   return v;
 }
@@ -338,7 +378,7 @@ export function getCardState(cardName, state, ctxtProps = {}) {
   const oldCardState = cache.cardState || {};
   let hasChanged = false;
   for (const k of Object.keys(cardState)) {
-    const v = getValue(k, cardState, state, ctxtProps);
+    const v = getValue(k, cardState, state, ctxtProps, cardName);
     const ov = oldCardState[k];
     // As redux and related state is supposed to be close to immutable
     // a simple equivalence check should suffice.
@@ -352,6 +392,7 @@ export function getCardState(cardName, state, ctxtProps = {}) {
     }
     cardState[k] = v;
   }
+  // console.log('>>> CARD STATE', cardName, hasChanged, cardState);
   if (hasChanged) {
     cardState.cardName = cardName;
     cacheCardState(cardName, cardState, state, ctxtProps);
