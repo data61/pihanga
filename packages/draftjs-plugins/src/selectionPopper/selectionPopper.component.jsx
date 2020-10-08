@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {getVisibleSelectionRect} from 'draft-js';
+import { getVisibleSelectionRect } from 'draft-js';
 import Popper from '@material-ui/core/Popper';
 import Fade from '@material-ui/core/Fade';
 
@@ -23,13 +23,13 @@ export const SelectionPopper = styled(({
   const prevRect = React.useRef(null);
 
   if (selection === null && domElementID === null) {
-    console.log("SelectionPopper hide");
+    console.log('SelectionPopper hide');
     return null;
   }
   let rect = null;
   if (selection) {
     if (!forceShow && selection.isCollapsed()) {
-      console.log("SelectionPopper hide collapsed");
+      console.log('SelectionPopper hide collapsed');
       return null;
     }
 
@@ -53,7 +53,7 @@ export const SelectionPopper = styled(({
     }
     rect = el.getBoundingClientRect();
   }
-  //console.log('>> POPPER RECT', rect);
+  // console.log('>> POPPER RECT', rect);
   const anchorEl = {
     getBoundingClientRect: () => rect,
     clientWidth: rect.width,
@@ -77,10 +77,10 @@ export const SelectionPopper = styled(({
 
   return (
     <div>
-      <Popper 
-        id={id} 
-        open={true} 
-        anchorEl={anchorEl} 
+      <Popper
+        id={id}
+        open
+        anchorEl={anchorEl}
         placement={placement}
         disablePortal={false}
         modifiers={modifiers}
@@ -90,7 +90,7 @@ export const SelectionPopper = styled(({
         {({ TransitionProps }) => (
           <Fade {...TransitionProps} timeout={fadeInTime}>
             <>
-              <span className={classes.arrow} ref={setArrowRef} /> 
+              <span className={classes.arrow} ref={setArrowRef} />
               { children }
             </>
           </Fade>

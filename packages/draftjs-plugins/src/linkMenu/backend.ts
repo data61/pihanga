@@ -15,7 +15,7 @@ export type SpacyAnalysis = {
 export const init = (register: PiRegister) => {
   registerGET({
     name: 'queryLink',
-    url: '/search?q=":q"',
+    url: '/search?q=:q',
     trigger: actions(Domain).VALUE,
     request: (action) => {
       const a = action as LinkValueAction;
