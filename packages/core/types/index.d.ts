@@ -26,6 +26,13 @@ export declare function registerPOST(props: PiRegisterPostProps): void;
 
 export declare function getCardState(cardName:string, state: ReduxState): PiCardState;
 export declare function createLogger(name:string):any;
+export declare function getParamValue(
+  paramName: string,  
+  cardName: string, 
+  state: ReduxState, 
+  ctxtProps?: {[k: string]: unknown}, 
+  includeDefaults?: boolean,
+)
 
 type ReactComponent = any; //({[key:string]:any}) => any
 type ReduxState = {
