@@ -27,13 +27,15 @@ import {
   getDocumentIDFromRedux,
   PiEditorActionSave,
   PiEditorActionOpenNew,
+  PiEditorFocusAction, DocumentRxState
 } from './api';
 
 export * from './api';
 export { addDecorator } from './decorator';
 
 const Domain = 'EDITOR';
-export const ACTION_TYPES = registerActions(Domain, ['OPEN', 'OPEN_NEW', 'LOAD', 'FETCH_REQUEST', 'OPENED', 'REQUEST_SAVE', 'SAVED', 'UPDATE', 'ERROR']);
+export const ACTION_TYPES = registerActions(Domain, [
+  'OPEN', 'OPEN_NEW', 'LOAD', 'FETCH_REQUEST', 'OPENED', 'REQUEST_SAVE', 'SAVED', 'UPDATE', 'REQUEST_FOCUS', 'ERROR']);
 
 type RxStateWithDocument = ReduxState & { documents: {[key: string]: unknown }};
 
@@ -42,9 +44,10 @@ export function init(register: PiRegister): void {
     name: 'Editor',
     component: EditorComponent,
     events: {
-      // onLoad: ACTION_TYPES.LOAD,
-      // onSave: ACTION_TYPES.REQUEST_SAVE,
       onUpdate: ACTION_TYPES.UPDATE,
+    },
+    defaults: {
+      focusRequestedAt: 0,
     },
   });
 
@@ -63,9 +66,10 @@ export function init(register: PiRegister): void {
   });
 
   register.reducer(ACTION_TYPES.OPEN_NEW, (state: ReduxState, a: PiEditorActionOpenNew) => {
-    const { editorID, content } = a;
+    const { editorID, content, title } = a;
     const documentID = a.documentID || uuidv4();
-    const [esh, updateAction] = createState(editorID, documentID, content);
+    const doc = { content, title };
+    const [esh, updateAction] = createState(editorID, documentID, doc);
     dispatchFromReducer({
       type: ACTION_TYPES.OPENED,
       editorID,
@@ -78,13 +82,14 @@ export function init(register: PiRegister): void {
 
   register.reducer(ACTION_TYPES.LOAD, (state: ReduxState, a: PiEditorActionLoad) => {
     const { editorID, documentID } = a;
-    const doc = (state as RxStateWithDocument).documents[documentID] as {content: unknown};
+    const doc = (state as RxStateWithDocument).documents[documentID] as DocumentRxState;
     if (doc) {
-      const [esh, updateAction] = createState(editorID, documentID, doc.content);
+      const [esh, updateAction] = createState(editorID, documentID, doc);
       dispatchFromReducer({
         type: ACTION_TYPES.OPENED,
         editorID,
         documentID,
+        content: doc.content,
         isNew: false,
       });
       dispatchFromReducer(updateAction);
@@ -146,17 +151,22 @@ export function init(register: PiRegister): void {
     });
     return update(s1, ['documents', documentID], { content });
   });
+
+  register.reducer(ACTION_TYPES.REQUEST_FOCUS, (state: ReduxState, { editorID }: PiEditorFocusAction) => {
+    // put request a bit into the future to allow for settling of other actions
+    return update(state, ['pihanga', editorID], { focusRequestedAt: Date.now() + 100 });
+  });
 }
 
 function createState(
   editorID: string,
   documentID: string,
-  content?: unknown,
+  document?: DocumentRxState,
 ): [PiEditorRxState, PiEditorActionUpdate] {
   const cd = Decorator({ editorID });
   let cs; let catalogKey; let blocksChanged: string[];
-  if (content) {
-    [cs, catalogKey, blocksChanged] = createContentState(content);
+  if (document) {
+    [cs, catalogKey, blocksChanged] = createContentState(document.content);
   } else {
     cs = EditorState.createEmpty().getCurrentContent();
     [catalogKey, cs] = initializeCatalog(cs);
@@ -179,6 +189,9 @@ function createState(
     documentID,
     catalogKey,
     stateSaveRequestedAt: -1,
-  };
+  } as PiEditorRxState;
+  if (document && document.content && document.content.lastSaved) {
+    rxState.stateSavedAt = document.content.lastSaved;
+  }
   return [rxState, updateAction];
 }

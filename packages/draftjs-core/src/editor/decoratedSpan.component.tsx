@@ -5,6 +5,7 @@ import { ContentState, DraftEntityType, DraftEntityMutability } from 'draft-js';
 import {
   DecorationMapper, ParentProps, ElementProps, DropProps, DragProps, EditorOpts,
 } from './decorator';
+import { OrderedSet } from 'immutable';
 
 // type ClassedProps<P> = P & {
 //   classes: {[name:string]:string},
@@ -31,15 +32,15 @@ type DropElProps = {
 };
 
 export type StylesSpanProps = ClassedProps<ParentProps & {
-  contentState: ContentState;
-  decoratedText: string;
-  start: number;
-  end: number;
-  blockKey: string;
-  entityKey: string | undefined;
-  // classes: {[key:string]:string},
+  // contentState: ContentState;
+  // decoratedText: string;
+  // start: number;
+  // end: number;
+  // blockKey: string;
+  // entityKey: string | undefined;
+  // // classes: {[key:string]:string},
 
-  editorOpts: EditorOpts;
+  // editorOpts: EditorOpts;
   decorators: {[key: string]: DecorationMapper};
   entities?: [string, Entity][];
   decoratorID?: string;

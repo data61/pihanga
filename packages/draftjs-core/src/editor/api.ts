@@ -13,14 +13,20 @@ import {
   SelectionState,
   DraftHandleValue,
   ContentBlock,
+  DraftDragType,
 } from 'draft-js';
 
 import {
   BlockType2Renderer,
+  Exts,
   HandleReturnExtensions,
   HandleBeforeInputExtensions,
   HandleKeyCommandExtensions,
   KeyBindingFnExtensions,
+  HandleDropExtensions,
+  HandleDroppedFilesExtensions,
+  HandlePastedFilesExtensions,
+  HandlePastedTextExtensions,
 } from './editor.component';
 
 import { getCatalog } from '../util';
@@ -34,6 +40,7 @@ import {
   DecoratorClassDef as DC,
 } from './decorator';
 import { ACTION_TYPES } from '.';
+import { PersistedState } from './persist';
 
 const logger = createLogger('PiEditor');
 
@@ -48,13 +55,19 @@ export type DecoratorClassDef = DC;
 // defined in @types/draft-js, but apparently not exported
 export type SyntheticKeyboardEvent = React.KeyboardEvent<{}>;
 
+// Document we are loadinginto editor
+export type DocumentRxState = {
+  title?: string;
+  content: PersistedState;
+}
+
 export type PiEditorRxState = {
   editorID: string;
   documentID?: string;
   autoSave?: boolean;
   catalogKey?: string;
   stateSaveRequestedAt: number;
-  stateLastSaved?: number;
+  stateSavedAt?: number;
   saveIntervalMS?: number; // msec to wait before persisting current editor state
   plugins?: unknown;
   editorState?: EditorState;
@@ -79,7 +92,8 @@ export type PiEditorActionOpen = PiEditorAction & {
 export type PiEditorActionOpenNew = ReduxAction & {
   editorID: string;
   documentID?: string;
-  content?: unknown;
+  title?: string;
+  content: PersistedState;
 };
 
 export type PiEditorActionLoad = PiEditorAction & {
@@ -113,17 +127,28 @@ export type PiEditorActionSave = PiEditorAction & {
   editorID: string;
 };
 
+export type PiEditorFocusEvent = {
+  editorID: string;
+};
+
+export type PiEditorFocusAction = ReduxAction & PiEditorFocusEvent;
+
 export type PiEditorExtension<P> = {
   handleReturn?: HandleReturnFn<P>;
   handleBeforeInput?: HandleBeforeInputFn<P>;
   handleKeyCommand?: HandleKeyCommandFn<P>;
   handleKeyBinding?: HandleKeyBindingFn<P>;
+  handlePastedText?: HandlePastedTextFn<P>;
+  handlePastedFiles?: HandlePastedFilesFn<P>;
+  handleDroppedFiles?: HandleDroppedFilesFn<P>;
+  handleDrop?: HandleDropFn<P>;
 };
 
 export type HandleReturnFn<P> = (
   event: SyntheticKeyboardEvent,
   eState: EditorState,
   readOnly: boolean, // default read only
+  editorID: string,
   extProps?: P,
 ) => [boolean, EditorState];
 
@@ -131,21 +156,57 @@ export type HandleBeforeInputFn<P> = (
   chars: string,
   eState: EditorState,
   readOnly: boolean, // default read only
+  editorID: string,
   extProps?: P,
 ) => [DraftHandleValue|undefined, EditorState];
+
+export type HandlePastedTextFn<P> = (
+  text: string,
+  html: string | undefined,
+  eState: EditorState,
+  readOnly: boolean, // default read only
+  editorID: string,
+  extProps?: P,
+) => [DraftHandleValue|undefined, EditorState];
+
+export type HandlePastedFilesFn<P> = (
+  files: Array<Blob>,
+  editorID: string,
+  readOnly: boolean, // default read only
+  extProps?: P,
+) => DraftHandleValue|undefined;
+
+export type HandleDroppedFilesFn<P> = (
+  selection: SelectionState,
+  files: Array<Blob>,
+  editorID: string,
+  readOnly: boolean, // default read only
+  extProps?: P,
+) => DraftHandleValue|undefined;
+
+export type HandleDropFn<P> = (
+  selection: SelectionState,
+  dataTransfer: any,
+  isInternal: DraftDragType,
+  editorID: string,
+  readOnly: boolean, // default read only
+  extProps?: P,
+) => DraftHandleValue|undefined;
 
 export type HandleKeyCommandFn<P> = (
   command: string,
   eState: EditorState,
   readOnly: boolean, // default read only
+  editorID: string,
   extProps?: P,
-) => [DraftHandleValue|undefined, EditorState]
+) => [DraftHandleValue|undefined, EditorState];
 
 export type HandleKeyBindingFn<P> = (
   e: SyntheticKeyboardEvent,
   eState: EditorState,
+  editorID: string,
   extProps?: P,
-) => [boolean, string | null, EditorState]
+) => [boolean, string | null, EditorState];
 
 export type BlockRendererFn<P, T extends PiComponentProps> = (
   block: ContentBlock,
@@ -343,27 +404,45 @@ export function registerExtensions<P>(
   extensions: PiEditorExtension<P>,
   priority = 500,
 ): void {
-  if (extensions.handleReturn) {
-    const re = HandleReturnExtensions;
-    re.push({ name, priority, f: extensions.handleReturn });
-    re.sort((a, b) => b.priority - a.priority);
+  function add<P>(f: P, extA: Exts<any>) {
+    if (f) {
+      const re = extA;
+      re.push({ name, priority, f });
+      re.sort((a, b) => b.priority - a.priority);
+    }
   }
-  if (extensions.handleBeforeInput) {
-    const ha = HandleBeforeInputExtensions;
-    ha.push({ name, priority, f: extensions.handleBeforeInput });
-    ha.sort((a, b) => b.priority - a.priority);
-  }
-  if (extensions.handleKeyCommand) {
-    const ha = HandleKeyCommandExtensions;
-    ha.push({ name, priority, f: extensions.handleKeyCommand });
-    ha.sort((a, b) => b.priority - a.priority);
-  }
-  if (extensions.handleKeyBinding) {
-    const ha = KeyBindingFnExtensions;
-    ha.push({ name, priority, f: extensions.handleKeyBinding });
-    ha.sort((a, b) => b.priority - a.priority);
-  }
+
+  add(extensions.handleReturn, HandleReturnExtensions);
+  add(extensions.handleBeforeInput, HandleBeforeInputExtensions);
+  add(extensions.handleKeyCommand, HandleKeyCommandExtensions);
+  add(extensions.handleKeyBinding, KeyBindingFnExtensions);
+  add(extensions.handlePastedText, HandlePastedTextExtensions);
+  add(extensions.handlePastedFiles, HandlePastedFilesExtensions);
+  add(extensions.handleDrop, HandleDropExtensions);
+  add(extensions.handleDroppedFiles, HandleDroppedFilesExtensions);
+
+  // if (extensions.handleReturn) {
+  //   const re = HandleReturnExtensions;
+  //   re.push({ name, priority, f: extensions.handleReturn });
+  //   re.sort((a, b) => b.priority - a.priority);
+  // }
+  // if (extensions.handleBeforeInput) {
+  //   const ha = HandleBeforeInputExtensions;
+  //   ha.push({ name, priority, f: extensions.handleBeforeInput });
+  //   ha.sort((a, b) => b.priority - a.priority);
+  // }
+  // if (extensions.handleKeyCommand) {
+  //   const ha = HandleKeyCommandExtensions;
+  //   ha.push({ name, priority, f: extensions.handleKeyCommand });
+  //   ha.sort((a, b) => b.priority - a.priority);
+  // }
+  // if (extensions.handleKeyBinding) {
+  //   const ha = KeyBindingFnExtensions;
+  //   ha.push({ name, priority, f: extensions.handleKeyBinding });
+  //   ha.sort((a, b) => b.priority - a.priority);
+  // }
 }
+
 
 export function removeSelection(
   eState: EditorState,

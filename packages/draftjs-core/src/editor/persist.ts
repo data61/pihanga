@@ -1,3 +1,4 @@
+import { createLogger } from '@pihanga/core';
 import {
   convertToRaw,
   convertFromRaw,
@@ -13,6 +14,8 @@ import { canonicalize } from 'json-canonicalize';
 
 import { getCatalog, initializeCatalog } from '../util';
 import sha1 from './sha1';
+
+const logger = createLogger('PiEditor:persist');
 
 type B = {
   key: string;
@@ -35,10 +38,10 @@ type H = {
   entities: {[entityKey: string]: string};
 };
 
-type PersistedState = {
+export type PersistedState = {
   blocks: B[];
-  entities: {[key: string]: E};
-  hashes: H;
+  entities?: {[key: string]: E};
+  hashes?: H;
   lastSaved?: number;
 }
 
@@ -76,9 +79,7 @@ export const persistState = (editorState: EditorState): PersistedState => {
     }
     const inlineStyleRanges = b.inlineStyleRanges
       .filter((s) => active.has(s.style))
-      .map((s) => {
-        return { ...s, style: key2name[s.style] || s.style };
-      });
+      .map((s) => ({ ...s, style: key2name[s.style] || s.style }));
     const bs = {
       key: b.key,
       inlineStyleRanges,
@@ -107,7 +108,11 @@ export const persistState = (editorState: EditorState): PersistedState => {
     entities[eid] = es;
     e2h[eid] = sha1(canonicalize(es));
   });
-  return { blocks, entities, hashes: { blocks: b2h, entities: e2h } };
+  const hashes = { blocks: b2h, entities: e2h };
+  const lastSaved = Date.now();
+  return {
+    blocks, entities, hashes, lastSaved,
+  };
 };
 
 export const createContentState = (
@@ -142,9 +147,13 @@ export const createContentState = (
     if (ccm) return ccm;
 
     const style = cm!.getStyle().flatMap((k) => {
-      const e = ctnt.entities[k!];
+      const e = ctnt.entities ? ctnt.entities[k!] : null;
+      if (!e) {
+        logger.warn(`Missing entity '${k}'`);
+      }
       const n = catData[k!];
-      return [n, `${e.type}_T`];
+      const t = e ? `${e.type}_T` : 'UNKNOWN_T';
+      return [n, t];
     }) as OrderedSet<string>;
     const cm2 = CharacterMetadata.create({ style });
     cache.set(cm!, cm2);

@@ -8,6 +8,8 @@ import {
   DraftHandleValue,
   RichUtils,
   getDefaultKeyBinding,
+  SelectionState,
+  DraftDragType,
 } from 'draft-js';
 import { Card } from '@pihanga/core';
 import * as Immutable from 'immutable';
@@ -28,6 +30,10 @@ import {
   PiComponentProps,
   BlockRenderDef,
   PiEditorActionUpdate,
+  HandlePastedTextFn,
+  HandlePastedFilesFn,
+  HandleDropFn,
+  HandleDroppedFilesFn,
 } from './api';
 
 import 'draft-js/dist/Draft.css';
@@ -48,6 +54,7 @@ export type Props = PiComponentProps & {
   autoSave: boolean;
   saveIntervalMS?: number;
   stateSavedAt?: number; // comes from pihanga state
+  focusRequestedAt: number; // timestamp a request to focus on this editor was issued
   withSpellCheck: boolean; // true,
   plugins: any[];
   extensions: {[key: string]: any};
@@ -90,23 +97,38 @@ export const BlockType2Renderer: BlockRendererFnMap = {
   paragraph: DEF_BLOCK_RENDER_FN('paragraph'),
 };
 
-type Ext = {
+type Ext<P> = {
   name: string;
   priority: number;
+  f: P;
 };
 
+export type Exts<P> = Ext<P>[];
+
 export const HandleReturnExtensions = [
-] as (Ext & {f: HandleReturnFn<never>})[];
+] as Exts<HandleReturnFn<never>>;
 
 export const HandleBeforeInputExtensions = [
-] as (Ext & {f: HandleBeforeInputFn<never>})[];
+] as Ext<HandleBeforeInputFn<never>>[];
+
+export const HandlePastedTextExtensions = [
+] as Ext<HandlePastedTextFn<never>>[];
+
+export const HandlePastedFilesExtensions = [
+] as Ext<HandlePastedFilesFn<never>>[];
+
+export const HandleDropExtensions = [
+] as Ext<HandleDropFn<never>>[];
+
+export const HandleDroppedFilesExtensions = [
+] as Ext<HandleDroppedFilesFn<never>>[];
 
 export const HandleKeyCommandExtensions = [
-] as (Ext & {f: HandleKeyCommandFn<never>})[];
+] as Ext<HandleKeyCommandFn<never>>[];
 
 export const KeyBindingFnExtensions = [
   { name: '__default__', priority: 100, f: defKeyBindingFn },
-] as (Ext & {f: HandleKeyBindingFn<never>})[];
+] as Ext<HandleKeyBindingFn<never>>[];
 
 const MAX_LIST_DEPTH = 4;
 const TAB_KEY_CODE = 9; // TAB key
@@ -138,12 +160,16 @@ const DEF_OPTS = {
   readOnly: false,
   autoSave: true,
   saveIntervalMS: DEF_SAVE_INTERVAL_MS,
-  withSpellCheck: false, // true,
+  focusRequestedAt: 0,
+  withSpellCheck: true,
   plugins: [], // ['styleMenu', 'linkDialog'],
   extensions: {},
 };
 
 export const EditorComponent = styled((opts: ClassedProps<Props>) => {
+  const editorRef = React.useRef<Editor>(null);
+  const lastFocusedRef = React.useRef<number>(Date.now());
+
   const {
     documentID,
     catalogKey,
@@ -153,6 +179,7 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
     autoSave,
     saveIntervalMS,
     withSpellCheck, // true,
+    focusRequestedAt,
     plugins,
     extensions,
     classes,
@@ -165,6 +192,17 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
   const eState = opts.editorState;
   if (!eState) {
     return null;
+  }
+
+  // console.log('>>>> FFF', opts.cardName, focusRequestedAt, lastFocusedRef.current, !!editorRef.current);
+  if (lastFocusedRef.current < focusRequestedAt) {
+    setTimeout(() => {
+      // console.log('>>>> FOCUS', opts.cardName, !!editorRef.current, lastFocusedRef.current < focusRequestedAt);
+      if (editorRef.current) {
+        lastFocusedRef.current = Date.now();
+        editorRef.current.focus();
+      }
+    });
   }
 
   const editorID = opts.cardName;
@@ -256,7 +294,7 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
         return [handeled, es];
       } else {
         const { name, f } = def;
-        return f(ev, es, readOnly, extensions[name]);
+        return f(ev, es, readOnly, editorID, extensions[name]);
       }
     }, [false, editorState]);
     return updateEState('handleReturn', editorState, es2, handled2 ? 'handled' : 'not-handled');
@@ -268,7 +306,7 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
         return [handeled, es];
       } else {
         const { name, f } = def;
-        return f(command, es, readOnly, extensions[name]);
+        return f(command, es, readOnly, editorID, extensions[name]);
       }
     }, [undefined, editorState] as [string|undefined, EditorState]);
     return updateEState('handleKeyCommand', editorState, es2, handled2);
@@ -280,15 +318,70 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
         return [handeled, es];
       } else {
         const { name, f } = def;
-        return f(chars, es, readOnly, extensions[name]);
+        return f(chars, es, readOnly, editorID, extensions[name]);
       }
     }, [undefined, editorState] as [string|undefined, EditorState]);
     return updateEState('handleBeforeInput', editorState, es2, handled2);
   }
 
-  function handlePastedText(): DraftHandleValue {
-    isPasted = true;
-    return 'not-handled';
+  function handlePastedText(
+    text: string,
+    html: string | undefined,
+    editorState: EditorState,
+  ): DraftHandleValue {
+    const [handled2, es2] = HandlePastedTextExtensions.reduce(([handeled, es], def) => {
+      if (handeled) {
+        return [handeled, es];
+      } else {
+        const { name, f } = def;
+        return f(text, html, editorState, readOnly, editorID, extensions[name]);
+      }
+    }, [undefined, editorState] as [string|undefined, EditorState]);
+    isPasted = editorState !== es2;
+    return updateEState('handlePastedText', editorState, es2, handled2);
+  }
+
+  function handlePastedFiles(files: Array<Blob>): DraftHandleValue {
+    const handled2 = HandlePastedFilesExtensions.reduce((handeled, def) => {
+      if (handeled) {
+        return handeled;
+      } else {
+        const { name, f } = def;
+        return f(files, editorID, readOnly, extensions[name]);
+      }
+    }, undefined as DraftHandleValue|undefined);
+    return (handled2 || 'not-handled') as DraftHandleValue;
+  }
+
+  function handleDroppedFiles(
+    selection: SelectionState,
+    files: Array<Blob>,
+  ): DraftHandleValue {
+    const handled2 = HandleDroppedFilesExtensions.reduce((handeled, def) => {
+      if (handeled) {
+        return handeled;
+      } else {
+        const { name, f } = def;
+        return f(selection, files, editorID, readOnly, extensions[name]);
+      }
+    }, undefined as DraftHandleValue|undefined);
+    return (handled2 || 'not-handled') as DraftHandleValue;
+  }
+
+  function handleDrop(
+    selection: SelectionState,
+    dataTransfer: Record<string, any>,
+    isInternal: DraftDragType,
+  ): DraftHandleValue {
+    const handled2 = HandleDropExtensions.reduce((handeled, def) => {
+      if (handeled) {
+        return handeled;
+      } else {
+        const { name, f } = def;
+        return f(selection, dataTransfer, isInternal, editorID, readOnly, extensions[name]);
+      }
+    }, undefined as DraftHandleValue|undefined);
+    return (handled2 || 'not-handled') as DraftHandleValue;
   }
 
   function updateEState(
@@ -314,7 +407,7 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
         return p;
       } else {
         const { name, f } = def;
-        return f(ev, es, extensions[name]);
+        return f(ev, es, editorID, extensions[name]);
       }
     }, [false, null as string | null, eState]);
     if (eState !== es2) {
@@ -419,6 +512,9 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
     handleReturn,
     handleBeforeInput,
     handlePastedText,
+    handlePastedFiles,
+    handleDroppedFiles,
+    handleDrop,
     // preserveSelectionOnBlur
     blockRenderMap,
     blockRendererFn,
@@ -426,6 +522,7 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
     spellCheck: withSpellCheck,
     className: classes.inner,
     styles: { width: '100%', overflowY: 'unset' },
+    ref: editorRef,
   };
 
   function createPluginCard(p: any, i: number): JSX.Element {
