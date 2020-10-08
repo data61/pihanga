@@ -1,6 +1,6 @@
 {
   "name": "@pihanga/draftjs-core",
-  "version": "0.1.16",
+  "version": "0.2.0",
   "description": "Wrapping and extending draft-js in the Pihanga framework",
   "license": "MIT",
   "author": "Max Ott <max@winlab.rutgers.edu> (http://linkedin.com/in/max-ott)",
@@ -42,8 +42,8 @@
   },
   "devDependencies": {
     "@material-ui/core": "^4.6.0",
-    "@pihanga/core": "^0.4.19",
-    "@pihanga/material-ui": "^0.4.19",
+    "@pihanga/core": "^0.5.0",
+    "@pihanga/material-ui": "^0.5.0",
     "@types/draft-js": "^0.10.37",
     "@types/immutable": "^3.8.7",
     "@types/jest": "^25.1.0",
