@@ -109,7 +109,10 @@ export function fetchApi(apiUrl, request, silent) {
   const tmpRequest = request;
   let contentType = null;
   if (tmpRequest && tmpRequest.body && typeof (tmpRequest.body) !== 'string') {
-    if (method === 'GET') {
+    // eslint-disable-next-line no-undef
+    if (tmpRequest.body instanceof FormData) {
+      contentType = undefined; // 'multipart/form-data; boundary=`';
+    } else if (method === 'GET') {
       tmpRequest.body = JSON.stringify(tmpRequest.body);
       contentType = 'application/json';
     } else {

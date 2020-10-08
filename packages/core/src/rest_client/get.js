@@ -107,7 +107,7 @@ export function buildURL(parts, vars) {
       if (!v) {
         throw Error(`Missing assignment to url parameter '${k}'`);
       }
-      id.forEach((i) => { a2[i] = encodeURI(v); });
+      id.forEach((i) => { a2[i] = encodeURIComponent(v); });
     });
     return a2;
   }
@@ -122,7 +122,7 @@ export function buildURL(parts, vars) {
   }
   const qe = Object.entries(qph);
   if (qe.length > 0) {
-    const query = qe.map(([k, v]) => `${encodeURI(k)}=${encodeURI(v)}`).join('&');
+    const query = qe.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
     return `${path}?${query}`;
   } else {
     return path;
