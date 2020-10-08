@@ -80,12 +80,12 @@ export class Reducer {
         try {
           const s2 = reducer(s, action);
           if (!isPlainObject(s2)) {
-            dispatchError(`Reducer '${reducer}' returns unexpected value '${s2}'`);
+            dispatchError(`Reducer '${reducer}' for action '${action}' returns unexpected value '${s2}'`);
             return s; // ignore 'reducer'
           }
           return s2;
         } catch (e) {
-          dispatchError(`While executing ${reducer} - ${e}`, e);
+          dispatchError(`While executing action '${action}' with reducer '${reducer}' - ${e}`, e);
           return s; // ignore 'reducer'
         }
       }, state);
