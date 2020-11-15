@@ -4,6 +4,7 @@ import { fetch } from 'whatwg-fetch';
 import {
   throwUnauthorisedError,
   throwPermissionDeniedError,
+  throwNotFoundError,
 } from './rest.actions';
 import { getCookie } from './browser-cookie';
 import { createLogger } from '../logger';
@@ -74,12 +75,14 @@ async function checkStatusOrThrowError(url, response, silent) {
   // don't throw or log any error
   if (!silent) {
     if (response.status === 401) {
-      throwUnauthorisedError();
+      throwUnauthorisedError(url);
     } else if (response.status === 403) {
-      throwPermissionDeniedError();
+      throwPermissionDeniedError(url);
+    } else if (response.status === 404) {
+      throwNotFoundError(url);
+    } else {
+      logger.error(`Request for '${url}' failed`, response);
     }
-
-    logger.error(`Request for '${url}' failed`, response);
   }
 
   // Client code might be interested in doing something with the error, and the original response
@@ -111,18 +114,23 @@ export function fetchApi(apiUrl, request, silent) {
   if (tmpRequest && tmpRequest.body && typeof (tmpRequest.body) !== 'string') {
     // eslint-disable-next-line no-undef
     if (tmpRequest.body instanceof FormData) {
-      contentType = undefined; // 'multipart/form-data; boundary=`';
-    } else if (method === 'GET') {
+      contentType = undefined; // will default to 'multipart/form-data; boundary=`';
+    } else {
       tmpRequest.body = JSON.stringify(tmpRequest.body);
       contentType = 'application/json';
-    } else {
-      const form = new URLSearchParams(); // new FormData();
-      Object.entries(tmpRequest.body).forEach(([k, v]) => {
-        form.append(k, v);
-      });
-      tmpRequest.body = form;
-      contentType = 'application/x-www-form-urlencoded; charset=UTF-8';
     }
+    // NOT SURE WHY I HAD THIS CODE. Json is default, and otherwise supply FormData
+    // } else if (method === 'GET') {
+    //   tmpRequest.body = JSON.stringify(tmpRequest.body);
+    //   contentType = 'application/json';
+    // } else {
+    //   const form = new URLSearchParams(); // new FormData();
+    //   Object.entries(tmpRequest.body).forEach(([k, v]) => {
+    //     form.append(k, v);
+    //   });
+    //   tmpRequest.body = form;
+    //   contentType = 'application/x-www-form-urlencoded; charset=UTF-8';
+    // }
   }
   const headers = { ...API_REQUEST_PROPERTIES.headers || {} };
   if (contentType) {
