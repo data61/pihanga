@@ -27,17 +27,19 @@ export const GridComp = styled(({
   };
 
   function addContent(opts, id) {
-    const { cardName, ...p } = isObject(opts) ? opts : { cardName: opts, ...defContentOpts };
+    const { cardName, key, ...p } = isObject(opts) ? opts : { cardName: opts, ...defContentOpts };
     if (cardName) {
       return (
-        <Grid key={id} {...p} className={classes[cardName] || ''}>
+        <Grid key={key || id} {...p} className={classes[cardName] || ''}>
           <PiCard cardName={cardName} />
         </Grid>
       );
     } else {
       return (
-        <Grid key={id} {...p} className={'missing'}>
-          Missing 'cardName' for grid {id}
+        <Grid key={key || id} {...p} className="missing">
+          Missing 'cardName' for grid
+          {' '}
+          {id}
         </Grid>
       );
     }
@@ -46,6 +48,6 @@ export const GridComp = styled(({
   return (
     <Grid spacing={spacing} {...muiComb} className={classes.card}>
       { content.map(addContent) }
-    </Grid>  );
+    </Grid>
+  );
 });
-
