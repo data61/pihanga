@@ -13,11 +13,7 @@ import {
 } from 'draft-js';
 import { Card } from '@pihanga/core';
 import * as Immutable from 'immutable';
-// import { createLogger } from '@pihanga/core';
 
-// import handleReturn from './handleReturn';
-// import { keyBindingFn, handleKeyCommand } from './handleKeyCommand';
-// import handleBeforeInput from './handleBeforeInput';
 import BlockComponent, { Props as BCProps } from './block.component';
 import { getCatalog } from '../util';
 import {
@@ -61,27 +57,6 @@ export type Props = PiComponentProps & {
   editorState: EditorState;
   onUpdate: (ev: PiEditorActionUpdate) => void;
 };
-
-// export type UpdateEvent = {
-//   editorID: string;
-//   documentID: string;
-//   editorState: EditorState;
-//   blocksChanged: string[];
-//   entitiesHaveChanged: boolean;
-//   selHasChanged: boolean;
-//   selection?: {
-//     anchor: {
-//       key: string;
-//       offset: number;
-//     };
-//     focus: {
-//       key: string;
-//       offset: number;
-//     };
-//     hasFocus: boolean;
-//   };
-//   autoSave: boolean;
-// };
 
 type BlockRenderFnProvider = (type: string) => BlockRendererFn<unknown, BCProps>;
 const DEF_BLOCK_RENDER_FN: BlockRenderFnProvider = (type) => (
@@ -200,6 +175,7 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
       // console.log('>>>> FOCUS', opts.cardName, !!editorRef.current, lastFocusedRef.current < focusRequestedAt);
       if (editorRef.current) {
         lastFocusedRef.current = Date.now();
+        // console.log('EditorComponent:focus()', editorID, eState);
         editorRef.current.focus();
       }
     });
@@ -279,14 +255,6 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
   function onChange(es: EditorState): void {
     setEState(es);
   }
-
-  // function onBlur(): void {
-  //   isFocused.current = false;
-  // }
-
-  // function onFocus(): void {
-  //   isFocused.current = true;
-  // }
 
   function handleReturn(ev: SyntheticKeyboardEvent, editorState: EditorState): DraftHandleValue {
     const [handled2, es2] = HandleReturnExtensions.reduce(([handeled, es], def) => {
@@ -429,6 +397,14 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
     return null;
   }
 
+  function onFocus(): void {
+    // console.log('EditorComponent:OnFocus', editorID);
+  }
+
+  function onBlur(): void {
+    // console.log('EditorComponent:OnBlur', editorID);
+  }
+
   // function renderBubble() {
   //   const style = {
   //     top: 89,
@@ -508,6 +484,8 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
     editorState: eState,
     readOnly, // handle ourselve,
     onChange,
+    onFocus,
+    onBlur,
     handleKeyCommand,
     handleReturn,
     handleBeforeInput,
