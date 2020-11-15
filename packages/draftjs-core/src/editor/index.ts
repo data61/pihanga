@@ -32,6 +32,7 @@ import {
 
 export * from './api';
 export { addDecorator } from './decorator';
+export { PersistedState } from './persist';
 
 const Domain = 'EDITOR';
 export const ACTION_TYPES = registerActions(Domain, [

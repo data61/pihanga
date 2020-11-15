@@ -28,6 +28,7 @@ import {
   HandlePastedFilesExtensions,
   HandlePastedTextExtensions,
 } from './editor.component';
+import { PersistReducers } from './persist';
 
 import { getCatalog } from '../util';
 // the following is weird but required by Create React App forcing "isolatedModules": true
@@ -142,6 +143,7 @@ export type PiEditorExtension<P> = {
   handlePastedFiles?: HandlePastedFilesFn<P>;
   handleDroppedFiles?: HandleDroppedFilesFn<P>;
   handleDrop?: HandleDropFn<P>;
+  handleSave?: PersistReducerFn;
 };
 
 export type HandleReturnFn<P> = (
@@ -207,6 +209,8 @@ export type HandleKeyBindingFn<P> = (
   editorID: string,
   extProps?: P,
 ) => [boolean, string | null, EditorState];
+
+export type PersistReducerFn = (content: PersistedState) => PersistedState;
 
 export type BlockRendererFn<P, T extends PiComponentProps> = (
   block: ContentBlock,
@@ -420,27 +424,7 @@ export function registerExtensions<P>(
   add(extensions.handlePastedFiles, HandlePastedFilesExtensions);
   add(extensions.handleDrop, HandleDropExtensions);
   add(extensions.handleDroppedFiles, HandleDroppedFilesExtensions);
-
-  // if (extensions.handleReturn) {
-  //   const re = HandleReturnExtensions;
-  //   re.push({ name, priority, f: extensions.handleReturn });
-  //   re.sort((a, b) => b.priority - a.priority);
-  // }
-  // if (extensions.handleBeforeInput) {
-  //   const ha = HandleBeforeInputExtensions;
-  //   ha.push({ name, priority, f: extensions.handleBeforeInput });
-  //   ha.sort((a, b) => b.priority - a.priority);
-  // }
-  // if (extensions.handleKeyCommand) {
-  //   const ha = HandleKeyCommandExtensions;
-  //   ha.push({ name, priority, f: extensions.handleKeyCommand });
-  //   ha.sort((a, b) => b.priority - a.priority);
-  // }
-  // if (extensions.handleKeyBinding) {
-  //   const ha = KeyBindingFnExtensions;
-  //   ha.push({ name, priority, f: extensions.handleKeyBinding });
-  //   ha.sort((a, b) => b.priority - a.priority);
-  // }
+  if (extensions.handleSave) PersistReducers.push(extensions.handleSave);
 }
 
 

@@ -13,9 +13,13 @@ import { OrderedSet } from 'immutable';
 import { canonicalize } from 'json-canonicalize';
 
 import { getCatalog, initializeCatalog } from '../util';
+import { PersistReducerFn } from './api';
 import sha1 from './sha1';
 
 const logger = createLogger('PiEditor:persist');
+
+export const PersistReducers = [
+] as PersistReducerFn[];
 
 type B = {
   key: string;
@@ -110,9 +114,11 @@ export const persistState = (editorState: EditorState): PersistedState => {
   });
   const hashes = { blocks: b2h, entities: e2h };
   const lastSaved = Date.now();
-  return {
+  const ps = {
     blocks, entities, hashes, lastSaved,
-  };
+  } as PersistedState;
+  const ps2 = PersistReducers.reduce((p, f) => f(p), ps);
+  return ps2;
 };
 
 export const createContentState = (
@@ -170,6 +176,6 @@ export const createContentState = (
     });
   });
   const cs5 = cs4.set('blockMap', bm2) as ContentState;
-  const raw = convertToRaw(cs5);
+  // const raw = convertToRaw(cs5);
   return [cs5, catKey, newBlocks];
 };

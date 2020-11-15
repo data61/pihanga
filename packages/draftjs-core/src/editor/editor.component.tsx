@@ -532,12 +532,20 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
         key={i}
         editorID={editorID}
         isFocused={isFocused}
+        readOnly={readOnly}
       />
     );
   }
 
+  // should use classNames or something like that
+  const cln = [
+    readOnly && 'PiDraftEditor-readonly',
+    readOnly && classes.outerReadOnly,
+    'PiDraftEditor',
+    classes.outer,
+  ].filter((e) => !!e).join(' ');
   return (
-    <div className={classes.outer}>
+    <div className={cln}>
       <Editor {...editorOpts} />
       { plugins.map(createPluginCard)}
     </div>
