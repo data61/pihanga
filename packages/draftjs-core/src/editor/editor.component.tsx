@@ -215,6 +215,10 @@ export const EditorComponent = styled((opts: ClassedProps<Props>) => {
     if (changed) {
       const cs2 = cs.merge({ blockMap: bm2 }) as ContentState;
       es2 = EditorState.push(es, cs2, 'change-block-data');
+      const sov = es.getInlineStyleOverride();
+      if (sov) {
+        es2 = EditorState.setInlineStyleOverride(es2, sov);
+      }
     }
 
     const entitiesHaveChanged = getCatalog(cs) !== getCatalog(origCS);
