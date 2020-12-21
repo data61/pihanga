@@ -1,5 +1,6 @@
 import React from 'react';
 import isFunction from 'lodash.isfunction';
+import merge from 'lodash.merge';
 import { connect } from 'react-redux';
 import { getState, registerActions } from './redux';
 import { createLogger } from './logger';
@@ -175,12 +176,18 @@ export function pQuery(cardName, propName, match, resProps) {
       const params = { cardName: cn };
       params[pn] = v; // matched property
       if (resProps) {
-        for (const opn of resProps) {
+        resProps.forEach((opn) => {
           if (opn !== pn) { // avoid duplication
             const ov = ref(cn, opn)(s);
             params[opn] = ov;
           }
-        }
+        });
+        // for (const opn of resProps) {
+        //   if (opn !== pn) { // avoid duplication
+        //     const ov = ref(cn, opn)(s);
+        //     params[opn] = ov;
+        //   }
+        // }
       }
       result.push(params);
     };
@@ -193,18 +200,31 @@ export function pQuery(cardName, propName, match, resProps) {
         }
       }
     }
-    for (const cn of cardNames) {
+    cardNames.forEach((cn) => {
       if (pName) {
         // single property
         addResultIf(cn, pName);
       } else {
         // parameter wild card
         const cs = getCardState(cn, s);
-        for (const pn of Object.keys(cs)) {
-          addResultIf(cn, pn);
-        }
+        Object.keys(cs).forEach((pn) => addResultIf(cn, pn));
+        // for (const pn of Object.keys(cs)) {
+        //   addResultIf(cn, pn);
+        // }
       }
-    }
+    })
+    // for (const cn of cardNames) {
+    //   if (pName) {
+    //     // single property
+    //     addResultIf(cn, pName);
+    //   } else {
+    //     // parameter wild card
+    //     const cs = getCardState(cn, s);
+    //     for (const pn of Object.keys(cs)) {
+    //       addResultIf(cn, pn);
+    //     }
+    //   }
+    // }
     return result;
   };
 }
@@ -214,7 +234,7 @@ export function getParamValue(paramName, cardName, state, ctxtProps = {}, includ
   if (cache.state === state) {
     return cache.cardState[paramName];
   }
- 
+
   const cardDef = cards[cardName];
   if (!cardDef) {
     throw new Error(`Unknonw card '${cardName}'`);
@@ -295,11 +315,11 @@ const createConnectedCard = (cardName, ctxtProps) => {
   const { eventProps, events } = cardDef;
 
   return connect(
-    (state, ctxtProps) => { // , ctxtProps
-      const cs = getCardState(cardName, state, ctxtProps);
+    (state2, ctxtProps2) => { // , ctxtProps
+      const cs = getCardState(cardName, state2, ctxtProps2);
       return cs;
     },
-    (dispatch, ctxtProps) => {
+    (dispatch, ctxtProps2) => {
       const dispProps = { dispatch };
       if (events) {
         Object.entries(events).reduce((h, [name, evtType]) => {
@@ -307,12 +327,12 @@ const createConnectedCard = (cardName, ctxtProps) => {
           const cf = eventProps[name];
           if (cf) {
             f = (opts = {}) => {
-              const state = getState();
+              const state2 = getState();
               const refF = (cn, pn) => {
-                const rv = ref(cn, pn)(state, ctxtProps);
+                const rv = ref(cn, pn)(state2, ctxtProps2);
                 return rv;
               };
-              cf(opts, state, refF);
+              cf(opts, state2, refF);
             };
           } else {
             // set default event handler
@@ -343,7 +363,7 @@ const createConnectedCard = (cardName, ctxtProps) => {
       return dispProps;
     },
     (stateProps, dispatchProps) => // , ownProps
-      // do not include 'ownProps' as that shoul dbe taken care of by pihanga binding
+      // do not include 'ownProps' as that should be taken care of by pihanga binding
       ({ ...stateProps, ...dispatchProps }),
 
   )(cardComponent);
@@ -374,10 +394,12 @@ export function getCardState(cardName, state, ctxtProps = {}) {
     return undefined;
   }
   const dynState = state.pihanga[cardName] || {};
-  const cardState = { ...cardDef2.props, ...dynState };
+  // const cardState = { ...cardDef2.props, ...dynState };
+  const cardState = merge(cardDef2.props, dynState);;
+
   const oldCardState = cache.cardState || {};
   let hasChanged = false;
-  for (const k of Object.keys(cardState)) {
+  Object.keys(cardState).forEach((k) => {
     const v = getValue(k, cardState, state, ctxtProps, cardName);
     const ov = oldCardState[k];
     // As redux and related state is supposed to be close to immutable
@@ -391,7 +413,22 @@ export function getCardState(cardName, state, ctxtProps = {}) {
       hasChanged = true;
     }
     cardState[k] = v;
-  }
+  });
+  // for (const k of Object.keys(cardState)) {
+  //   const v = getValue(k, cardState, state, ctxtProps, cardName);
+  //   const ov = oldCardState[k];
+  //   // As redux and related state is supposed to be close to immutable
+  //   // a simple equivalence check should suffice.
+  //   if (!hasChanged && v !== ov) {
+  //     // if 'v' is a function ignore difference,
+  //     // but also check for deep differences when object
+  //     // if (!isFunction(v) && !isEqual(v, ov)) {
+  //     //   hasChanged = true;
+  //     // }
+  //     hasChanged = true;
+  //   }
+  //   cardState[k] = v;
+  // }
   // console.log('>>> CARD STATE', cardName, hasChanged, cardState);
   if (hasChanged) {
     cardState.cardName = cardName;
