@@ -395,7 +395,8 @@ export function getCardState(cardName, state, ctxtProps = {}) {
   }
   const dynState = state.pihanga[cardName] || {};
   // const cardState = { ...cardDef2.props, ...dynState };
-  const cardState = merge(cardDef2.props, dynState);;
+  let cardState = {};
+  merge(cardState, cardDef2.props, dynState);;
 
   const oldCardState = cache.cardState || {};
   let hasChanged = false;
