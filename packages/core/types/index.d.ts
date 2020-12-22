@@ -31,7 +31,7 @@ export declare function getParamValue(
   paramName: string,  
   cardName: string, 
   state: ReduxState, 
-  ctxtProps?: {[k: string]: unknown}, 
+  ctxtProps?: {[k: string]: any}, 
   includeDefaults?: boolean,
 )
 export declare function ref<T>(
@@ -46,7 +46,7 @@ export type Ref<T> = (
 
 type ReactComponent = any; //({[key:string]:any}) => any
 export type ReduxState = {
-  pihanga?: {[key:string]: unknown},
+  pihanga?: {[key:string]: any},
 };
 export type ReduxAction = {
   type: string,
@@ -88,7 +88,7 @@ type PiRegisterComponent = {
 export type PiMetaTransformerF<T> = (
   name: string,
   opts: T
-) => {[name:string]:{[prop:string]: unknown}};
+) => {[name:string]:{[prop:string]: any}};
 
 type PiUrlBindings = {[key:string]:string|number};
 type PiRestRequestBody = {[key:string]:any};
@@ -116,4 +116,4 @@ type PiRegisterPostPutProps = {
 };
 
 type CardNameOrFunction = string 
-  | ((state: ReduxState, ctxtProps: {[k: string]: unknown}) => string);
+  | ((state: ReduxState, ctxtProps: {[k: string]: any}) => string);
