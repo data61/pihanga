@@ -1,6 +1,6 @@
 {
   "name": "@pihanga/draftjs-plugins",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A set of plugins for the Pihanga draft-js editor",
   "license": "MIT",
   "author": "Max Ott <max@winlab.rutgers.edu> (http://linkedin.com/in/max-ott)",
@@ -23,7 +23,7 @@
     "x-preversion": "yarn lint"
   },
   "dependencies": {
-    "@pihanga/draftjs-core": "^0.2.2",
+    "@pihanga/draftjs-core": "^0.2.3",
     "draftjs-utils": "^0.10.0",
     "immutable": "^4.0.0-rc.12",
     "valid-url": "^1.0.0"
@@ -39,8 +39,8 @@
   "devDependencies": {
     "@material-ui/core": "^4.6.0",
     "@material-ui/lab": "^4.0.0-alpha.36",
-    "@pihanga/core": "^0.5.2",
-    "@pihanga/material-ui": "^0.5.2",
+    "@pihanga/core": "^0.5.3",
+    "@pihanga/material-ui": "^0.5.3",
     "@types/draft-js": "^0.10.37",
     "@types/immutable": "^3.8.7",
     "@types/jest": "^25.1.0",
