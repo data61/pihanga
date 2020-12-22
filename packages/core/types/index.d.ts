@@ -1,3 +1,4 @@
+import { string } from "prop-types";
 
 export declare function addCard(cardName: string, cardDef: {cardType: string} & {[key:string]:string}): void;
 export declare function registerActions(domain: string, names: string[]): {[key:string]:string};
@@ -33,12 +34,21 @@ export declare function getParamValue(
   ctxtProps?: {[k: string]: unknown}, 
   includeDefaults?: boolean,
 )
+export declare function ref<T>(
+  cardNameOrF: CardNameOrFunction,
+  paramName: string,
+): T;
+
+export type Ref<T> = (
+  cardNameOrF: CardNameOrFunction,
+  paramName: string,
+) => T;
 
 type ReactComponent = any; //({[key:string]:any}) => any
-type ReduxState = {
-  pihanga?: {[key:string]:any},
+export type ReduxState = {
+  pihanga?: {[key:string]: unknown},
 };
-type ReduxAction = {
+export type ReduxAction = {
   type: string,
 };
 
@@ -49,7 +59,7 @@ type CardOpts = {
 }
 export declare function Card(opts: CardOpts & {[key:string]:any}): any;
 
-interface PiRegister {
+export interface PiRegister {
   cardComponent(declaration: PiRegisterComponent): void,
 
   /**
@@ -63,7 +73,7 @@ interface PiRegister {
    * @param {string} type 
    * @param {function} transformF 
    */
-  metaCard(type: string, transformF: PiMetaTransformerF): void;
+  metaCard<T>(type: string, transformF: PiMetaTransformerF<T>): void;
 
   reducer<S extends ReduxState, A extends ReduxAction>(eventType: string, mapper: (state: S, action: A) => S, priority?: number): void,
 }
@@ -75,10 +85,10 @@ type PiRegisterComponent = {
   defaults?: {[key:string]:any},
 };
 
-type PiMetaTransformerF = (
+export type PiMetaTransformerF<T> = (
   name: string,
-  opts: {[name:string]:any},
-) => {[name:string]:{[prop:string]:any}};
+  opts: T
+) => {[name:string]:{[prop:string]: unknown}};
 
 type PiUrlBindings = {[key:string]:string|number};
 type PiRestRequestBody = {[key:string]:any};
@@ -104,3 +114,6 @@ type PiRegisterPostPutProps = {
   reply: (state: ReduxState, reply: any, requestAction: ReduxAction) => ReduxState,
   error: (state: ReduxState, reply: any, requestAction: ReduxAction) => ReduxState,
 };
+
+type CardNameOrFunction = string 
+  | ((state: ReduxState, ctxtProps: {[k: string]: unknown}) => string);
