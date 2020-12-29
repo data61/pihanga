@@ -123,5 +123,5 @@ The
 
 ### Pulishing new release
 
-    lerna version prerelease
+    lerna version patch
     lerna publish from-git
