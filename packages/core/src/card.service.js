@@ -182,12 +182,6 @@ export function pQuery(cardName, propName, match, resProps) {
             params[opn] = ov;
           }
         });
-        // for (const opn of resProps) {
-        //   if (opn !== pn) { // avoid duplication
-        //     const ov = ref(cn, opn)(s);
-        //     params[opn] = ov;
-        //   }
-        // }
       }
       result.push(params);
     };
@@ -208,29 +202,14 @@ export function pQuery(cardName, propName, match, resProps) {
         // parameter wild card
         const cs = getCardState(cn, s);
         Object.keys(cs).forEach((pn) => addResultIf(cn, pn));
-        // for (const pn of Object.keys(cs)) {
-        //   addResultIf(cn, pn);
-        // }
       }
-    })
-    // for (const cn of cardNames) {
-    //   if (pName) {
-    //     // single property
-    //     addResultIf(cn, pName);
-    //   } else {
-    //     // parameter wild card
-    //     const cs = getCardState(cn, s);
-    //     for (const pn of Object.keys(cs)) {
-    //       addResultIf(cn, pn);
-    //     }
-    //   }
-    // }
+    });
     return result;
   };
 }
 
 export function getParamValue(paramName, cardName, state, ctxtProps = {}, includeDefaults = true) {
-  const cache = cardStates[cardName] || {};
+  const cache = CardStatesCache[cardName] || {};
   if (cache.state === state) {
     return cache.cardState[paramName];
   }
@@ -287,10 +266,10 @@ function getValue(paramName, cardDef, state, ctxtProps, cardName) {
 const ConnectedCards = {};
 
 export const Card = (props) => {
-  const { cardName, ...ctxtProps } = props;
+  const { cardName, cardKey, ...ctxtProps } = props;
   let cc = ConnectedCards[cardName];
   if (!cc) {
-    cc = createConnectedCard(cardName, ctxtProps);
+    cc = createConnectedCard(cardName, ctxtProps, cardKey);
     if (!cc) {
       return UnknownCard(cardName);
     }
@@ -300,14 +279,14 @@ export const Card = (props) => {
   return el;
 };
 
-const createConnectedCard = (cardName, ctxtProps) => {
+const createConnectedCard = (cardName, ctxtProps, cardKey) => {
   const cardDef = cards[cardName];
   if (!cardDef) {
     return null;
   }
 
   const state = getState();
-  const cardState = getCardState(cardName, state, ctxtProps);
+  const cardState = getCardState(cardName, state, ctxtProps, cardKey);
   if (!cardState) {
     return null;
   }
@@ -316,7 +295,7 @@ const createConnectedCard = (cardName, ctxtProps) => {
 
   return connect(
     (state2, ctxtProps2) => { // , ctxtProps
-      const cs = getCardState(cardName, state2, ctxtProps2);
+      const cs = getCardState(cardName, state2, ctxtProps2, cardKey);
       return cs;
     },
     (dispatch, ctxtProps2) => {
@@ -374,7 +353,7 @@ const UnknownCard = (cardName) => {
   return React.createElement('div', null, s);
 };
 
-const cardStates = {};
+const CardStatesCache = {};
 
 function isEqualMap(a, b) {
   const ae = Object.entries(a);
@@ -382,8 +361,9 @@ function isEqualMap(a, b) {
   return !ae.find(([k, v]) => b[k] !== v);
 }
 
-export function getCardState(cardName, state, ctxtProps = {}) {
-  const cache = cardStates[cardName] || {};
+export function getCardState(cardName, state, ctxtProps = {}, cardKey = undefined) {
+  const cacheName = cardKey ? `${cardName}-${cardKey}` : cardName;
+  const cache = CardStatesCache[cacheName] || {};
   if (cache.state === state && isEqualMap(cache.ctxtProps || {}, ctxtProps)) {
     return cache.cardState;
   }
@@ -394,13 +374,18 @@ export function getCardState(cardName, state, ctxtProps = {}) {
     return undefined;
   }
   const dynState = state.pihanga[cardName] || {};
-  // const cardState = { ...cardDef2.props, ...dynState };
-  let cardState = {};
-  merge(cardState, cardDef2.props, dynState);;
+  // eslint-disable-next-line prefer-const
+  let cardState = {}; // not really a const
+  merge(cardState, cardDef2.props, dynState);
+  const params = Object.keys(cardState);
+  if (params.length === 0) {
+    // no parameters
+    return { cardName };
+  }
 
   const oldCardState = cache.cardState || {};
   let hasChanged = false;
-  Object.keys(cardState).forEach((k) => {
+  params.forEach((k) => {
     const v = getValue(k, cardState, state, ctxtProps, cardName);
     const ov = oldCardState[k];
     // As redux and related state is supposed to be close to immutable
@@ -415,31 +400,13 @@ export function getCardState(cardName, state, ctxtProps = {}) {
     }
     cardState[k] = v;
   });
-  // for (const k of Object.keys(cardState)) {
-  //   const v = getValue(k, cardState, state, ctxtProps, cardName);
-  //   const ov = oldCardState[k];
-  //   // As redux and related state is supposed to be close to immutable
-  //   // a simple equivalence check should suffice.
-  //   if (!hasChanged && v !== ov) {
-  //     // if 'v' is a function ignore difference,
-  //     // but also check for deep differences when object
-  //     // if (!isFunction(v) && !isEqual(v, ov)) {
-  //     //   hasChanged = true;
-  //     // }
-  //     hasChanged = true;
-  //   }
-  //   cardState[k] = v;
-  // }
   // console.log('>>> CARD STATE', cardName, hasChanged, cardState);
-  if (hasChanged) {
+  if (hasChanged || !CardStatesCache[cacheName]) {
     cardState.cardName = cardName;
-    cacheCardState(cardName, cardState, state, ctxtProps);
+    CardStatesCache[cacheName] = { state, cardState, ctxtProps };
     return cardState;
   } else {
     return oldCardState;
   }
 }
 
-function cacheCardState(cardName, cardState, state, ctxtProps) {
-  cardStates[cardName] = { state, cardState, ctxtProps };
-}
