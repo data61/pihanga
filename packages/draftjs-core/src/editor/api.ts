@@ -128,6 +128,11 @@ export type PiEditorActionSave = PiEditorAction & {
   editorID: string;
 };
 
+export type PiEditorActionSaved = PiEditorAction & {
+  content: PersistedState;
+  prevContent: any;
+};
+
 export type PiEditorFocusEvent = {
   editorID: string;
 };

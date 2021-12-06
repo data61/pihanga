@@ -8,6 +8,7 @@ import {
   RawDraftInlineStyleRange,
   RawDraftContentBlock,
   DraftEntityMutability,
+  convertFromHTML,
 } from 'draft-js';
 import { OrderedSet } from 'immutable';
 import { canonicalize } from 'json-canonicalize';
@@ -37,6 +38,8 @@ type E = {
   data?: {[key: string]: any};
 };
 
+type ES = {[key: string]: E};
+
 type H = {
   blocks: {[blockKey: string]: string};
   entities: {[entityKey: string]: string};
@@ -44,7 +47,7 @@ type H = {
 
 export type PersistedState = {
   blocks: B[];
-  entities?: {[key: string]: E};
+  entities?: ES;
   hashes?: H;
   lastSaved?: number;
 }
@@ -78,7 +81,7 @@ export const persistState = (editorState: EditorState): PersistedState => {
   const b2h = {} as {[key: string]: string};
   const blocks = raw.blocks.map((b, i) => {
     if (b.data) {
-      const d = b.data as {CATALOG_KEY: string};
+      const d = b.data as {CATALOG_KEY?: string};
       delete d.CATALOG_KEY;
     }
     const inlineStyleRanges = b.inlineStyleRanges
@@ -121,24 +124,32 @@ export const persistState = (editorState: EditorState): PersistedState => {
   return ps2;
 };
 
-export const createContentState = (
-  content: any,
-): [ContentState, string, string[]] => {
-  const ctnt = content as PersistedState;
+export function createContentState(
+  content: PersistedState,
+): [ContentState, string /* catKey */, string[] /* blockNames */] {
+  const ctnt = content;
 
   const cs = convertFromRaw({
     blocks: ctnt.blocks as RawDraftContentBlock[],
     entityMap: {},
   });
+  const { entities } = ctnt;
+// }
+
+// function fixupCS(
+//   cs: ContentState,
+//   entities: ES | undefined,
+// ): [ContentState, string /* catKey */, string[] /* blockNames */] {
+
   const [catKey, cs2] = initializeCatalog(cs);
-  if (!ctnt.entities) {
+  if (!entities) {
     // no entities to process. All done.
     const keys = cs2.getBlockMap().keySeq().toArray();
     return [cs2, catKey, keys];
   }
   // const old2new = {} as {[key: string]: string};
   const catData = {} as {[key: string]: string};
-  const cs3 = Object.entries(ctnt.entities).reduce((csi, el) => {
+  const cs3 = Object.entries(entities).reduce((csi, el) => {
     const [key, ed] = el;
     const cso = csi.createEntity(ed.type, ed.mutability as DraftEntityMutability, ed.data);
     catData[key] = cs.getLastCreatedEntityKey();
@@ -153,7 +164,7 @@ export const createContentState = (
     if (ccm) return ccm;
 
     const style = cm!.getStyle().flatMap((k) => {
-      const e = ctnt.entities ? ctnt.entities[k!] : null;
+      const e = entities ? entities[k!] : null;
       if (!e) {
         logger.warn(`Missing entity '${k}'`);
       }
@@ -178,4 +189,17 @@ export const createContentState = (
   const cs5 = cs4.set('blockMap', bm2) as ContentState;
   // const raw = convertToRaw(cs5);
   return [cs5, catKey, newBlocks];
-};
+}
+
+export function createContentStateFromHTML(
+  content: string /* htmlString */,
+): [ContentState, string /* catKey */, string[] /* blockNames */] {
+  const r = convertFromHTML(content);
+  const cs = ContentState.createFromBlockArray(
+    r.contentBlocks,
+    r.entityMap,
+  );
+  const [catKey, cs2] = initializeCatalog(cs);
+  const keys = cs2.getBlockMap().keySeq().toArray();
+  return [cs2, catKey, keys];
+}

@@ -27,7 +27,7 @@ import {
   getDocumentIDFromRedux,
   PiEditorActionSave,
   PiEditorActionOpenNew,
-  PiEditorFocusAction, DocumentRxState
+  PiEditorFocusAction, DocumentRxState, PiEditorActionSaved
 } from './api';
 
 export * from './api';
@@ -143,7 +143,7 @@ export function init(register: PiRegister): void {
     const content = persistState(ers.editorState);
     const props = { stateSaveRequestedAt: -1, stateSavedAt: Date.now() };
     const s1 = update(state, ['pihanga', editorID], props);
-    dispatchFromReducer({
+    dispatchFromReducer<PiEditorActionSaved>({
       type: ACTION_TYPES.SAVED,
       documentID,
       editorID,
