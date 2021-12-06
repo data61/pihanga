@@ -69,11 +69,11 @@ const registerMethod = (method, opts) => {
         error: e,
       });
     }
-    const [body, vars] = r;
+    const [body, vars, headers = {}] = r;
     if (body) {
       const url2 = buildURL(parts, vars, variables);
       try {
-        runMethod(method, url2, name, body, vars, resultType, errorType, action);
+        runMethod(method, url2, name, body, vars, headers, resultType, errorType, action);
       } catch (e) {
         dispatchFromReducer({
           type: intErrorType,
@@ -90,6 +90,7 @@ const registerMethod = (method, opts) => {
         url: url2,
         body,
         vars,
+        headers,
       });
     }
     return state;
@@ -130,12 +131,14 @@ export const runMethod = (
   name,
   body,
   vars,
+  headers,
   resultType, errorType,
   requestAction,
 ) => {
   fetchApi(url, {
     method,
     body,
+    headers,
   }).then(([reply, contentType]) => {
     const p = {
       type: resultType,

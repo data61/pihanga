@@ -16,7 +16,7 @@ export declare function dispatchFromReducer<T extends ReduxAction>(action: T): v
 export declare function dispatchFromReducer<T extends {[key:string]:any}>(actionType: string, props: T): void;
 export declare function dispatchFromReducer<T extends {[key:string]:any}>(domain: string, actionType: string, props: T): void;
 
-export declare function update<S extends ReduxState>(state: T, path: string[], partial: any): S;
+export declare function update<S extends ReduxState>(state: S, path: string[], partial: any): S;
 
 export declare function getState():ReduxState;
 export declare function getPihangaState<T>(name: string, state?: ReduxState): T;
@@ -97,9 +97,10 @@ type PiRestRequestBody = {[key:string]:any};
 type PiRegisterGetProps<S extends ReduxState, A extends ReduxAction, R> = {
   name: string,
   url: string,
+  throttleMS?: number, // thottle delay in ms
   trigger: string,
   guard?: (action: A, state: S) => boolean,
-  request: (action: A, state: S, variables: string[]) => PiUrlBindings,
+  request: (action: A, state: S, variables: string[]) => PiUrlBindings | undefined,
   reply: (state: S, reply: R, requestAction: A) => S,
   error: (state: S, reply: R, requestAction: A) => S,
 };

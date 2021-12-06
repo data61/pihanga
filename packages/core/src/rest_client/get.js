@@ -1,3 +1,5 @@
+import throttle from 'lodash.throttle';
+
 import { dispatch, dispatchFromReducer } from '../redux';
 import { fetchApi } from './fetch-api';
 import { ACTION_TYPES } from './rest.actions';
@@ -15,6 +17,7 @@ export function registerGET({
   name, url,
   trigger, guard,
   request, reply, error,
+  throttleMS = -1,
 }) {
   if (!name) {
     throw Error('Missing "name"');
@@ -37,6 +40,7 @@ export function registerGET({
   const submitType = `${ACTION_TYPES.GET_SUBMITTED}:${name}`;
   const resultType = `${ACTION_TYPES.GET_RESULT}:${name}`;
   const errorType = `${ACTION_TYPES.GET_ERROR}:${name}`;
+  const throttleF = throttleMS > 0 ? throttle(execGet, throttleMS, { leading: false }) : undefined;
 
   registerReducer(trigger, (state, action) => {
     if (guard) {
@@ -46,13 +50,25 @@ export function registerGET({
     }
     const vars = request(action, state, variables);
     if (vars) {
-      const url2 = buildURL(parts, vars, variables);
-      runGET(url2, name, vars, resultType, errorType, action);
-      // eslint-disable-next-line object-curly-newline
-      dispatchFromReducer({ type: submitType, queryID: name, url: url2, vars });
+      const p = { vars, action };
+      if (throttleF) {
+        throttleF(p);
+      } else {
+        execGet(p);
+      }
+    } else if (throttleF) {
+      // cancel any pending actions
+      throttleF.cancel();
     }
     return state;
   });
+
+  function execGet({ vars, action }) {
+    const url2 = buildURL(parts, vars, variables);
+    runGET(url2, name, vars, resultType, errorType, action);
+    // eslint-disable-next-line object-curly-newline
+    dispatchFromReducer({ type: submitType, queryID: name, url: url2, vars });
+  }
 
   registerReducer(resultType, (state, action) => {
     return reply(state, action.reply, action.requestAction);
