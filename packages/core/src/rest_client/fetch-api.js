@@ -46,14 +46,29 @@ function decodeReply(response) {
     return {};
   }
   const contentType = response.headers.get('content-type');
-  if (!contentType || !contentType.includes('application/json')) {
-    return Promise.resolve([{
-      contentType,
-      response,
-    }, contentType]);
-  } else {
-    return response.json().then((j) => [j, contentType]);
+  if (contentType) {
+    switch (contentType) {
+      case 'application/json':
+        return response.json().then((j) => [j, contentType]);
+      case 'application/jose':
+        return response.text().then((t) => [t, contentType]);
+      default:
+        if (contentType.startsWith('text')) {
+          return response.text().then((t) => [t, contentType]);
+        }
+    }
   }
+  // catch all
+  return response.blob().then((b) => [b, contentType]);
+  // if (!contentType || !contentType.includes('application/json')) {
+  //   return response.
+  //   return Promise.resolve([{
+  //     contentType,
+  //     response,
+  //   }, contentType]);
+  // } else {
+  //   return response.json().then((j) => [j, contentType]);
+  // }
 }
 
 /**

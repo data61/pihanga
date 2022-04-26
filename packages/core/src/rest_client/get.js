@@ -1,5 +1,5 @@
 import throttle from 'lodash.throttle';
-
+import isFunction from 'lodash.isfunction';
 import { dispatch, dispatchFromReducer } from '../redux';
 import { fetchApi } from './fetch-api';
 import { ACTION_TYPES } from './rest.actions';
@@ -41,6 +41,8 @@ export function registerGET({
   const resultType = `${ACTION_TYPES.GET_RESULT}:${name}`;
   const errorType = `${ACTION_TYPES.GET_ERROR}:${name}`;
   const throttleF = throttleMS > 0 ? throttle(execGet, throttleMS, { leading: false }) : undefined;
+  const intErrorType = `${ACTION_TYPES.GET_INTERNAL_ERROR}:${name}`;
+
 
   registerReducer(trigger, (state, action) => {
     if (guard) {
@@ -48,9 +50,25 @@ export function registerGET({
         return state;
       }
     }
-    const vars = request(action, state, variables);
+    let r;
+    try {
+      r = request(action, state, variables);
+      if (!Array.isArray(r)) {
+        r = [r];
+      }
+    } catch (e) {
+      dispatchFromReducer({
+        type: intErrorType,
+        call: 'request',
+        // eslint-disable-next-line object-property-newline
+        action, state, variables,
+        error: e,
+      });
+    }
+    // const vars = request(action, state, variables);
+    const [vars, headers = {}] = r;
     if (vars) {
-      const p = { vars, action };
+      const p = { vars, headers, action };
       if (throttleF) {
         throttleF(p);
       } else {
@@ -63,15 +81,15 @@ export function registerGET({
     return state;
   });
 
-  function execGet({ vars, action }) {
-    const url2 = buildURL(parts, vars, variables);
-    runGET(url2, name, vars, resultType, errorType, action);
+  function execGet({ vars, headers, action }) {
+    const url2 = typeof vars === 'string' ? vars : buildURL(parts, vars, variables);
+    runGET(url2, name, vars, headers, resultType, errorType, action);
     // eslint-disable-next-line object-curly-newline
     dispatchFromReducer({ type: submitType, queryID: name, url: url2, vars });
   }
 
   registerReducer(resultType, (state, action) => {
-    return reply(state, action.reply, action.requestAction);
+    return reply(state, action.reply, action.requestAction, action.contentType);
   });
 
   if (error) {
@@ -120,7 +138,7 @@ export function buildURL(parts, vars) {
     const a2 = [...a];
     Object.entries(v2id).forEach(([k, id]) => {
       const v = vars[k];
-      if (!v) {
+      if (v === undefined) {
         throw Error(`Missing assignment to url parameter '${k}'`);
       }
       id.forEach((i) => { a2[i] = encodeURIComponent(v); });
@@ -145,9 +163,10 @@ export function buildURL(parts, vars) {
   }
 }
 
-export function runGET(url, name, vars, resultType, errorType, requestAction) {
+export function runGET(url, name, vars, headers, resultType, errorType, requestAction) {
   fetchApi(url, {
     method: 'GET',
+    headers,
   }).then(([reply, contentType]) => {
     const p = {
       type: resultType,
@@ -159,11 +178,20 @@ export function runGET(url, name, vars, resultType, errorType, requestAction) {
     };
     dispatch(p);
   }).catch((error) => {
+    const resp = error.response;
+    let status = {};
+    if (resp) {
+      status = {
+        code: resp.status,
+        text: resp.text,
+      };
+    }
     const p = {
       type: errorType,
-      queryID: name,
+      restName: name,
       error: {
-        error,
+        error: error.toString(),
+        status,
         url,
         vars,
       },

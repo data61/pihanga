@@ -71,7 +71,7 @@ const registerMethod = (method, opts) => {
     }
     const [body, vars, headers = {}] = r;
     if (body) {
-      const url2 = buildURL(parts, vars, variables);
+      const url2 = typeof vars === 'string' ? vars : buildURL(parts, vars, variables);
       try {
         runMethod(method, url2, name, body, vars, headers, resultType, errorType, action);
       } catch (e) {
@@ -96,7 +96,7 @@ const registerMethod = (method, opts) => {
     return state;
   });
 
-  registerReducer(resultType, (state, action) => reply(state, action.reply, action.requestAction));
+  registerReducer(resultType, (state, action) => reply(state, action.reply, action.requestAction, action.contentType));
 
   if (error) {
     registerReducer(errorType, (state, action) => error(state, action.error, action.requestAction));
@@ -155,7 +155,10 @@ export const runMethod = (
       restName: name,
       error: {
         error: error.toString(),
-        stack: error.stack,
+        status: {
+          code: error.response.status,
+          text: error.response.text,
+        },
         url,
         vars,
       },

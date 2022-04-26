@@ -4,7 +4,6 @@ import merge from 'lodash.merge';
 import { connect } from 'react-redux';
 import { getState, registerActions } from './redux';
 import { createLogger } from './logger';
-import { errorMonitor } from 'form-data';
 
 const logger = createLogger('card.service');
 
@@ -12,6 +11,10 @@ const cards = {};
 const metaCards = {};
 const metaCard2cards = {}; // mapping from instantiated meta cards to their respective cards
 const cardComponents = {};
+
+const WITH_CARD_TRACING = process.env.NODE_ENV !== 'production';
+
+export const ParentContext = React.createContext(null);
 
 /**
  * Register a meta card which expands a single card definition of type `name`
@@ -290,7 +293,49 @@ const createConnectedCard = (cardName, ctxtProps, cardKey) => {
   if (!cardState) {
     return null;
   }
-  const { cardComponent } = cardComponents[cardDef.cardType];
+  let { cardComponent } = cardComponents[cardDef.cardType];
+  cardComponent.displayName = `Card:${cardName}`;
+  if (WITH_CARD_TRACING) {
+    //const { render } = cardComponent;
+    const cc = cardComponent;
+    cardComponent = (props) => {
+      return React.createElement(ParentContext.Consumer, null, (parentCardName) => {
+        console.log(`== ${cardName}`, parentCardName, props);
+        const el = React.createElement(cc, { parentCardName, ...props });
+        return React.createElement(ParentContext.Provider, { value: cardName }, el);
+      });
+    };
+  } else {
+    // nothing
+  }
+  // cardComponent.render = (...args) => {
+  //   console.log(`IN>> ${cardName}`, args);
+  //   const r = render(...args);
+  //   console.log(`OUT>> ${cardName}`, r);
+  //   return r;
+  // };
+
+  // const origCardComponent = cardComponent;
+  // const handler = {
+  //   get: (target, prop) => {
+  //     console.log(`GET>> ${cardName} - ${prop}`);
+  //     return target[prop];
+  //   },
+  //   // // apply is the [[Call]] trap
+  //   // apply: (target, _, args) => {
+  //   //   console.log(`IN>> ${cardName}`);
+  //   //   const res = target(...args);
+  //   //   console.log(`OUT>> ${cardName} - ${res}`);
+  //   //   return res;
+  //   // },
+  //   // construct: (target, args) => {
+  //   //   console.log(`NEW>> ${cardName}`);
+  //   //   return new target(...args);
+  //   // },
+  // };
+  // cardComponent = new Proxy(origCardComponent, handler);
+  // }
+
   const { eventProps, events } = cardDef;
 
   return connect(
@@ -341,12 +386,29 @@ const createConnectedCard = (cardName, ctxtProps, cardKey) => {
       }
       return dispProps;
     },
-    (stateProps, dispatchProps) => // , ownProps
+    (stateProps, dispatchProps) => {// , ownProps
       // do not include 'ownProps' as that should be taken care of by pihanga binding
-      ({ ...stateProps, ...dispatchProps }),
-
+      const p = { ...stateProps, ...dispatchProps };
+      console.log(`>> ${stateProps.cardName}`, stateProps);
+      return p;
+    },
   )(cardComponent);
 };
+
+// function wrapParentContext() {
+//   // <ParentContext.Consumer>
+//   //                 {parent => {
+//   //                     console.log('I am:', this, ' my parent is:',parent ? parent.name : 'null');
+//   //                     return(
+//   //                         <ParentContext.Provider value={this}>
+//   //                             <componentClass ref={inst=>refToInstance=inst} parent={parent} {...this.props} />
+//   //                         </ParentContext.Provider>
+//   //                     )}
+//   //                 }
+//   //                 </ ParentContext.Consumer>
+
+
+// }
 
 const UnknownCard = (cardName) => {
   const s = `Unknown card "${cardName}" - (${Object.keys(cards).join(', ')})`;

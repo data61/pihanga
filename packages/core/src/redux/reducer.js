@@ -26,7 +26,9 @@ function getType(action) {
 
 export class Reducer {
   constructor(reducerByAction) {
-    this.reducerByAction = reducerByAction;
+    this._reducerByAction = reducerByAction;
+    this._reducerAllStart = undefined;
+    this._reducerAllEnd = undefined;
   }
 
   registerReducer(...args) {
@@ -37,15 +39,41 @@ export class Reducer {
     if (typeof reducer !== 'function') {
       throw new Error('Expected the reducer to be a function.');
     }
-    let d = this.reducerByAction[type];
+    let d = this._reducerByAction[type];
     if (d === undefined) {
-      this.reducerByAction[type] = [];
-      d = this.reducerByAction[type];
+      this._reducerByAction[type] = [];
+      d = this._reducerByAction[type];
     }
     d.push({ reducer, priority });
     d.sort((a, b) => b.priority - a.priority);
 
     logger.infoSilently(`Register reducer for type: ${type} with priority ${priority}`);
+  }
+
+  reducerAllStart(reducer) {
+    if (typeof reducer !== 'function') {
+      throw new Error('Expected the reducer to be a function.');
+    }
+    const r = { reducer, priority: -1 };
+    if (this._reducerAllStart === undefined) {
+      this._reducerAllStart = [r];
+    } else {
+      this._reducerAllStart.push(r);
+    }
+    logger.infoSilently('Register ALL_START reducer');
+  }
+
+  reducerAllEnd(reducer) {
+    if (typeof reducer !== 'function') {
+      throw new Error('Expected the reducer to be a function.');
+    }
+    const r = { reducer, priority: -1 };
+    if (this._reducerAllEnd === undefined) {
+      this._reducerAllEnd = [r];
+    } else {
+      this._reducerAllEnd.push(r);
+    }
+    logger.infoSilently('Register ALL_END reducer');
   }
 
   static parseReducerArgs(args) {
@@ -74,8 +102,14 @@ export class Reducer {
 
   rootReducer(state, action) {
     const type = getType(action);
-    const tr = this.reducerByAction[type];
-    if (tr) {
+    let tr = this._reducerByAction[type] || [];
+    if (this._reducerAllStart) {
+      tr = this._reducerAllStart.concat(tr);
+    }
+    if (this._reducerAllEnd) {
+      tr = tr.concat(this._reducerAllEnd);
+    }
+    if (tr.length > 0) {
       return tr.reduce((s, { reducer }) => {
         try {
           const s2 = reducer(s, action);

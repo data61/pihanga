@@ -53,7 +53,7 @@ export default (registerReducer, browserHistory, opts) => {
     return [pa, q, url];
   };
 
-  registerReducer(ROUTER_ACTION_TYPES.NAVIGATE_TO_PAGE, (state, action) =>  {
+  registerReducer(ROUTER_ACTION_TYPES.NAVIGATE_TO_PAGE, (state, action) => {
     var url = action.url;
     if (pathPrefixLength > 0 && !url.startsWith(pathPrefix)) {
       url = `${pathPrefix}/${url}`;
@@ -76,12 +76,14 @@ export default (registerReducer, browserHistory, opts) => {
     });
   });
 
-  registerReducer(ROUTER_ACTION_TYPES.SHOW_PAGE, (state, { path = [], query = {} }) => {
+  registerReducer(ROUTER_ACTION_TYPES.SHOW_PAGE, (state, { path = [], query = {}, noHistory = false }) => {
     const url = toUrl(path, query);
-    const loc = browserHistory.location;
-    const hp = `${loc.pathname}${loc.search}`;
-    if (url !== hp) {
-      browserHistory.push(url);
+    if (!noHistory) {
+      const loc = browserHistory.location;
+      const hp = `${loc.pathname}${loc.search}`;
+      if (url !== hp) {
+        browserHistory.push(url);
+      }
     }
     return update(state, ['route'], {
       fromBrowser: false,

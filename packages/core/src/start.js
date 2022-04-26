@@ -35,6 +35,10 @@ function initReducer(rf) {
   const reducer = new Reducer({});
   // eslint-disable-next-line no-param-reassign
   rf.reducer = reducer.registerReducer.bind(reducer);
+  // eslint-disable-next-line no-param-reassign
+  rf.reducerAllStart = reducer.reducerAllStart.bind(reducer);
+  // eslint-disable-next-line no-param-reassign
+  rf.reducerAllEnd = reducer.reducerAllEnd.bind(reducer);
   return reducer;
 }
 
