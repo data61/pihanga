@@ -117,11 +117,19 @@ develop 'template' cards which can dynamically be adapted to various different u
 
 The [examples](./examples) directory contains various examples on how _Pihanga_ can be used to quickly develop useful and scalable web applications. See the _README_ files in the various sub directories for more information.
 
-The 
+## Get Started
+
+```
+npx create-react-app my-app
+cd my-app
+rm -rf src node_modules yarn.lock
+yo pihanga
+yarn start
+```
 
 ## Developer Notes
 
 ### Pulishing new release
 
-    lerna version patch
+    lerna version minor
     lerna publish from-git
