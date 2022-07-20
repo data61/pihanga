@@ -14,5 +14,6 @@
     "parse-author": "^2.0.0",
     "validate-npm-package-name": "^3.0.0",
     "yeoman-generator": "^5.2.0"
-  }
+  },
+  "gitHead": "f015ea5370235b1fecc99e68ef0502d73ec325df"
 }
