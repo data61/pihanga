@@ -12,7 +12,7 @@ const metaCards = {};
 const metaCard2cards = {}; // mapping from instantiated meta cards to their respective cards
 const cardComponents = {};
 
-const WITH_CARD_TRACING = process.env.NODE_ENV !== 'production';
+const WITH_CARD_TRACING = false; // process.env.NODE_ENV !== 'production'; // not yet working
 
 export const ParentContext = React.createContext(null);
 
@@ -287,16 +287,18 @@ const createConnectedCard = (cardName, ctxtProps, cardKey) => {
   if (!cardDef) {
     return null;
   }
-
-  const state = getState();
-  const cardState = getCardState(cardName, state, ctxtProps, cardKey);
-  if (!cardState) {
-    return null;
-  }
   let { cardComponent } = cardComponents[cardDef.cardType];
   cardComponent.displayName = `Card:${cardName}`;
+
   if (WITH_CARD_TRACING) {
-    //const { render } = cardComponent;
+    const state = getState();
+    const cardState = getCardState(cardName, state, ctxtProps, cardKey);
+    if (!cardState) {
+      return null;
+    }
+    // let { cardComponent } = cardComponents[cardDef.cardType];
+    // cardComponent.displayName = `Card:${cardName}`;
+
     const cc = cardComponent;
     cardComponent = (props) => {
       return React.createElement(ParentContext.Consumer, null, (parentCardName) => {
@@ -308,6 +310,7 @@ const createConnectedCard = (cardName, ctxtProps, cardKey) => {
   } else {
     // nothing
   }
+
   // cardComponent.render = (...args) => {
   //   console.log(`IN>> ${cardName}`, args);
   //   const r = render(...args);
