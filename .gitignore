@@ -29,4 +29,7 @@ yarn-error.log*
 **/dist
 **/lib
 **/build/
+
+GIT
 X
+Y
