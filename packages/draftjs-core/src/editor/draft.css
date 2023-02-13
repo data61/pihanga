@@ -1,0 +1,77 @@
+/*
+ * This is a hackish way of styling the  <Editor> component
+ * as it ignores the  usual 'className' property.
+ */
+
+div.DraftEditor-root {
+  height: 100%;
+  width: 100%;
+  /* overflow-y: auto; */
+}
+
+div.DraftEditor-editorContainer,
+div.public-DraftEditor-content {
+  height: 100%;
+  font-family: 'Open Sans',Roboto;
+  font-size: 1rem;
+}
+
+.DraftEditor-block-paragraph div {
+  margin-block-end: 0.6em;
+}
+
+div.public-DraftEditor-content blockquote {
+  background: #FFF8D1;
+  border-left: 10px solid #ffe564;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+}
+
+div.public-DraftEditor-content pre code {
+  background-color: transparent;
+  border: 0;
+  border-radius: 3px;
+  display: inline;
+  font-size: 85%;
+  line-height: inherit;
+  margin: 0;
+  max-width: auto;
+  overflow: visible;
+  padding: 0;
+  white-space: pre;
+  word-break: normal;
+  word-wrap: normal;
+  font-family: SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;
+}
+
+.public-DraftStyleDefault-ol, .public-DraftStyleDefault-ul {
+  margin-top: 0;
+}
+
+div.DraftEditor-editorContainer a span {
+  cursor: 'pointer';
+}
+
+/* Also part of code ***/
+.hljs {
+  display: block;
+  overflow-x: auto;
+  background: #f1efee;
+  color: #68615e;
+  padding: 1.25rem 1.5rem;
+}
+
+.hljs.css {
+  background-color: rgba(75,145,80,.05);
+}
+
+.MuiInputBase-input {
+  font-size: 0.85rem;
+}
+
+/* 
+::selection {
+  color: red; 
+  background: yellow;
+} 
+*/
