@@ -22,7 +22,7 @@ module.exports = class extends Generator {
   // Courtesy of https://denis-voronin.medium.com/quick-start-of-your-react-application-development-with-yeoman-7d3cadd2f36f
   initializing() {
     this.pkg = this.fs.readJSON(this.destinationPath('package.json'), {});
-  
+
     this.props = {
       name: this.pkg.name,
       description: this.pkg.description,
@@ -30,7 +30,7 @@ module.exports = class extends Generator {
       homepage: this.pkg.homepage,
       repositoryName: this.options.repositoryName
     };
-  
+
     if (typeof this.pkg.author === 'object') {
       this.props.authorName = this.pkg.author.name;
       this.props.authorEmail = this.pkg.author.email;
@@ -72,13 +72,13 @@ module.exports = class extends Generator {
         store: true
       }
     ];
-  
+
     return this.prompt(prompts).then(props => {
       this.props = extend(this.props, props);
       const packageNameValidity = validatePackageName(this.props.name);
       if (!packageNameValidity.validForNewPackages) {
         const error = packageNameValidity.errors && packageNameValidity.errors[0] ||
-          'The name option is not a valid npm package name.';
+          `The name ${this.props.name} is not a valid npm package name. (${this.props})`;
         console.log(error);
         process.exit(1);
       }
