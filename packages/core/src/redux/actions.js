@@ -35,6 +35,28 @@ export function registerActions(namespace, actionsAL) {
 }
 
 /**
+ * Return a function to more conventiently register a
+ * reducer function for 'actionType'.
+ * 
+ * @param {string} actionType 
+ * @returns a function to register a reducer for 'actionType'
+ */
+export function createOnAction(actionType) {
+  return (register, f) => {
+    register.reducer(actionType, f);
+  };
+}
+// function createOnAction<E>(actionType: string) {
+//   return <S extends ReduxState,>(
+//     register: PiRegister,
+//     f: (state: S, ev: CardAction & E) => S,
+//   ) => {
+//     register.reducer<S, CardAction & E>(actionType, f)
+//   }
+// }
+
+
+/**
  * Return the actions registered for a particular component/namespace.
  * 
  * If nothing was registered for this namespace, an empty hash is returned.
@@ -75,3 +97,20 @@ export function action(namespace, name) {
     throw Error(`Requesting action '${name}' from unknown namespace '${namespace}'`);
   }
 }
+
+export function actionTypesToEvents(actionTypes) {
+  return Object.entries(actionTypes).reduce((p, el) => {
+    const [k, v] = el;
+    const n = k.split('_').map((s) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()).join('');
+    p[`on${n}`] = v;
+    return p;
+  }, {});
+}
+
+// function actionTypesToEvents(actionTypes: { [k: string]: string }): { [k: string]: string } {
+//   return Object.entries(ACTION_TYPES).reduce((p, [k, v]) => {
+//     const n = k.split('_').map((s) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()).join('')
+//     p['on' + n] = v
+//     return p;
+//   }, {} as { [k: string]: string });
+// }

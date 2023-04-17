@@ -16,7 +16,8 @@ export function init(register) {
 export function registerGET({
   name, url,
   trigger, guard,
-  request, reply, error,
+  request, headers,
+  reply, error,
   throttleMS = -1,
 }) {
   if (!name) {
@@ -50,11 +51,12 @@ export function registerGET({
         return state;
       }
     }
-    let r;
+    let vars;
+    let httpHeaders = {};
     try {
-      r = request(action, state, variables);
-      if (!Array.isArray(r)) {
-        r = [r];
+      vars = request(action, state, variables);
+      if (headers) {
+        httpHeaders = headers(action, state, variables);
       }
     } catch (e) {
       dispatchFromReducer({
@@ -66,9 +68,8 @@ export function registerGET({
       });
     }
     // const vars = request(action, state, variables);
-    const [vars, headers = {}] = r;
     if (vars) {
-      const p = { vars, headers, action };
+      const p = { vars, httpHeaders, action };
       if (throttleF) {
         throttleF(p);
       } else {
@@ -81,9 +82,9 @@ export function registerGET({
     return state;
   });
 
-  function execGet({ vars, headers, action }) {
+  function execGet({ vars, httpHeaders, action }) {
     const url2 = typeof vars === 'string' ? vars : buildURL(parts, vars, variables);
-    runGET(url2, name, vars, headers, resultType, errorType, action);
+    runGET(url2, name, vars, httpHeaders, resultType, errorType, action);
     // eslint-disable-next-line object-curly-newline
     dispatchFromReducer({ type: submitType, queryID: name, url: url2, vars });
   }

@@ -6,18 +6,31 @@ type PiCardDef = {
   cardType: string;
 };
 
+// get value of property from another (or self) card in the context of 'ctxtProp'
+type PiRefF = (cardName: string, propName: string) => any;
+
+// context props given to <Card> in parent card
+type PiDefCtxtProps = { [k: string]: any };
+type PiCtxtProps<T = PiDefCtxtProps> = T;
+
+type RefF = any;
+type StateMapper<T, S, C = PiDefCtxtProps> = (state: S, ref: RefF, ctxtProps: C, cardName: string) => T
+
+type PiMapProps<Type, S, C = PiDefCtxtProps> = {
+  [Property in keyof Type]: Type[Property] | StateMapper<Type[Property], S, C>;
+};
+
 type PiStartEnvironment = {
   API_BASE?: string;
   AUTH_TOKEN_COOKIE_NAME?: string | undefined, //'AUTH_TOKEN',
   // The value of this header will be checked by server. If missing, server will return 401 for
   // restricted access API
   AUTH_TOKEN_HEADER?: string; // 'N1-Api-Key',
-
 } & { [key: string]: any };
 
 type PiStartOpts<T> = {
   rootEl: HTMLElement | null;
-  rootComponent: () => any; // JSX.Element;
+  rootComponent: () => JSX.Element;
   inits: PiInitF[];
   initialReduxState: T;
   initialCards?: { [name: string]: PiCardDef };
@@ -31,14 +44,24 @@ export type PiCardProps<P> = P & {
   children?: React.ReactNode;
 };
 
+export type PiCardSimpleProps<P> = P & {
+  cardName: string;
+  children?: React.ReactNode;
+};
+
 export declare function start<T extends ReduxState>(opts: PiStartOpts<T>): void;
 
 export declare function addCard<T>(cardName: string, cardDef: { cardType: string } & T): void;
+export declare function createCardDeclaration<C, P = PiDefCtxtProps>(cardType: string): <S>(p: PiMapProps<C, S, P>) => PiCardDef;
 
 export declare function registerActions(domain: string, names: string[]): { [key: string]: string };
 export function actions(name: string): { [key: string]: string };
 export function actions(namespace: string, name: string): string;
 export function action(namespace: string, name: string): string;
+
+export declare function createOnAction<E>(actionType: string):
+  <S extends ReduxState>(register: PiRegister, f: (state: S, ev: CardAction & E) => S) => void;
+export declare function actionTypesToEvents(actionTypes: { [k: string]: string }): { [k: string]: string };
 
 export declare function dispatch<T extends ReduxAction>(action: T): void;
 export declare function dispatch<T>(actionType: string, props: T): void;
@@ -85,6 +108,10 @@ export type ReduxState = {
 export type ReduxAction = {
   type: string,
 };
+export type CardAction = ReduxAction & {
+  cardID: string;
+}
+export type ReduxActionExt = ReduxAction & { [k: string]: any };
 
 type PiCardState = { [key: string]: any }
 
@@ -126,7 +153,9 @@ export type PiMetaTransformerF<T> = (
   opts: T
 ) => { [name: string]: { [prop: string]: any } };
 
-type PiUrlBindings = { [key: string]: string | number };
+type PiUrlVars = { [key: string]: string | number };
+type PiUrlHeaders = { [key: string]: string | number };
+type PiUrlBindings = PiUrlVars | [PiUrlVars, PiUrlHeaders];
 type PiRestRequestBody = { [key: string]: any };
 
 type PiRegisterGetProps<S extends ReduxState, A extends ReduxAction, R> = {
@@ -135,7 +164,8 @@ type PiRegisterGetProps<S extends ReduxState, A extends ReduxAction, R> = {
   throttleMS?: number, // thottle delay in ms
   trigger: string,
   guard?: (action: A, state: S) => boolean,
-  request: (action: A, state: S, variables: string[]) => PiUrlBindings | undefined,
+  request: (action: A, state: S, variables: string[]) => PiUrlVars | string | undefined,
+  headers?: (action: A, state: S, variables: string[]) => { [key: string]: string },
   reply: (state: S, reply: R, requestAction: A, contentType: string) => S,
   error: (state: S, reply: R, requestAction: A) => S,
 };
