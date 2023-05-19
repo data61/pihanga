@@ -136,6 +136,11 @@ export interface PiRegister {
    */
   metaCard<T>(type: string, transformF: PiMetaTransformerF<T>): void;
 
+  registerGET<S extends ReduxState, A extends ReduxAction, R>(props: PiRegisterGetProps<S, A, R>): void;
+  registerPUT<S extends ReduxState, A extends ReduxAction, R>(props: PiRegisterPutProps<S, A, R>): void;
+  registerPOST<S extends ReduxState, A extends ReduxAction, R>(props: PiRegisterPostProps<S, A, R>): void;
+  registerPeriodicGET<S extends ReduxState, A extends ReduxAction, R>(props: PiRegisterPeridicGetProps<S, A, R>): void;
+
   reducer<S extends ReduxState, A extends ReduxAction>(eventType: string, mapper: (state: S, action: A) => S, priority?: number): void,
   reducerAllStart<S extends ReduxState, A extends ReduxAction>(mapper: (state: S, action: A) => S): void,
   reducerAllEnd<S extends ReduxState, A extends ReduxAction>(mapper: (state: S, action: A) => S): void,
@@ -166,6 +171,17 @@ type PiRegisterGetProps<S extends ReduxState, A extends ReduxAction, R> = {
   guard?: (action: A, state: S) => boolean,
   request: (action: A, state: S, variables: string[]) => PiUrlVars | string | undefined,
   headers?: (action: A, state: S, variables: string[]) => { [key: string]: string },
+  reply: (state: S, reply: R, requestAction: A, contentType: string) => S,
+  error: (state: S, reply: R, requestAction: A) => S,
+};
+type PiRegisterPeriodicGetProps<S extends ReduxState, A extends ReduxAction, R> = {
+  name: string,
+  url: string,
+  intervalMS?: number, // interval in ms
+  startTrigger: string,
+  init?: (action: A, state: S) => S,
+  request: (action: A, state: S, variables: string[]) => PiUrlVars | string | undefined,
+  //headers?: (action: A, state: S, variables: string[]) => { [key: string]: string },
   reply: (state: S, reply: R, requestAction: A, contentType: string) => S,
   error: (state: S, reply: R, requestAction: A) => S,
 };
