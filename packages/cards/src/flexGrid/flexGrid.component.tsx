@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react';
+import React from 'react';
 import { Card, PiCardSimpleProps } from '@pihanga/core';
 
 // body { 
