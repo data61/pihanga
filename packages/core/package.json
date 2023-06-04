@@ -57,6 +57,7 @@
     "lodash.isplainobject": "^4.0.6",
     "lodash.isstring": "^4.0.1",
     "lodash.merge": "^4.6.2",
+    "lodash.throttle": "^4.1.1",
     "moment": "^2.24.0",
     "numeral": "^2.0.6",
     "path-to-regexp": "^3.0.0",
@@ -115,5 +116,5 @@
       "loose-envify"
     ]
   },
-  "gitHead": "f015ea5370235b1fecc99e68ef0502d73ec325df"
+  "gitHead": "d6333c9ab3c29e1ffe56a14321af5030bd64ae2d"
 }
