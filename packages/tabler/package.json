@@ -1,30 +1,37 @@
 {
   "name": "@pihanga/tabler",
-  "version": "0.2.1",
+  "version": "0.2.4",
   "description": "A library of Pihanga cards based on the Tabler UI framework",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "repository": "git@github.com:data61/pihanga.git",
   "author": "Max Ott <max.ott@data61.csiro.au>",
   "license": "MIT",
-  "private": true,
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "prepublish": "tsc",
+    "x-publish": "yarn publish --access public"
   },
   "bugs": {
     "url": "https://github.com/data61/pihanga/issues"
   },
   "homepage": "https://github.com/data61/pihanga#readme.md",
   "devDependencies": {
-    "@pihanga/core": "^0.7.7",
-    "@types/react": "^18.0.37",
+    "@pihanga/core": "^0.7.0",
+    "@types/react": "^18.2.0",
     "@types/subscribe-ui-event": "^1.1.5",
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@formkit/auto-animate": "^1.0.0-beta.6",
-    "@tabler/core": "^1.0.0-beta17",
-    "@tabler/icons-react": "^2.16.0",
+    "@pihanga/cards": "^0.2.0",
+    "@formkit/auto-animate": "1.0.0-beta.6",
+    "@tabler/core": "1.0.0-beta19",
+    "@tabler/icons-react": "^2.21.0",
     "classnames": "^2.3.2",
     "subscribe-ui-event": "^2.0.7"
-  }
+  },
+  "files": [
+    "dist",
+    "src"
+  ]
 }
