@@ -1,14 +1,17 @@
 {
   "name": "@pihanga/cards",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A set of basic cards for the Pihanga framework",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "repository": "git@github.com:data61/pihanga.git",
   "author": "Max Ott <max.ott@data61.csiro.au>",
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "prepublish": "tsc",
+    "publish": "yarn publish --access public"
   },
   "bugs": {
     "url": "https://github.com/data61/pihanga/issues"
@@ -24,5 +27,9 @@
     "react-drag-drop-files": "^2.3.9",
     "react-json-view": "^1.21.3",
     "react-modal": "^3.16.1"
-  }
+  },
+  "files": [
+    "dist",
+    "lib"
+  ]
 }
