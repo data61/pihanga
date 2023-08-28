@@ -1,6 +1,6 @@
 import { registerActions, PiRegister, PiMapProps, PiCardDef, createOnAction, actionTypesToEvents, } from '@pihanga/core';
 import { ButtonEvent, ColSortEvent, Component, HideDetailEvent, RowSelectEvent, ShowDetailEvent } from './datatable.component';
-import type { ComponentProps } from './datatable.component';
+import type { ComponentProps, ToggleEvent } from './datatable.component';
 
 export type { Column, Row, DetailContext, ButtonEvent as TbDataTableButtonEvent } from './datatable.component';
 export { ColumnType, } from './datatable.component';
@@ -23,6 +23,7 @@ export const ACTION_TYPES = registerActions('TBDTABLE', [
   'NEXT_PAGE',
   "PREV_PAGE",
   "BUTTON_CLICKED",
+  "CHECKBOX_CLICKED",
 ])
 
 export const onTbXlDataTableRowSelect = createOnAction<RowSelectEvent>(ACTION_TYPES.ROW_SELECT)
@@ -30,6 +31,7 @@ export const onTbXlDataTableColumnSort = createOnAction<ColSortEvent>(ACTION_TYP
 export const onTbXlDataTableShowDetail = createOnAction<ShowDetailEvent<any>>(ACTION_TYPES.SHOW_DETAIL)
 export const onTbXlDataTableHideDetail = createOnAction<HideDetailEvent<any>>(ACTION_TYPES.HIDE_DETAIL)
 export const onTbXlDataTableButtonClicked = createOnAction<ButtonEvent<any>>(ACTION_TYPES.BUTTON_CLICKED)
+export const onTbXlDataTableCheckboxClicked = createOnAction<ToggleEvent<any>>(ACTION_TYPES.CHECKBOX_CLICKED)
 
 export function init(register: PiRegister): void {
   register.cardComponent({

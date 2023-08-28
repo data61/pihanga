@@ -15,14 +15,13 @@ import { Card, PiCardSimpleProps } from '@pihanga/core';
 //   }
 
 export type TemplateT = {
-  area: string[][];
+  area: number[][]; // index into cards[]
   rows: string[];
   columns: string[];
   gap?: string;
 }
 
 export type ComponentProps = {
-  cardName: string;
   cards: string[];
   template: TemplateT;
   height?: string;
@@ -33,30 +32,37 @@ export type ComponentProps = {
 
 type ComponentT = ComponentProps;
 
-export const Component = (props: PiCardSimpleProps<ComponentT>) => {
+export const Component = (
+  props: PiCardSimpleProps<ComponentT>
+): React.ReactNode => {
   const {
     cardName,
     cards = [],
     template,
     height = 'auto', //'100vh',
     margin = 0,
-    overflow = 'scroll',
+    overflow = 'hidden', // 'scroll',
   } = props;
 
-  const c2n = cards.reduce((p, n) => { p[n] = `pi-grid-${cardName}-${n}`; return p }, {} as { [k: string]: string });
-  const areaRows = template.area.map((r) => {
-    const ca = r.map((c) => {
-      const n = c2n[c];
-      if (!n) {
-        console.error(`Unknown card ref '${c}' in grid template for grid card '${cardName}'`)
-        return '???'
-      } else {
-        return n;
-      }
-    });
-    return ca.join(' ');
+  const areaRows = template.area.map((rn) => {
+    const r = rn.map((c) => `a${c}`)
+    return `"${r.join(',')}"`
   })
-  const area = areaRows.reduce((p, e) => `${p} '${e}'`, "").trim()
+  const area = areaRows.join(' ')
+  // const c2n = cards.reduce((p, n) => { p[n] = `pi-grid-${cardName}-${n}`; return p }, {} as { [k: string]: string });
+  // const areaRows = template.area.map((r) => {
+  //   const ca = r.map((c) => {
+  //     const n = c2n[c];
+  //     if (!n) {
+  //       console.error(`Unknown card ref '${c}' in grid template for grid card '${cardName}'`)
+  //       return '???'
+  //     } else {
+  //       return n;
+  //     }
+  //   });
+  //   return ca.join(' ');
+  // })
+  // const area = areaRows.reduce((p, e) => `${p} '${e}'`, "").trim()
   console.log('AREA', area);
   const style = {
     display: 'grid',
@@ -69,9 +75,9 @@ export const Component = (props: PiCardSimpleProps<ComponentT>) => {
     width: '100%',
   }; // having type issues with gridTemplateXXX
   console.log('STYLE', style);
-  function renderGridCard(name: string, idx: number) {
+  function renderGridCard(name: string, idx: number): JSX.Element {
     const style = {
-      gridArea: c2n[name],
+      gridArea: `a${idx}`, // c2n[name],
       overflow,
     }
     return (

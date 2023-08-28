@@ -1,6 +1,6 @@
 {
   "name": "@pihanga/cards",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "A set of basic cards for the Pihanga framework",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -25,7 +25,11 @@
     "@types/react": "^18.0.37",
     "react-drag-drop-files": "^2.3.9",
     "react-json-view": "^1.21.3",
-    "react-modal": "^3.16.1"
+    "react-modal": "^3.16.1",
+    "react-markdown": "^8.0.7",
+    "remark-math": "^5.1.1",
+    "rehype-katex": "^6.0.3",
+    "katex": "^0.16.8"
   },
   "files": [
     "dist",
