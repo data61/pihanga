@@ -2,8 +2,7 @@ import React, { Fragment } from 'react';
 import { Card, PiCardSimpleProps, ReduxActionExt, dispatch } from '@pihanga/core';
 import { IconCaretRight, IconCaretDown, IconBell, IconStar, Icon } from '@tabler/icons-react';
 import { TbButtonType } from '../constants';
-import { TbIcon } from '@pihanga/tabler/dist/components';
-import { createRequestArtifactInModalAction } from '../../app.actions';
+import { TbIcon } from '../../components';
 
 type DEF_ROW_TYPE = { [k: string]: any }
 
