@@ -5,7 +5,7 @@ import { Icon as TablerIcon } from '@tabler/icons-react';
 
 export type ComponentProps = {
   title?: string;
-  noPadding?: boolean; // don't use Tabler's card 
+  wrapInCard?: boolean; // when true wrap in Tb Card
   items: DataGridEl[];
   cardOnEmpty?: string; // card to display when no items are available
   dateFormatter?: (d: Date) => string;
@@ -91,11 +91,13 @@ type ComponentT = ComponentProps & {
   onLinkClicked: (ev: LinkClickedEvent) => void;
 }
 
-export const Component = (props: PiCardSimpleProps<ComponentT>) => {
+export const Component = (
+  props: PiCardSimpleProps<ComponentT>
+): React.ReactNode => {
   const {
     items,
     title,
-    noPadding = false,
+    wrapInCard = false,
     dateFormatter = DEF_DATE_FORMATTER.format,
     cardOnEmpty,
     onButtonClicked,
@@ -111,7 +113,7 @@ export const Component = (props: PiCardSimpleProps<ComponentT>) => {
     )
   }
 
-  function buttonClicked(el: ButtonEl) {
+  function buttonClicked(el: ButtonEl): void {
     if (el.actionTemplate) {
       dispatch(el.actionTemplate)
     } else {
@@ -121,7 +123,7 @@ export const Component = (props: PiCardSimpleProps<ComponentT>) => {
     }
   }
 
-  function renderText(el: TextEl) {
+  function renderText(el: TextEl): React.ReactNode {
     if (el.avatarUrl != null) {
       return renderTextWithAvatar(el)
     }
@@ -134,8 +136,9 @@ export const Component = (props: PiCardSimpleProps<ComponentT>) => {
     )
   }
 
-  function renderLink(el: LinkEl) {
-    const onClick = (ev: React.MouseEvent<HTMLAnchorElement>) => {
+  function renderLink(el: LinkEl): React.ReactNode {
+
+    const onClick = (ev: React.MouseEvent<HTMLAnchorElement>): void => {
       if (el.actionTemplate) {
         dispatch(el.actionTemplate)
       } else {
@@ -153,7 +156,7 @@ export const Component = (props: PiCardSimpleProps<ComponentT>) => {
     )
   }
 
-  function renderDate(el: DateEl) {
+  function renderDate(el: DateEl): React.ReactNode {
     let v = el.value || '-'
     if (v instanceof Date) {
       v = dateFormatter(v)
@@ -161,7 +164,7 @@ export const Component = (props: PiCardSimpleProps<ComponentT>) => {
     return renderText({ ...el, type: DataGridElType.Text, value: v })
   }
 
-  function renderTextWithAvatar(el: TextEl) {
+  function renderTextWithAvatar(el: TextEl): React.ReactNode {
     return (
       <div className={`datagrid-content tb-datagrid-content-text-avatar`} key="textA">
         <div className="d-flex align-items-center">
@@ -173,7 +176,7 @@ export const Component = (props: PiCardSimpleProps<ComponentT>) => {
     )
   }
 
-  function renderStatus(el: StatusEl) {
+  function renderStatus(el: StatusEl): React.ReactNode {
     return (
       <div className={`datagrid-content tb-datagrid-content-status`} key="status">
         <span className={`status status-${el.statusColor}`}>
@@ -183,7 +186,7 @@ export const Component = (props: PiCardSimpleProps<ComponentT>) => {
     )
   }
 
-  function renderCheckbox(el: CheckboxEl) {
+  function renderCheckbox(el: CheckboxEl): React.ReactNode {
     return (
       <div className={`datagrid-content tb-datagrid-content-checkbox`} key="checkbox">
         <label className="form-check">
@@ -195,7 +198,7 @@ export const Component = (props: PiCardSimpleProps<ComponentT>) => {
     )
   }
 
-  function renderInput(el: InputEl) {
+  function renderInput(el: InputEl): React.ReactNode {
     return (
       <div className={`datagrid-content tb-datagrid-content-input`} key="input">
         <input type="text" className="form-control form-control-flush" placeholder={el.placeHolder} />
@@ -203,18 +206,18 @@ export const Component = (props: PiCardSimpleProps<ComponentT>) => {
     )
   }
 
-  function renderButton(el: ButtonEl) {
+  function renderButton(el: ButtonEl): React.ReactNode {
     const cls = `btn btn-${el.buttonType || TbButtonType.Primary}`
     return (
       <div className="datagrid-content tb-datagrid-content-button">
-        <button className={cls} onClick={() => buttonClicked(el)}>
+        <button className={cls} onClick={(): void => buttonClicked(el)}>
           {el.label}
         </button  >
       </div>
     )
   }
 
-  function renderCard(el: CardEl) {
+  function renderCard(el: CardEl): React.ReactNode {
     return (
       <div className={`datagrid-content tb-datagrid-content-input`} key="card">
         <Card cardName={el.cardName} {...el.context} />
@@ -222,7 +225,7 @@ export const Component = (props: PiCardSimpleProps<ComponentT>) => {
     )
   }
 
-  function renderContent(el: DataGridEl) {
+  function renderItemContent(el: DataGridEl): React.ReactNode {
     switch (el.type) {
       case DataGridElType.Text: return renderText(el)
       case DataGridElType.Link: return renderLink(el)
@@ -238,33 +241,41 @@ export const Component = (props: PiCardSimpleProps<ComponentT>) => {
     }
   }
 
-  function renderItem(el: DataGridEl, idx: number) {
+  function renderItem(el: DataGridEl, idx: number): React.ReactNode {
     if ("id" in el) {
       const title = el.title || camelToWords(el.id)
       return (
         <div className={`tb-datagrid-item pi-tb-item-${el.type} pi-tb-item-${el.id}`} key={idx}>
           {title !== '-' && (<div className="tb-datagrid-title datagrid-title" key="title">{title} </div>)}
-          {renderContent(el)}
+          {renderItemContent(el)}
         </div>
       )
     } else {
       return (
         <div className={`tb-datagrid-item pi-tb-item-${el.type}`} key={idx}>
-          {renderContent(el)}
+          {renderItemContent(el)}
         </div>
       )
     }
   }
 
-  function renderTitle() {
+  function renderTitle(): React.ReactNode {
     if (title == null) return null;
 
-    return (
-      <h3 className="card-title">{title}</h3>
-    )
+    if (wrapInCard) {
+      return (
+        <div className="card-header card-header-light">
+          <h3 className="card-title">{title}</h3>
+        </div>
+      )
+    } else {
+      return (
+        <h3 className="card-title">{title}</h3>
+      )
+    }
   }
 
-  function renderGrid(grid: { title?: string; els: DataGridEl[] }, idx: number) {
+  function renderGrid(grid: { title?: string; els: DataGridEl[] }, idx: number): React.ReactNode {
     return (
       <div className="pi-tb-datagrid" key={idx}>
         {grid.title && (<h4 className='pi-tb-sub-title'>{grid.title}</h4>)}
@@ -285,14 +296,28 @@ export const Component = (props: PiCardSimpleProps<ComponentT>) => {
     return p
   }, [{ els: [] }] as { title?: string; els: DataGridEl[] }[])
 
-  return (
-    <div className={`pi-tb-data-grid pi-tb-data-grid-${cardName}`} data-pihanga={cardName}>
-      <div className={noPadding ? "" : "card"}>
+  function renderContent(): React.ReactNode {
+    if (wrapInCard) {
+      return (
+        <div className="card">
+          {renderTitle()}
+          <div className="card-body">
+            {grids.map(renderGrid)}
+          </div>
+        </div>
+      )
+    } else {
+      return (
         <div className="card-body">
           {renderTitle()}
           {grids.map(renderGrid)}
         </div>
-      </div>
+      )
+    }
+  }
+  return (
+    <div className={`pi-tb-data-grid pi-tb-data-grid-${cardName}`} data-pihanga={cardName}>
+      {renderContent()}
     </div>
   )
 }
