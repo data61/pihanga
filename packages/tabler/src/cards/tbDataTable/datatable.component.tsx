@@ -145,7 +145,7 @@ type HiddenColumn = Column & {
   type: ColumnType.Hidden,
 }
 
-type GenericColumn = StringColumn
+export type GenericColumn = StringColumn
   | NumberColumn | BooleanColumn | DateColumn | ProgressColumn
   | ButtonColumn | ToggleColumn | IconColumn | HiddenColumn
 
@@ -163,6 +163,12 @@ export type ToggleEvent<T = DEF_ROW_TYPE> = ButtonEvent<T> & {
   selected: boolean;
 }
 
+export type PagingEvent = {
+  offset: number;
+  recordsShowing: number;
+  nextPage: boolean; // false for previous page
+}
+
 type ComponentT<T> = ComponentProps<T> & {
   onRowSelect: (ev: RowSelectEvent<T>) => void;
   onColumnSort: (ev: ColSortEvent) => void;
@@ -170,6 +176,9 @@ type ComponentT<T> = ComponentProps<T> & {
   onHideDetail: (ev: HideDetailEvent<T>) => void;
   onButtonClicked: (ev: ButtonEvent<T>) => void;
   onCheckboxClicked: (ev: ToggleEvent<T>) => void;
+
+  onNextPage: (ev: PagingEvent) => void;
+  onPrevPage: (ev: PagingEvent) => void;
 };
 
 type ExtColumnT = GenericColumn | DetailColumnT
@@ -200,6 +209,8 @@ export function Component<T = DEF_ROW_TYPE>(
     onHideDetail,
     onButtonClicked,
     onCheckboxClicked,
+    onNextPage,
+    onPrevPage: onPreviousPage,
     cardName,
   } = props;
   const [showingDetail, setShowingDetail] = React.useState<Set<string | number>>(new Set<string | number>())
@@ -511,10 +522,10 @@ export function Component<T = DEF_ROW_TYPE>(
 
 
   function renderFooter(): React.ReactNode {
-    if (recordCount <= 0) {
-      // don't show footer if we don't know how many records there are
-      return null
-    }
+    // if (recordCount <= 0) {
+    //   // don't show footer if we don't know how many records there are
+    //   return null
+    // }
 
     const from = dataOffset + 1
     const to = dataOffset + data.length
@@ -559,7 +570,7 @@ export function Component<T = DEF_ROW_TYPE>(
 
     return (
       <li className={disabled ? "page-item disabled" : "page-item"} key="prev-page">
-        <a className="page-link" href="#" aria-disabled={disabled}>
+        <button className="page-link" onClick={(): void => onPaging(false)} aria-disabled={disabled}>
           <svg xmlns="http://www.w3.org/2000/svg"
             className="icon" width="24" height="24" viewBox="0 0 24 24"
             strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -567,7 +578,7 @@ export function Component<T = DEF_ROW_TYPE>(
             <polyline points="15 6 9 12 15 18" />
           </svg>
           prev
-        </a>
+        </button>
       </li>
     )
   }
@@ -576,16 +587,25 @@ export function Component<T = DEF_ROW_TYPE>(
     const disabled = !hasMore
     return (
       <li className={disabled ? "page-item disabled" : "page-item"} key="next-page">
-        <a className="page-link" href="#" aria-disabled={disabled}>
+        <button className="page-link" onClick={(): void => onPaging(true)} aria-disabled={disabled}>
           next
           <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="24" height="24" viewBox="0 0 24 24"
             strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
             <path stroke="none" d="M0 0h24v24H0z" fill="none" />
             <polyline points="9 6 15 12 9 18" />
           </svg>
-        </a>
+        </button>
       </li>
     )
+  }
+
+  function onPaging(nextPage: boolean): void {
+    const ev: PagingEvent = {
+      offset: dataOffset,
+      recordsShowing: data.length,
+      nextPage,
+    }
+    nextPage ? onNextPage(ev) : onPreviousPage(ev)
   }
 
   //   function renderShowingRecordCount() {
