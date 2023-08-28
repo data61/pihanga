@@ -8,6 +8,7 @@ import { init as imageInit } from './imageCard';
 import { init as fileDropInit } from './fileDrop';
 import { init as jsonViewerInit } from './jsonViewer';
 import { init as flexGridInit } from './flexGrid';
+import { init as markdownInit } from './markdown';
 
 export function init(register: PiRegister): void {
   piSwitcher(register);
@@ -16,5 +17,6 @@ export function init(register: PiRegister): void {
   fileDropInit(register);
   jsonViewerInit(register);
   flexGridInit(register);
+  markdownInit(register);
 }
 
