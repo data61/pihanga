@@ -1,6 +1,6 @@
 {
   "name": "@pihanga/core",
-  "version": "0.7.4",
+  "version": "0.8.0",
   "description": "Core module of the Pihanga framework",
   "homepage": "https://github.com/n1analytics/pihanga#readme",
   "main": "lib/index.js",
@@ -57,13 +57,14 @@
     "lodash.isplainobject": "^4.0.6",
     "lodash.isstring": "^4.0.1",
     "lodash.merge": "^4.6.2",
+    "lodash.throttle": "^4.1.1",
     "moment": "^2.24.0",
     "numeral": "^2.0.6",
     "path-to-regexp": "^3.0.0",
     "prop-types": "^15.7.2",
-    "react-redux": "^7.1.0",
-    "redux": "^4.0.0",
-    "redux-thunk": "^2.3.0",
+    "react-redux": "^8.0.5",
+    "redux": "^4.2.1",
+    "redux-thunk": "^2.4.2",
     "stackinfo": "^1.1.5",
     "whatwg-fetch": "~3.0.0"
   },
@@ -99,9 +100,7 @@
     "jest-dom": "^3.5.0",
     "npm-run": "^5.0.1",
     "prettier": "^1.18.2",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0",
-    "react-testing-library": "^5.9.0",
+    "react-testing-library": "^8.0.1",
     "rimraf": "^2.7.1",
     "rollup": "^1.19.4",
     "rollup-plugin-babel": "^4.3.3",
@@ -117,5 +116,5 @@
       "loose-envify"
     ]
   },
-  "gitHead": "f015ea5370235b1fecc99e68ef0502d73ec325df"
+  "gitHead": "7bc8a88142fef550eae2d4f884c20fe153d2a0f0"
 }

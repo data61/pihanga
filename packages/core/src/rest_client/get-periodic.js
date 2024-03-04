@@ -9,6 +9,8 @@ let registerReducer;
  */
 export function init(register) {
   registerReducer = register.reducer;
+  // eslint-disable-next-line no-param-reassign
+  register.registerPeriodicGET = registerPeriodicGET;
 }
 
 export function registerPeriodicGET({

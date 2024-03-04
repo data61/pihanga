@@ -10,6 +10,10 @@ let registerReducer;
  */
 export function init(register) {
   registerReducer = register.reducer;
+  // eslint-disable-next-line no-param-reassign
+  register.registerPUT = registerPUT;
+  // eslint-disable-next-line no-param-reassign
+  register.registerPOST = registerPOST;
 }
 
 export const registerPUT = (opts) => {
