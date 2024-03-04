@@ -1,6 +1,6 @@
 {
   "name": "@pihanga/cards",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "A set of basic cards for the Pihanga framework",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/data61/pihanga#readme.md",
   "devDependencies": {
-    "@pihanga/core": "^0.8.0",
+    "@pihanga/core": "^0.8.1",
     "@types/react-modal": "^3.16.0",
     "typescript": "^5.0.4"
   },

@@ -1,6 +1,6 @@
 {
   "name": "@pihanga/graphql",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Implemnts a graphql based backend for local state management",
   "homepage": "https://github.com/n1analytics/pihanga#readme",
   "main": "lib/index.js",
