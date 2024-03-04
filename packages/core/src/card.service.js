@@ -116,6 +116,21 @@ export function registerCardComponent(compDefs) {
   };
 }
 
+export function createCardDeclaration(cardType) {
+  return (p) => ({
+    ...p,
+    cardType,
+  });
+}
+// function createCardDeclaration<C>(cardType: string) {
+//   return <S>(p: PiMapProps<C, S>): PiCardDef => {
+//     return {
+//       ...p,
+//       cardType,
+//     }
+//   }
+// }
+
 export function card(name) {
   const cc = cardComponents[name];
   if (!cc) {
