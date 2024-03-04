@@ -5,7 +5,7 @@ export const ACTION_TYPES = registerActions('ROUTER', ['SHOW_PAGE', 'NAVIGATE_TO
 export function navigateToPage(url, fromBrowser = false) {
   dispatch({
     type: ACTION_TYPES.NAVIGATE_TO_PAGE,
-    url.replaceAll(' ', '%20'),
+    url: url.replaceAll(' ', '%20'),
     fromBrowser,
   });
 }
