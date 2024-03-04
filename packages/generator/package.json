@@ -15,10 +15,4 @@
     "validate-npm-package-name": "^3.0.0",
     "yeoman-generator": "^5.2.0"
   },
-<<<<<<< Updated upstream
-  "gitHead": "f015ea5370235b1fecc99e68ef0502d73ec325df"
 }
-=======
-  "gitHead": "88ba0411f14fbc9d767513e1bba31ff4f2574976"
-}
->>>>>>> Stashed changes
