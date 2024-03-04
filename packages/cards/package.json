@@ -1,6 +1,6 @@
 {
   "name": "@pihanga/cards",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A set of basic cards for the Pihanga framework",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,19 +17,19 @@
   },
   "homepage": "https://github.com/data61/pihanga#readme.md",
   "devDependencies": {
-    "@pihanga/core": "^0.7.7",
+    "@pihanga/core": "^0.8.0",
     "@types/react-modal": "^3.16.0",
     "typescript": "^5.0.4"
   },
   "dependencies": {
     "@types/react": "^18.0.37",
+    "katex": "^0.16.8",
     "react-drag-drop-files": "^2.3.9",
     "react-json-view": "^1.21.3",
-    "react-modal": "^3.16.1",
     "react-markdown": "^8.0.7",
-    "remark-math": "^5.1.1",
+    "react-modal": "^3.16.1",
     "rehype-katex": "^6.0.3",
-    "katex": "^0.16.8"
+    "remark-math": "^5.1.1"
   },
   "files": [
     "dist",
